@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import RegisterScreen from './view/RegisterScreen';
+import LoginScreen from './view/LoginScreen';
 
 const RegisterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -16,8 +16,8 @@ const RegisterTab = () => {
 
 
       <RegisterStack.Screen
-        name="Register"
-        component={RegisterScreen}
+        name="Login"
+        component={LoginScreen}
       />
 
     </RegisterStack.Navigator>
