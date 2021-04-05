@@ -5,7 +5,7 @@ import { SafeAreaView, StyleSheet, Text, View, Image, Button, Dimensions, Toucha
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const { width: WIDTH } = Dimensions.get('window');
-const  HEIGHT  = Dimensions.get('window').height;
+const HEIGHT = Dimensions.get('window').height;
 
 class LoginScreen extends React.Component {
 
@@ -36,6 +36,16 @@ class LoginScreen extends React.Component {
 
 
   }
+  onRegister = async () => {
+    const { navigation } = this.props;
+    navigation.navigate("Register")
+
+  }
+  onLogin = async () => {
+    const { navigation } = this.props;
+    navigation.navigate("Home")
+
+  }
 
 
   render() {
@@ -43,9 +53,9 @@ class LoginScreen extends React.Component {
     return (
 
       <View style={styles.container} >
-<ImageBackground source={require('./../assets/background.png')} style={styles.image} >
-        <SafeAreaView>
-          
+        <ImageBackground source={require('./../assets/background.png')} style={styles.image} >
+          <SafeAreaView>
+
             <View style={styles.logoContainer}>
               <Text style={styles.logoText}>BiShare</Text>
               <Text style={styles.text}>Marketplace Polibatam</Text>
@@ -81,18 +91,18 @@ class LoginScreen extends React.Component {
               <TouchableOpacity onPress={this.onSubmit} style={styles.btnLupaPassword} >
                 <Text style={styles.text}>Lupa Password</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={this.onSubmit} style={styles.btnLogin} >
+              <TouchableOpacity onPress={this.onLogin} style={styles.btnLogin} >
                 <Text style={styles.text}>Masuk</Text>
               </TouchableOpacity>
-             
-              <TouchableOpacity onPress={this.onSubmit} style={styles.btnDaftar} >
-                <Text style={styles.text}>Belum Punya Akun? Daftar Disini</Text> 
+
+              <TouchableOpacity onPress={this.onRegister} style={styles.btnDaftar} >
+                <Text style={styles.text}>Belum Punya Akun? Daftar Disini</Text>
               </TouchableOpacity>
 
 
             </View>
-          
-        </SafeAreaView>
+
+          </SafeAreaView>
         </ImageBackground>
       </View>
 
@@ -129,17 +139,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   logoContainer: {
-    marginTop: HEIGHT / 25 ,   
-  
+    marginTop: HEIGHT / 25,
+
     justifyContent: 'center',
 
   },
   bottomContainer: {
-    marginTop:  100 ,   
+    marginTop: 100,
     alignItems: 'center',
     justifyContent: 'center'
   },
- 
+
   subLogo: {
     color: '#666872',
     fontSize: 15,
@@ -184,7 +194,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
- 
+
   inputContainer: {
     marginTop: 10,
   },
@@ -194,7 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     paddingLeft: 50,
-    color   : '#252835',
+    color: '#252835',
     backgroundColor: '#fff',
     marginHorizontal: 25,
   },

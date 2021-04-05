@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LoginScreen from './view/LoginScreen';
+import RegisterScreen from './view/RegisterScreen';
+import HomeScreen from './view/HomeScreen';
 
 const RegisterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -19,6 +21,14 @@ const RegisterTab = () => {
         name="Login"
         component={LoginScreen}
       />
+      <RegisterStack.Screen
+        name="Register"
+        component={RegisterScreen}
+      />
+       <RegisterStack.Screen
+        name="Home"
+        component={HomeScreen}
+      />
 
     </RegisterStack.Navigator>
   );
@@ -32,14 +42,14 @@ export default class App extends React.Component {
   constructor() {
     super()
 
- 
+
     this.state = {
       tokenUser: "",
       tokenExpire: "",
     }
   }
 
- 
+
 
   render() {
 
@@ -47,12 +57,12 @@ export default class App extends React.Component {
       <NavigationContainer>
         <AuthStack.Navigator
           screenOptions={{ gestureEnabled: false, headerShown: false }}
-          
+
         >
           <AuthStack.Screen
-              name="splash"
-              component={RegisterTab}
-            />
+            name="splash"
+            component={RegisterTab}
+          />
 
 
 
