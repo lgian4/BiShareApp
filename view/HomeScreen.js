@@ -1,27 +1,36 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, Button, Dimensions, TouchableOpacity, TextInput, Alert,FlatList, ImageBackground } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, Button, Dimensions, TouchableOpacity, TextInput, Alert, FlatList, ImageBackground } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
+import * as firebase from 'firebase';
 
+const firebaseConfig = {
+  apiKey: 'AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA',
+  authDomain: 'bishare-48db5.firebaseapp.com',
+  databaseURL: 'https://bishare-48db5-default-rtdb.firebaseio.com/',
+  projectId: 'bishare-48db5',
+  storageBucket: 'bishare-48db5.appspot.com',
+  messagingSenderId: 'sender-id',
+  appId: '1:250899433800:android:982f8764221e4e5666cb7d',
+  measurementId: 'G-measurement-id',
+};
+
+firebase.initializeApp(firebaseConfig);
 
 const { width: WIDTH } = Dimensions.get('window');
 const HEIGHT = Dimensions.get('window').height;
 
 
-const harga = [
-  {nama:'Rekomendasi',key:'Melchem'},
-  {nama:'Semua',key:'mrasyid.haikal@gmail.com'},
-  {nama:'Baju',key:'M Rasyid Khaikal'},  
-  {nama:'Nomor KTP',key:'511243'},
-  {nama:'Tempat Lahir',key:'password'}]
+
 
 class HomeScreen extends React.Component {
 
   constructor() {
     super()
-
+  
+    
 
     this.state = {
       showPass: true,
@@ -36,9 +45,11 @@ class HomeScreen extends React.Component {
       password: "",
       konfirmasiPassword: "",
       nomorHP: "",
+      harga :[]
 
     }
-
+    this.loadKategori();
+    
   }
 
   showPass = async () => {
@@ -49,22 +60,32 @@ class HomeScreen extends React.Component {
       this.setState({ showPass: true, press: false })
     }
   }
+  loadKategori = async () => {
+    
+     firebase.database()
+    .ref('kategori/')
+    .on('value', snapshot => {
+        this.setState({harga:snapshot.val() }) 
+        console.log(this.state.harga);
+    });
+    
+  }
   onSubmit = async () => {
     const { navigation } = this.props;
 
 
   }
-  _renderItem =({item,index}) =>{
-      
-    return(
-        <TouchableOpacity>
-      <View style={{paddingHorizontal:15,paddingVertical:9,borderRadius:20, backgroundColor:'#F24E1E',marginHorizontal:7 }}>
-        <Text style={{color:'white'}}>{item.nama}</Text>
-        
-      </View>
+  _renderItem = ({ item }) => {
+    
+    return (
+      <TouchableOpacity>
+        <View style={{ paddingHorizontal: 15, paddingVertical: 9, borderRadius: 20, backgroundColor: '#F24E1E', marginHorizontal: 7 }}>
+          <Text style={{ color: 'white' }}>{item.kategoriname}</Text>
+
+        </View>
       </TouchableOpacity>
     )
-}
+  }
 
 
 
@@ -97,6 +118,7 @@ class HomeScreen extends React.Component {
 
 
   render() {
+    
     const { navigation } = this.props;
     return (
 
@@ -126,15 +148,15 @@ class HomeScreen extends React.Component {
             />
             <Icon name={'search'} size={25} color={'#666872'} style={styles.inputIcon} />
           </View>
-          <View style={{ backgroundColor: '#F6F6F6', height: HEIGHT, marginTop: 10, borderRadius: 10,paddingVertical:10 }}>
-          <FlatList
-          data={harga}
-          style={{}}
-          horizontal={true}
-          renderItem = {this._renderItem}
-          keyExtractor={(item, index)=> index.toString()}
-          
-          />
+          <View style={{ backgroundColor: '#F6F6F6', height: HEIGHT, marginTop: 10, borderRadius: 10, paddingVertical: 10 }}>
+            <FlatList
+              data={this.state.harga}
+              style={{}}
+              horizontal={true}
+              renderItem={this._renderItem}
+              keyExtractor={(item, index) => index.toString()}
+
+            />
 
           </View>
         </SafeAreaView>
