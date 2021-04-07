@@ -40,7 +40,7 @@ if (!firebase.apps.length) {
 const { width: WIDTH } = Dimensions.get("window");
 const HEIGHT = Dimensions.get("window").height;
 
-class HomeScreen extends React.Component {
+class SearchScreen extends React.Component {
   constructor() {
     super();
 
@@ -126,159 +126,80 @@ class HomeScreen extends React.Component {
               justifyContent: "space-between",
               paddingHorizontal: 20,
               paddingTop: 10,
+              marginBottom:20
             }}
           >
             <View style={{ marginTop: 20 }}>
               <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
             </View>
-
+<Text style={{fontSize:16,fontWeight:'bold',marginTop:20}}>Pencarian</Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"#666872"} />
             </View>
           </View>
-          
-          <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
-            <Text
-              style={{ fontSize: 14, color: "#F24E1E", fontWeight: "bold" }}
-            >
-              Rp. 20.000
-            </Text>
-            <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}>
-              TMA-2 HD WIRELESS
-            </Text>
-          </View>
           <View style={styles.inputContainer}>
-            <View style={{ marginHorizontal: 20, marginTop: 20 }}>
-              <View
+            <TextInput
+              style={styles.input}
+              onChangeText={(val) => this.setState({ username: val })}
+              placeholder={"Search "}
+              placeholderTextColor={"#666872"}
+              underlineColorAndroid="transparent"
+            />
+            <Icon
+              name={"search"}
+              size={25}
+              color={"#666872"}
+              style={styles.inputIcon}
+            />
+          </View>
+         
+         <View style={{paddingHorizontal:25,marginTop:20}}>
+           <Text style={{fontSize:16}}>Pencarian Terakhir</Text>
+
+           <View style={{ flexDirection:'row',}}>
+           <Icon name={'ios-timer-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
+              <Text style={{flex:2, fontSize:16, marginTop:11,marginLeft:5}}>Favorit</Text>
+              <Icon name={'ios-close-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
+           </View>
+           <View style={{ flexDirection:'row',}}>
+           <Icon name={'ios-timer-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
+              <Text style={{flex:2, fontSize:16, marginTop:11,marginLeft:5}}>Favorit</Text>
+              <Icon name={'ios-close-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
+           </View>
+           <View style={{ flexDirection:'row',}}>
+           <Icon name={'ios-timer-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
+              <Text style={{flex:2, fontSize:16, marginTop:11,marginLeft:5}}>Favorit</Text>
+              <Icon name={'ios-close-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
+           </View>
+         </View>
+         <TouchableOpacity>
+          <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  width: WIDTH / 2.5,
+                  backgroundColor: "white",
+                  marginTop: 10,
+                  borderRadius: 10,
+                  alignSelf: "flex-start",
+                  padding: 10,
+                  marginHorizontal:10,
+                  borderWidth:1,
                 }}
               >
-                <View style={{ alignItems: "center" }}>
-                  <Text style={{ fontSize: 16, color: "black" }}>Gambaran</Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                    }}
-                  ></View>
-                </View>
-
-                <View style={{ alignItems: "center" }}>
-                  <Text style={{ fontSize: 16, color: "black" }}>Fitur</Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                    }}
-                  ></View>
-                </View>
-                <View style={{ alignItems: "center" }}>
-                  <Text style={{ fontSize: 16, color: "black" }}>
-                    Spesifikasi
-                  </Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                    }}
-                  ></View>
-                </View>
-              </View>
-              <View style={{alignItems:'center',margin:20}}>
                 <Image
                   source={require("./../assets/produk.png")}
-                  style={{
-                    width: WIDTH * 0.7,
-
-                    borderWidth: 1,
-                    borderRadius: 50,
-                    borderColor: "black",
-                  }}
                   resizeMode="contain"
                 />
+                <Text style={{ fontWeight: "bold" }}>ss</Text>
+                <Text>Rp. item.harga</Text>
               </View>
-              <View>
-                <Text style={{}}>
-                Unit speaker berisi diafragma yang dikembangkan secara presisi dari bio-selulosa NAC Audio, membuatnya lebih kaku, lebih ringan, dan lebih kuat daripada unit speaker PET biasa, dan memungkinkan diafragma penghasil suara bergetar tanpa tingkat distorsi yang ditemukan di speaker lain.
-                </Text>
-                <Text style={{}}>
-                Unit speaker berisi diafragma yang dikembangkan secara presisi dari bio-selulosa NAC Audio, membuatnya lebih kaku, lebih ringan, dan lebih kuat daripada unit speaker PET biasa, dan memungkinkan diafragma penghasil suara bergetar tanpa tingkat distorsi yang ditemukan di speaker lain.
-                </Text>
-
-              </View>
-            </View>
-          </View>
-          <View  style={          
-          {
-            bottom: -100,
-            alignItems:'center',
-            justifyContent:'space-evenly',
-            width:WIDTH,
-            flexDirection:'row',
-            position:'absolute',
-            
-            
-          } }>
-            <TouchableOpacity
-              style={{
-                
-                height: 45,
-                borderRadius: 10,
-                fontSize: 16,
-                borderColor: "#F24E1E",
-                borderWidth:1,
-                justifyContent: "space-evenly",
-                flexDirection:'row',
-                backgroundColor:'white',
-                marginTop: 20,
-                paddingHorizontal:10,
-                
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,  
-                elevation: 5
-              }}
-            >
-              <Icon name={'heart-outline'} size={25} color={'#666872'} style={{color:'#F24E1E',marginTop:10}} />
-              <Text style={[styles.text,{color: "#F24E1E",marginTop:10}]}>Favorit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-               
-                height: 45,
-                borderRadius: 10,
-                fontSize: 16,
-                backgroundColor: "#F24E1E",
-                justifyContent: "center",
-                marginTop: 20,
-                paddingHorizontal:10,
-                
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,  
-                elevation: 5
-              }}
-            >
-              <Text style={styles.text}>Masukkan Ke Keranjang</Text>
-            </TouchableOpacity>
-          </View>
+      </TouchableOpacity>
         </SafeAreaView>
       </View>
     );
   }
 }
 
-export default HomeScreen;
+export default SearchScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -352,5 +273,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 37,
+  },
+  inputIcon: {
+    position: 'absolute',
+    borderColor: '#666872',
+    top: 8,
+    left: 37,
+    paddingRight: 5,
+    
   },
 });

@@ -7,6 +7,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import LoginScreen from './view/LoginScreen';
 import RegisterScreen from './view/RegisterScreen';
 import HomeScreen from './view/HomeScreen';
+import ProdukDetailScreen from './view/ProdukDetailScreen';
+import SearchScreen from './view/SearchScreen';
 
 const RegisterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -28,6 +30,14 @@ const RegisterTab = () => {
        <RegisterStack.Screen
         name="Home"
         component={HomeScreen}
+      />
+        <RegisterStack.Screen
+        name="ProdukDetail"
+        component={ProdukDetailScreen}
+      />
+        <RegisterStack.Screen
+        name="Search"
+        component={SearchScreen}
       />
 
     </RegisterStack.Navigator>

@@ -43,7 +43,7 @@ class LoginScreen extends React.Component {
   }
   onLogin = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Home")
+    navigation.navigate("Search")
 
   }
 
