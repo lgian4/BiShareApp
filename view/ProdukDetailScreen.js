@@ -43,7 +43,7 @@ const HEIGHT = Dimensions.get("window").height;
 
 
 
-class ProdukDetailScreen extends React.Component {
+class HomeScreen extends React.Component {
   constructor() {
     super();
 
@@ -134,7 +134,7 @@ this.loadProduk();
         .ref("produk/")
         .on("value", (snapshot) => {
           snapshot.forEach((child) => {
-            if (child.key != "count" && child.key != "produkmediacount" && child.val().dlt != true) {
+            if (child.key != "count" && child.val().dlt != true) {
               tempproduk.push({
                 key: child.key,
                 produkcode: child.val().produkcode,
@@ -315,7 +315,7 @@ this.loadProduk();
   }
 }
 
-export default ProdukDetailScreen;
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {
