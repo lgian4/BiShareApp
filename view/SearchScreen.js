@@ -189,7 +189,7 @@ class SearchScreen extends React.Component {
                   source={require("./../assets/produk.png")}
                   resizeMode="contain"
                 />
-                <Text style={{ fontWeight: "bold" }}>ss</Text>
+                <Text style={{ fontWeight: "bold" }}>ssexe</Text>
                 <Text>Rp. item.harga</Text>
               </View>
       </TouchableOpacity>

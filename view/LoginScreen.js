@@ -1,11 +1,28 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, Button, Dimensions, TouchableOpacity, TextInput, Alert, ImageBackground } from 'react-native';
-
+import * as firebase from "firebase";
 import Icon from 'react-native-vector-icons/Ionicons'
 
 const { width: WIDTH } = Dimensions.get('window');
 const HEIGHT = Dimensions.get('window').height;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
+  authDomain: "bishare-48db5.firebaseapp.com",
+  databaseURL: "https://bishare-48db5-default-rtdb.firebaseio.com/",
+  projectId: "bishare-48db5",
+  storageBucket: "bishare-48db5.appspot.com",
+  messagingSenderId: "sender-id",
+  appId: "1:250899433800:android:982f8764221e4e5666cb7d",
+  measurementId: "G-measurement-id",
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
+}
 
 class LoginScreen extends React.Component {
 
@@ -42,6 +59,8 @@ class LoginScreen extends React.Component {
 
   }
   onLogin = async () => {
+
+      
     const { navigation } = this.props;
     navigation.navigate("Search")
 
@@ -88,9 +107,7 @@ class LoginScreen extends React.Component {
                   <Icon name={this.state.press == false ? 'ios-eye-outline' : 'ios-eye-off-outline'} size={25} color={'#666872'} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={this.onSubmit} style={styles.btnLupaPassword} >
-                <Text style={styles.text}>Lupa Password</Text>
-              </TouchableOpacity>
+              
               <TouchableOpacity onPress={this.onLogin} style={styles.btnLogin} >
                 <Text style={styles.text}>Masuk</Text>
               </TouchableOpacity>
