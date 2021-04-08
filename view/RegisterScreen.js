@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, Button, Dimensions, TouchableOpacity, TextInput, Alert, ImageBackground } from 'react-native';
+import { SafeAreaView, StyleSheet,Picker, Text, View, Image, Button, Dimensions, TouchableOpacity, TextInput, Alert, ImageBackground } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
@@ -23,12 +23,15 @@ class RegisterScreen extends React.Component {
       DateDisplay:"",
       TextInputDisableStatus: true,
       displayFormat: 'YYYY-MM-DD',
-      namaLengkap:"",
-      alamatLengkap:"",
+      nama:"",
+      jeniskelamin:"",
+      tanggallahir:"",
       email:"",
-      password:"",
-      konfirmasiPassword:"",
-      nomorHP : "",
+      nohp:"",
+      alamat : "",
+      username : "",
+      password : "",
+      repassword : "",
 
     }
     

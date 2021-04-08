@@ -14,9 +14,11 @@ import {
   FlatList,
   ImageBackground,
   ScrollView,
+  ToastAndroid,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
+import AsyncStorage  from "@react-native-community/async-storage";
 import moment from "moment";
 import * as firebase from "firebase";
 
@@ -37,6 +39,28 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
+const storeData = async (key,value) => {
+  try {
+    const jsonValue = JSON.stringify(value)
+    await AsyncStorage.setItem('@storage_Key:'+key, jsonValue)
+  } catch (e) {
+    // saving error
+    this.notify(e);
+    return;
+  }
+}
+const getData = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('@storage_Key:'+key)
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch(e) {
+    // error reading value
+    this.notify(e);
+    return;
+  }
+}
+
+
 const { width: WIDTH } = Dimensions.get("window");
 const HEIGHT = Dimensions.get("window").height;
 
@@ -56,8 +80,21 @@ class SearchScreen extends React.Component {
       refresh: true,
     };
   }
+  notify = (message) => {
+    if (Platform.OS != "android") {
+      // Snackbar.show({
+      //     text: message,
+      //     duration: Snackbar.LENGTH_SHORT,
+      // });
+    } else {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    }
+  };
+  LoadData = async () => {
 
-  LoadData = async () => {};
+   console.log( getData("user"));
+
+  };
 
   loadProduk = async () => {
     console.log("produk length");
@@ -189,7 +226,7 @@ class SearchScreen extends React.Component {
                   source={require("./../assets/produk.png")}
                   resizeMode="contain"
                 />
-                <Text style={{ fontWeight: "bold" }}>ssexe</Text>
+                <Text style={{ fontWeight: "bold" }}>ssex</Text>
                 <Text>Rp. item.harga</Text>
               </View>
       </TouchableOpacity>
