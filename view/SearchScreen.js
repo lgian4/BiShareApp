@@ -92,7 +92,7 @@ class SearchScreen extends React.Component {
   };
   LoadData = async () => {
 
-   console.log( getData("user"));
+   console.log(await getData("user"));
 
   };
 

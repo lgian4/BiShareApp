@@ -8,8 +8,10 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "~1.12.0",
     "@react-native-community/datetimepicker": "3.0.4",
     "@react-native-community/masked-view": "0.1.10",
+    "@react-native-community/picker": "^1.8.1",
     "@react-native-firebase/app": "^11.2.0",
     "@react-navigation/bottom-tabs": "^5.11.8",
     "@react-navigation/native": "^5.9.3",
@@ -28,8 +30,7 @@
     "react-native-screens": "~2.15.2",
     "react-native-snackbar": "^2.4.0",
     "react-native-vector-icons": "^8.1.0",
-    "react-native-web": "~0.13.12",
-    "@react-native-community/async-storage": "~1.12.0"
+    "react-native-web": "~0.13.12"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0"

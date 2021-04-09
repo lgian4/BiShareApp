@@ -75,6 +75,18 @@ class LoginScreen extends React.Component {
     };
   }
 
+  checkLogin= async () => {
+    console.log('check login');
+   var user = await getData("user");
+   console.log(user);
+    if(user != null && user.nama != null)
+    {
+      const { navigation } = this.props;
+      navigation.navigate("Home");
+
+    }
+  }
+
   notify = (message) => {
     if (Platform.OS != "android") {
       // Snackbar.show({
@@ -130,6 +142,7 @@ class LoginScreen extends React.Component {
   };
 
   render() {
+    this.checkLogin();
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
