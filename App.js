@@ -9,8 +9,10 @@ import RegisterScreen from './view/RegisterScreen';
 import HomeScreen from './view/HomeScreen';
 import ProdukDetailScreen from './view/ProdukDetailScreen';
 import SearchScreen from './view/SearchScreen';
+import AsyncStorage from "@react-native-community/async-storage";
 
 const RegisterStack = createStackNavigator();
+const HomeStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const RegisterTab = () => {
   return (
@@ -27,21 +29,44 @@ const RegisterTab = () => {
         name="Register"
         component={RegisterScreen}
       />
-       <RegisterStack.Screen
-        name="Home"
-        component={HomeScreen}
-      />
-        <RegisterStack.Screen
-        name="ProdukDetail"
-        component={ProdukDetailScreen}
-      />
-        <RegisterStack.Screen
-        name="Search"
-        component={SearchScreen}
-      />
+
 
     </RegisterStack.Navigator>
   );
+}
+
+const HomeTab = () => {
+  return (
+    <HomeStack.Navigator
+      screenOptions={{ gestureEnabled: false, headerShown: false }}
+    >
+      <HomeStack.Screen name="Home" component={HomeScreen} />
+      <HomeStack.Screen name="ProdukDetail" component={ProdukDetailScreen} />
+      <HomeStack.Screen name="Search" component={SearchScreen} />
+    </HomeStack.Navigator>
+  )
+}
+
+
+const storeData = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value)
+    await AsyncStorage.setItem('@storage_Key:' + key, jsonValue)
+  } catch (e) {
+    // saving error
+    this.notify(e);
+    return;
+  }
+}
+const getData = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('@storage_Key:' + key)
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    // error reading value
+    this.notify(e);
+    return;
+  }
 }
 
 
@@ -52,13 +77,18 @@ export default class App extends React.Component {
   constructor() {
     super()
 
+   this.UserData();
 
     this.state = {
       tokenUser: "",
       tokenExpire: "",
+      user:[]
     }
   }
-
+  UserData = async() => {
+    this.state.user =await getData("user");
+    
+  }
 
 
   render() {
@@ -69,16 +99,17 @@ export default class App extends React.Component {
           screenOptions={{ gestureEnabled: false, headerShown: false }}
 
         >
-          <AuthStack.Screen
-            name="splash"
-            component={RegisterTab}
-          />
-
-
-
-
-
-
+          {this.state.user == null || this.state.user.userid == '' ? (
+            <AuthStack.Screen
+              name="splash"
+              component={RegisterTab}
+            />
+          ) : (
+            <AuthStack.Screen
+              name="home"
+              component={HomeTab}
+            />
+          )}
         </AuthStack.Navigator>
       </NavigationContainer>
     );
