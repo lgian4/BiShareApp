@@ -114,10 +114,10 @@ class ProdukDetailScreen extends React.Component {
      this.setState({ user: tuser });
      this.setState({ nama: tuser.nama });
 
-    console.log("loaddata");
+    
     if (this.state.refresh == false && this.state.isFetching == false)
       return;
-    console.log("loaddata 2");
+    
     this.setState({ refresh: false });
     this.setState({ isFetching: false });
     var tloadddate = await getData("loadddate");
