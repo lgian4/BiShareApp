@@ -29,6 +29,10 @@ const RegisterTab = () => {
         name="Register"
         component={RegisterScreen}
       />
+      <RegisterStack.Screen
+        name="HomeTab"
+        component={HomeTab}
+      />
 
 
     </RegisterStack.Navigator>
@@ -43,6 +47,7 @@ const HomeTab = () => {
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="ProdukDetail" component={ProdukDetailScreen} />
       <HomeStack.Screen name="Search" component={SearchScreen} />
+      <HomeStack.Screen name="RegisterTab" component={RegisterTab} />
     </HomeStack.Navigator>
   )
 }
@@ -77,7 +82,7 @@ export default class App extends React.Component {
   constructor() {
     super()
 
-   this.UserData();
+  
 
     this.state = {
       tokenUser: "",
@@ -87,9 +92,11 @@ export default class App extends React.Component {
   }
   UserData = async() => {
     this.state.user =await getData("user");
+    console.log(this.state.user);
+    this.state.user = null;
     
   }
-
+  componentDidMount() { this.UserData(); }
 
   render() {
 
@@ -101,12 +108,12 @@ export default class App extends React.Component {
         >
           {this.state.user == null || this.state.user.userid == '' ? (
             <AuthStack.Screen
-              name="splash"
+              name="RegisterTab"
               component={RegisterTab}
             />
           ) : (
             <AuthStack.Screen
-              name="home"
+              name="HomeTab"
               component={HomeTab}
             />
           )}

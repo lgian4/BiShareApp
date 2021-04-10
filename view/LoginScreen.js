@@ -119,7 +119,7 @@ class LoginScreen extends React.Component {
     }
     var user = null;
 
-    firebase
+   await firebase
       .database()
       .ref("users")
       .orderByChild("username")
@@ -137,12 +137,14 @@ class LoginScreen extends React.Component {
     if (user != null && user.userid != "") {
       await storeData("user",user);
       const { navigation } = this.props;
-      navigation.navigate("Search");
+      navigation.navigate("HomeTab");
     }
   };
 
+  componentDidMount() { this.checkLogin(); }
+
   render() {
-    this.checkLogin();
+    
     const { navigation } = this.props;
     return (
       <View style={styles.container}>

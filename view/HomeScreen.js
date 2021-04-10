@@ -20,6 +20,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
@@ -42,6 +43,28 @@ const { width: WIDTH } = Dimensions.get("window");
 const HEIGHT = Dimensions.get("window").height;
 
 
+const storeData = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value)
+    await AsyncStorage.setItem('@storage_Key:' + key, jsonValue)
+  } catch (e) {
+    // saving error
+    this.notify(e);
+    return;
+  }
+}
+const getData = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('@storage_Key:' + key)
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    // error reading value
+    this.notify(e);
+    return;
+  }
+}
+
+
 
 class ProdukDetailScreen extends React.Component {
   constructor() {
@@ -54,7 +77,7 @@ class ProdukDetailScreen extends React.Component {
       DateDisplay: "",
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
-      namaLengkap: "",
+      nama: "",
       alamatLengkap: "",
       email: "",
       password: "",
@@ -63,7 +86,13 @@ class ProdukDetailScreen extends React.Component {
       kategori: [],
       produk: [],
       refresh: true,
+      user: [],
+      searchtext: "",
+      connected: false,
+      loadddate: null,
+      isFetching: true,
     };
+
   }
 
   showPass = async () => {
@@ -74,60 +103,110 @@ class ProdukDetailScreen extends React.Component {
     }
   };
   LoadData = async () => {
-this.loadKategori();
-this.loadProduk();
-  }
-  loadKategori = async () => {
-    console.log("kategori length");
-    console.log(this.state.kategori.length);
 
-    var tempkategori = [];
-    tempkategori.push({
-      key: "All",
-      kategoricode: "All",
-      kategoridesc: "All",
-      kategoriid: "All",
-      kategoriname: "All",
-    });
-    tempkategori.push({
-      key: "Rekomendasi",
-      kategoricode: "Rekomendasi",
-      kategoridesc: "Rekomendasi",
-      kategoriid: "Rekomendasi",
-      kategoriname: "Rekomendasi",
-    });
+     //await this.loadProduk();
+     var tuser = await getData("user");
+     console.log(tuser);
+     if(tuser == null || tuser.userid == ""){
+       const { navigation } = this.props;
+       navigation.navigate('RegisterTab')
+     }
+     this.setState({ user: tuser });
+     this.setState({ nama: tuser.nama });
+
+    console.log("loaddata");
+    if (this.state.refresh == false && this.state.isFetching == false)
+      return;
+    console.log("loaddata 2");
+    this.setState({ refresh: false });
+    this.setState({ isFetching: false });
+    var tloadddate = await getData("loadddate");
+    this.setState({ loadddate: tloadddate })
+
+    await this.CekKoneksi();
+
+    if (this.state.connected) {
+      await this.loadKategori();
+      await this.loadProduk();
+      await storeData("kategori", this.state.kategori);
+
+    }
+    else {
+
+      var tkategori = await getData("kategori");
+      this.setState({ kategori: tkategori })
+
+    }
+
    
+
+    
+  }
+
+  onRefresh() {
+    this.setState({ isFetching: true, }, () => { this.LoadData(); });
+  }
+
+  CekKoneksi = async () => {
+
+
+    firebase
+      .database()
+      .ref("info/connected")
+      .on("value", (snapshot) => {
+
+        if (snapshot.val() == true) {
+          this.setState({ connected: true });
+        } else {
+          this.setState({ connected: false });
+        }
+      });
+  }
+
+
+  loadKategori = async () => {
     if (this.state.kategori == null || this.state.kategori.length <= 0) {
-      firebase
-        .database()
-        .ref("kategori/")
-        .on("value", (snapshot) => {
-          snapshot.forEach((child) => {
-            if (child.key != "count" && child.val().dlt != true) {
-              tempkategori.push({
-                key: child.key,
-                kategoricode: child.val().kategoricode,
-                kategoridesc: child.val().kategoridesc,
-                kategoriid: child.val().kategoriid,
-                kategoriname: child.val().kategoriname,
-              });
-            }
-          });
+      var tempkategori = [];
+      tempkategori.push({
+        key: "All",
+        kategoricode: "All",
+        kategoridesc: "All",
+        kategoriid: "All",
+        kategoriname: "All",
+      });
+      tempkategori.push({
+        key: "Rekomendasi",
+        kategoricode: "Rekomendasi",
+        kategoridesc: "Rekomendasi",
+        kategoriid: "Rekomendasi",
+        kategoriname: "Rekomendasi",
+      });
+
+
+      firebase.database().ref("kategori/").on("value", (snapshot) => {
+        snapshot.forEach((child) => {
+          if (child.key != "count" && child.val().dlt != true) {
+            tempkategori.push({
+              key: child.key,
+              kategoricode: child.val().kategoricode,
+              kategoridesc: child.val().kategoridesc,
+              kategoriid: child.val().kategoriid,
+              kategoriname: child.val().kategoriname,
+            });
+          }
         });
+      });
 
       this.setState({ kategori: tempkategori });
-      if (!this.state.refresh) {
-        this.setState({ refresh: true });
-      }
+
+
     }
 
   };
   loadProduk = async () => {
-    console.log("produk length");
-    console.log(this.state.produk.length);
 
     var tempproduk = [];
-  
+
     if (this.state.produk == null || this.state.produk.length <= 0) {
       firebase
         .database()
@@ -142,14 +221,15 @@ this.loadProduk();
                 produkid: child.val().produkid,
                 produkname: child.val().produkname,
                 harga: child.val().harga,
+                produkmedia: child.val().produkmedia ?? null,
               });
             }
           });
         });
 
       this.setState({ produk: tempproduk });
-      if (!this.state.refresh) {
-        this.setState({ refresh: true });
+      if (this.state.refresh) {
+        this.setState({ refresh: false });
       }
     }
 
@@ -157,8 +237,49 @@ this.loadProduk();
   onSubmit = async () => {
     const { navigation } = this.props;
   };
+  showDatePicker = () => {
+    this.setState({ visibility: true });
+  };
+
+  onPressCancel = () => {
+    this.setState({ visibility: false });
+    this.setState({ TextInputDisableStatus: true });
+  };
+
+  onPressButton = () => {
+    this.setState({ visibility: true });
+    this.setState({ TextInputDisableStatus: false });
+  };
+
+  handleConfirm = (date) => {
+    this.setState({ DateDisplay: date });
+    this.setState({ visibility: false });
+    this.setState({ TextInputDisableStatus: true });
+  };
+  onSearch = () => {
+    const { navigation } = this.props;
+    navigation.navigate("Search");
+  }
+
+  onLogin = async () => {
+    const { navigation } = this.props;
+    navigation.navigate("Login");
+  };
+  onLogout = async () => {
+    const { navigation } = this.props;
+
+    try {
+      await storeData("user", null);
+      navigation.navigate('RegisterTab')
+    }
+    catch (error) {
+      console.error(error);
+    }
+
+
+  }
   _renderItem = ({ item }) => {
-   
+
     if (this.state.refresh) {
       this.setState({ refresh: false });
     }
@@ -180,97 +301,97 @@ this.loadProduk();
     );
   };
   _renderProduk = ({ item }) => {
-    console.log("render");
-    console.log(item);
+
 
     if (this.state.refresh) {
       this.setState({ refresh: false });
     }
 
+    var uriimage = "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
+    var fill = false;
+    if (item.produkmedia == null) { }
+
+    else if (typeof item.produkmedia === 'object') {
+      if (Object.keys(item.produkmedia) != null && Object.keys(item.produkmedia).length >= 1) {
+
+        Object.values(item.produkmedia).forEach(function (produkmedia) {
+          if (produkmedia != null && produkmedia.dlt == false && produkmedia.mediaurl != '' && fill == false) {
+
+            uriimage = produkmedia.mediaurl;
+            fill = true;
+          }
+        });
+
+      }
+    }
+
+
     return (
       <TouchableOpacity>
-          <View
-                style={{
-                  width: WIDTH / 2.5,
-                  backgroundColor: "white",
-                  marginTop: 10,
-                  borderRadius: 10,
-                  alignSelf: "flex-start",
-                  padding: 10,
-                  marginHorizontal:10
-                }}
-              >
-                <Image
-                  source={require("./../assets/produk.png")}
-                  resizeMode="contain"
-                />
-                <Text style={{ fontWeight: "bold" }}>{item.produkname}</Text>
-                <Text>Rp. {item.harga}</Text>
-              </View>
+        <View style={{
+          width: WIDTH / 2.5,
+
+          backgroundColor: "white",
+          marginTop: 10,
+          borderRadius: 10,
+          alignSelf: "flex-start",
+          padding: 10,
+          marginHorizontal: 10
+        }}>
+          <Image source={{ uri: uriimage }} resizeMode="contain" style={{ height: 100 }} />
+          <Text style={{ fontWeight: "bold", flexWrap: 'wrap' }} numberOfLines={1}>{item.produkname}</Text>
+          <Text>Rp. {item.harga}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
 
-  showDatePicker = () => {
-    this.setState({ visibility: true });
-  };
 
-  onPressCancel = () => {
-    this.setState({ visibility: false });
-    this.setState({ TextInputDisableStatus: true });
-  };
+  componentDidMount() { this.LoadData(); }
+  componentWillUnmount() {
 
-  onPressButton = () => {
-    this.setState({ visibility: true });
-    this.setState({ TextInputDisableStatus: false });
-  };
-
-  handleConfirm = (date) => {
-    this.setState({ DateDisplay: date });
-    this.setState({ visibility: false });
-    this.setState({ TextInputDisableStatus: true });
-  };
-  onLogin = async () => {
-    const { navigation } = this.props;
-    navigation.navigate("Login");
-  };
-
+  }
   render() {
-    this.LoadData();    
+
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
         <SafeAreaView>
+
+
           <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
               paddingHorizontal: 20,
-              paddingTop: 10,
+              paddingTop: 20,
             }}
           >
             <View style={{}}>
               <Image
                 source={require("./../assets/logo.png")}
-                style={{ width: WIDTH / 4 }}
+                style={{ height: 50, alignContent: "flex-start", width: 50 }}
                 resizeMode="contain"
               />
             </View>
 
             <View style={{ marginTop: 20 }}>
-              <Icon name={"ios-person"} size={25} color={"#666872"} />
+              <TouchableOpacity onPress={this.onLogout}>
+                <Icon name={"ios-person"} size={25} color={"#666872"} />
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={{ paddingHorizontal: 20 }}>
-            <Text style={{ fontSize: 16 }}>Hi, Andrea</Text>
+          <View style={{ paddingHorizontal: 25, paddingTop: 10 }}>
+            <Text style={{ fontSize: 16 }}>Hi, {this.state.nama ?? ""}</Text>
           </View>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              onChangeText={(val) => this.setState({ username: val })}
+              onChangeText={(val) => this.setState({ searchtext: val })}
               placeholder={"Search "}
               placeholderTextColor={"#666872"}
               underlineColorAndroid="transparent"
+              onFocus={this.onSearch}
             />
             <Icon
               name={"search"}
@@ -281,36 +402,45 @@ this.loadProduk();
           </View>
           <View
             style={{
+
               backgroundColor: "#F6F6F6",
-              height: HEIGHT,
+
               marginTop: 10,
-              borderRadius: 10,
+              borderRadius: 20,
               paddingVertical: 10,
               alignContent: "space-between",
             }}
           >
+
+
             <FlatList
               data={this.state.kategori}
               extraData={this.state.refresh}
               style={{ height: 50, flexGrow: 0 }}
               horizontal={true}
               renderItem={this._renderItem}
-              keyExtractor={(item) => item.kategoriid}
-            />
-              <FlatList
-              data={this.state.produk}
-              extraData={this.state.refresh}
-              style={{  paddingHorizontal:10,}}
-              numColumns={2}
-             contentContainerStyle={{ justifyContent:'space-between'}}
-              renderItem={this._renderProduk}
-              keyExtractor={(item) => item.produkid}
+              keyExtractor={(item) => item.kategoriid.toString()}
             />
 
-           
+
+
           </View>
+
         </SafeAreaView>
+        <FlatList
+          data={this.state.produk}
+          extraData={this.state.refresh}
+          style={{ paddingHorizontal: 10, marginTop: -20, backgroundColor: "#F6F6F6", }}
+          scrollEnabled={true}
+          numColumns={2}
+          contentContainerStyle={{ justifyContent: 'space-between' }}
+          renderItem={this._renderProduk}
+          keyExtractor={(item) => item.produkid.toString()}
+          onRefresh={() => this.onRefresh()}
+          refreshing={this.state.isFetching}
+        />
       </View>
+
     );
   }
 }
