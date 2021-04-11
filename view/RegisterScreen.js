@@ -193,12 +193,12 @@ class RegisterScreen extends React.Component {
     firebase.database()
       .ref("users/" + user.userid).set(user);
 
-    return;
+  
 
     if (user != null && user.userid != "") {
       await storeData("user", user);
       const { navigation } = this.props;
-      navigation.navigate("Home");
+      navigation.navigate("HomeTab");
     }
 
 

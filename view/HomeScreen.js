@@ -110,6 +110,7 @@ class ProdukDetailScreen extends React.Component {
      if(tuser == null || tuser.userid == ""){
        const { navigation } = this.props;
        navigation.navigate('RegisterTab')
+       return;
      }
      this.setState({ user: tuser });
      this.setState({ nama: tuser.nama });
@@ -347,7 +348,11 @@ class ProdukDetailScreen extends React.Component {
   };
 
 
-  componentDidMount() { this.LoadData(); }
+  componentDidMount() { 
+    this.setState({refresh:true})  ;
+    this.LoadData();
+  
+  }
   componentWillUnmount() {
 
   }

@@ -106,7 +106,7 @@ export default class App extends React.Component {
           screenOptions={{ gestureEnabled: false, headerShown: false }}
 
         >
-          {this.state.user == null || this.state.user.userid == '' ? (
+          {this.state.user == null ||  this.state.user.userid == '' ? (
             <AuthStack.Screen
               name="RegisterTab"
               component={RegisterTab}
