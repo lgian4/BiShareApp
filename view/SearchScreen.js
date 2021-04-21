@@ -226,8 +226,8 @@ class SearchScreen extends React.Component {
                   source={require("./../assets/produk.png")}
                   resizeMode="contain"
                 />
-                <Text style={{ fontWeight: "bold" }}>ssex</Text>
-                <Text>Rp. item.harga</Text>
+                <Text style={{ fontWeight: "bold" }}>Sendal</Text>
+                <Text>Rp. 20.000</Text>
               </View>
       </TouchableOpacity>
         </SafeAreaView>
