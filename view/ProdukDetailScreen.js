@@ -51,45 +51,15 @@ class HomeScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
 
-      kategori: [],
-      produk: [],
+      kategori: [],      
       refresh: true,
+      produk : null,
     };
   }
 
-  LoadData = async () => {};
+ 
 
-  loadProduk = async () => {
-    console.log("produk length");
-    console.log(this.state.produk.length);
-
-    var tempproduk = [];
-
-    if (this.state.produk == null || this.state.produk.length <= 0) {
-      firebase
-        .database()
-        .ref("produk/")
-        .on("value", (snapshot) => {
-          snapshot.forEach((child) => {
-            if (child.key != "count" && child.val().dlt != true) {
-              tempproduk.push({
-                key: child.key,
-                produkcode: child.val().produkcode,
-                deskripsi: child.val().deskripsi,
-                produkid: child.val().produkid,
-                produkname: child.val().produkname,
-                harga: child.val().harga,
-              });
-            }
-          });
-        });
-
-      this.setState({ produk: tempproduk });
-      if (!this.state.refresh) {
-        this.setState({ refresh: true });
-      }
-    }
-  };
+  
   onSubmit = async () => {
     const { navigation } = this.props;
   };
@@ -115,7 +85,7 @@ class HomeScreen extends React.Component {
   };
 
   render() {
-    this.LoadData();
+    console.log(this.state.produk);
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
@@ -144,7 +114,7 @@ class HomeScreen extends React.Component {
               Rp. 20.000
             </Text>
             <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}>
-              TMA-2 HD WIRELESS
+              test
             </Text>
           </View>
           <View style={styles.inputContainer}>
