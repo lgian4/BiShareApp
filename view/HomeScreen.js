@@ -300,6 +300,11 @@ class ProdukDetailScreen extends React.Component {
     navigation.navigate("Login");
   };
 
+  OnProdukDetail = (selectedproduk) => {
+    const { navigation } = this.props
+    navigation.navigate('ProdukDetail',{params: selectedproduk})
+  }
+
   onLogout = async () => {
     const { navigation } = this.props;
 
@@ -327,8 +332,8 @@ class ProdukDetailScreen extends React.Component {
           console.log('change kategori');
           console.log(item);
           this.setState({ selectedkategori: item.kategoriid });
-           this.loadKategori();
-           this.loadProdukKategori();
+          this.loadKategori();
+          this.loadProdukKategori();
         }}
       >
         <View
@@ -372,13 +377,12 @@ class ProdukDetailScreen extends React.Component {
         });
       }
     }
+    
 
     return (
       <TouchableOpacity
-        onPress={(item) => {
-          const { navigation } = this.props;
-          navigation.navigate("ProdukDetail", { produk: item });
-        }}
+      onPress={() => this.OnProdukDetail(item)}
+        
       >
         <View
           style={{
@@ -413,7 +417,7 @@ class ProdukDetailScreen extends React.Component {
     this.setState({ selectedkategori: "All" });
     this.LoadData();
   }
-  componentWillUnmount() {}
+  componentWillUnmount() { }
   render() {
     const { navigation } = this.props;
     return (
