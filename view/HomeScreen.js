@@ -83,6 +83,7 @@ class ProdukDetailScreen extends React.Component {
       produk: [],
       viewproduk: [],
       refresh: true,
+      refreshkategori: true,
       user: [],
       rekomendasi: [],
       searchtext: "",
@@ -100,10 +101,14 @@ class ProdukDetailScreen extends React.Component {
       this.setState({ showPass: true, press: false });
     }
   };
-  LoadData = async () => {
-    //await this.loadProduk();
+  LoadData = async () => {    
+    if (this.state.isFetching == false) {
+      return;
+    }
+
+    this.setState({ isFetching: true });
+
     var tuser = await getData("user");
-    console.log(tuser);
     if (tuser == null || tuser.userid == "") {
       const { navigation } = this.props;
       navigation.navigate("RegisterTab");
@@ -112,16 +117,13 @@ class ProdukDetailScreen extends React.Component {
     this.setState({ user: tuser });
     this.setState({ nama: tuser.nama });
 
-    if (this.state.refresh == false && this.state.isFetching == false) return;
-
-    this.setState({ refresh: false });
-    this.setState({ isFetching: false });
     var tloadddate = await getData("loadddate");
     this.setState({ loadddate: tloadddate });
 
     await this.CekKoneksi();
-
+    console.log(this.state.connected);
     if (this.state.connected) {
+      console.log("load data");
       await this.loadKategori();
       await this.loadProduk();
     } else {
@@ -132,13 +134,12 @@ class ProdukDetailScreen extends React.Component {
       var tproduk = await getData("produk");
       this.setState({ produk: tproduk });
     }
-    await this.loadProdukKategori();
+    this.setState({ isFetching: false });
+    await this.loadProdukKategori(this.state.selectedkategori);
   };
 
   onRefresh() {
-    this.setState({ isFetching: true }, () => {
-      this.LoadData();
-    });
+    this.LoadData();
   }
 
   CekKoneksi = async () => {
@@ -155,28 +156,28 @@ class ProdukDetailScreen extends React.Component {
   };
 
   loadKategori = async () => {
-    console.log("load kategori");
-    if (this.state.kategori == null || this.state.kategori.length <= 0) {
+    if (this.state.kategori == null || this.state.kategori.length <= 3) {
       var tempkategori = [];
-      tempkategori.push({
-        key: "All",
-        kategoricode: "All",
-        kategoridesc: "All",
-        kategoriid: "All",
-        kategoriname: "All",
-      });
-      tempkategori.push({
-        key: "Rekomendasi",
-        kategoricode: "Rekomendasi",
-        kategoridesc: "Rekomendasi",
-        kategoriid: "Rekomendasi",
-        kategoriname: "Rekomendasi",
-      });
+      console.log("load kategori");
 
       firebase
         .database()
         .ref("kategori/")
         .on("value", (snapshot) => {
+          tempkategori.push({
+            key: "All",
+            kategoricode: "All",
+            kategoridesc: "All",
+            kategoriid: "All",
+            kategoriname: "All",
+          });
+          tempkategori.push({
+            key: "Rekomendasi",
+            kategoricode: "Rekomendasi",
+            kategoridesc: "Rekomendasi",
+            kategoriid: "Rekomendasi",
+            kategoriname: "Rekomendasi",
+          });
           snapshot.forEach((child) => {
             if (child.key != "count" && child.val().dlt != true) {
               tempkategori.push({
@@ -189,9 +190,8 @@ class ProdukDetailScreen extends React.Component {
             }
           });
         });
-
       this.setState({ kategori: tempkategori });
-      storeData("kategori", this.state.kategori);
+      await storeData("kategori", tempkategori);
 
       var temprekomendasi = [];
       firebase
@@ -211,31 +211,38 @@ class ProdukDetailScreen extends React.Component {
         });
 
       this.setState({ rekomendasi: temprekomendasi });
-      storeData("rekomendasi", this.state.rekomendasi);
+      await storeData("rekomendasi", this.state.rekomendasi);
+      this.setState({ refreshkategori: !this.state.refreshkategori });
+      this.setState({ refreshkategori: !this.state.refreshkategori });
     }
   };
 
-  loadProdukKategori = async () => {
-    console.log("load produk kategori");
+  loadProdukKategori = async (kategori) => {
+    this.setState({ isFetching: true });  
+    this.setState({ selectedkategori: kategori });
     if (this.state.selectedkategori == "All") {
+
       this.setState({ viewproduk: this.state.produk });
     } else if (this.state.selectedkategori == "Rekomendasi") {
-      this.setState({ viewproduk: [] });
+      this.setState({ viewproduk: this.state.produk });
     } else {
-      tempproduk = [];
-      for (var i = 0; i < this.state.produk.length; i++) {
-        if (this.state.produk[i].produkid == this.state.selectedkategori) {
-          tempproduk.push(this.state.produk[i]);
-          break;
+      console.log("load produk kategori");      
+      var tempproduk = [];
+      for (var i = 0; i < this.state.produk.length; i++) {        
+        if (this.state.produk[i].kategoriid == this.state.selectedkategori) {
+          tempproduk.push(this.state.produk[i]);          
         }
-      }
+      }          
       this.setState({ viewproduk: tempproduk });
     }
+    this.setState({ isFetching: false });  
+    this.setState({ refresh: !this.state.refresh });    
+    
   };
   loadProduk = async () => {
     console.log("load produk");
     var tempproduk = [];
-
+    this.setState({ refresh: !this.state.refresh });
     if (this.state.produk == null || this.state.produk.length <= 0) {
       firebase
         .database()
@@ -255,17 +262,16 @@ class ProdukDetailScreen extends React.Component {
                 produkname: child.val().produkname,
                 harga: child.val().harga,
                 produkmedia: child.val().produkmedia ?? null,
+                kategoriid: child.val().kategoriid,
               });
             }
           });
         });
 
       this.setState({ produk: tempproduk });
-      storeData("produk", this.state.produk);
+      await storeData("produk", tempproduk);
 
-      if (this.state.refresh) {
-        this.setState({ refresh: false });
-      }
+      this.setState({ refresh: !this.state.refresh });
     }
   };
   onSubmit = async () => {
@@ -301,9 +307,9 @@ class ProdukDetailScreen extends React.Component {
   };
 
   OnProdukDetail = (selectedproduk) => {
-    const { navigation } = this.props
-    navigation.navigate('ProdukDetail',{params: selectedproduk})
-  }
+    const { navigation } = this.props;
+    navigation.navigate("ProdukDetail", { params: selectedproduk });
+  };
 
   onLogout = async () => {
     const { navigation } = this.props;
@@ -316,24 +322,18 @@ class ProdukDetailScreen extends React.Component {
     }
   };
   _renderItem = ({ item }) => {
-    if (this.state.refresh) {
-      this.setState({ refresh: false });
-    }
     var backcolor = "white";
     var fontcolor = "black";
-    console.log(this.state.selectedkategori);
     if (item.kategoriid == this.state.selectedkategori) {
       backcolor = "#F24E1E";
       fontcolor = "white";
     }
     return (
       <TouchableOpacity
-        onPress={(xitem) => {
-          console.log('change kategori');
-          console.log(item);
-          this.setState({ selectedkategori: item.kategoriid });
-          this.loadKategori();
-          this.loadProdukKategori();
+        onPress={async (xitem) => {
+          console.log("change kategori");
+          await this.loadProdukKategori(item.kategoriid);
+          this.setState({ refreshkategori: !this.state.refreshkategori });
         }}
       >
         <View
@@ -351,10 +351,7 @@ class ProdukDetailScreen extends React.Component {
     );
   };
   _renderProduk = ({ item }) => {
-    if (this.state.refresh) {
-      this.setState({ refresh: false });
-    }
-
+    console.log("render produk");
     var uriimage =
       "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var fill = false;
@@ -377,13 +374,9 @@ class ProdukDetailScreen extends React.Component {
         });
       }
     }
-    
 
     return (
-      <TouchableOpacity
-      onPress={() => this.OnProdukDetail(item)}
-        
-      >
+      <TouchableOpacity onPress={() => this.OnProdukDetail(item)}>
         <View
           style={{
             width: WIDTH / 2.5,
@@ -413,11 +406,12 @@ class ProdukDetailScreen extends React.Component {
   };
 
   componentDidMount() {
-    this.setState({ refresh: true });
-    this.setState({ selectedkategori: "All" });
+    //this.setState({ refresh: true });
+
     this.LoadData();
+    this.setState({ selectedkategori: "All" });    
   }
-  componentWillUnmount() { }
+  componentWillUnmount() {}
   render() {
     const { navigation } = this.props;
     return (
@@ -476,7 +470,7 @@ class ProdukDetailScreen extends React.Component {
           >
             <FlatList
               data={this.state.kategori}
-              extraData={this.state.refresh}
+              extraData={this.state.refreshkategori}
               style={{ height: 50, flexGrow: 0 }}
               horizontal={true}
               renderItem={this._renderItem}
@@ -511,6 +505,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
+    height: HEIGHT,
   },
   image: {
     flex: 1,

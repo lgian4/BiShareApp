@@ -130,15 +130,19 @@ class LoginScreen extends React.Component {
           if (child.key != "count" && child.val().dlt != true) {
             if (child.val().password == this.state.password) {
               user = child.val();
+              storeData("user",user);
+              const { navigation } = this.props;
+              navigation.navigate("HomeTab");
             }
           }
         });
       });
 
     if (user != null && user.userid != "") {
-      await storeData("user",user);
-      const { navigation } = this.props;
-      navigation.navigate("HomeTab");
+     
+    }
+    else {
+      this.notify("user Tidak ditemukan");
     }
   };
 

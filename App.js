@@ -91,10 +91,7 @@ export default class App extends React.Component {
     }
   }
   UserData = async() => {
-    this.state.user =await getData("user");
-    console.log(this.state.user);
-    this.state.user = null;
-    
+    this.state.user = await getData("user");
   }
   componentDidMount() { this.UserData(); }
 
