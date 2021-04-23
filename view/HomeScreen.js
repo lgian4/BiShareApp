@@ -62,6 +62,30 @@ const getData = async (key) => {
   }
 };
 
+const defaultOptions = {
+  significantDigits: 2,
+  thousandsSeparator: '.',
+  decimalSeparator: ',',
+  symbol: 'Rp'
+}
+
+const currencyFormatter = (value, options) => {
+  console.log("currencyFormatter");
+  console.log(typeof value);
+  if(typeof value != "number"){
+    value = parseInt(value);
+  }
+  if (typeof value !== 'number') value = 0.0
+  options = { ...defaultOptions, ...options }
+  value = value.toFixed(options.significantDigits)
+
+  const [currency, decimal] = value.split('.')
+  return `${options.symbol} ${currency.replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    options.thousandsSeparator
+  )}${options.decimalSeparator}${decimal}`
+}
+
 class ProdukDetailScreen extends React.Component {
   constructor() {
     super();
@@ -133,6 +157,8 @@ class ProdukDetailScreen extends React.Component {
       this.setState({ kategori: tkategori });
       var trekomendasi = await getData("rekomendasi");
       this.setState({ rekomendasi: trekomendasi });
+      var trekomendasikey = await getData("rekomendasikey");
+      this.setState({ rekomendasikey: trekomendasikey });
       var tproduk = await getData("produk");
       this.setState({ produk: tproduk });
 
@@ -287,6 +313,9 @@ class ProdukDetailScreen extends React.Component {
                 key: child.key,
                 produkcode: child.val().produkcode,
                 deskripsi: child.val().deskripsi,
+                fitur: child.val().fitur,
+                spesifikasi: child.val().spesifikasi,
+                stok: child.val().stok,
                 produkid: child.val().produkid,
                 produkname: child.val().produkname,
                 harga: child.val().harga,
@@ -435,7 +464,7 @@ class ProdukDetailScreen extends React.Component {
           >
             {item.produkname}
           </Text>
-          <Text>Rp. {item.harga}</Text>
+          <Text> {currencyFormatter(item.harga)}</Text>
         </View>
       </TouchableOpacity>
     );
