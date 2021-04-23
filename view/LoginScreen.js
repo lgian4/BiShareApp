@@ -13,10 +13,10 @@ import {
   TextInput,
   Alert,
   ImageBackground,
-  
+
 } from "react-native";
 import * as firebase from "firebase";
-import AsyncStorage  from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const { width: WIDTH } = Dimensions.get("window");
@@ -39,10 +39,10 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
-const storeData = async (key,value) => {
+const storeData = async (key, value) => {
   try {
     const jsonValue = JSON.stringify(value)
-    await AsyncStorage.setItem('@storage_Key:'+key, jsonValue)
+    await AsyncStorage.setItem('@storage_Key:' + key, jsonValue)
   } catch (e) {
     // saving error
     this.notify(e);
@@ -51,9 +51,9 @@ const storeData = async (key,value) => {
 }
 const getData = async (key) => {
   try {
-    const jsonValue = await AsyncStorage.getItem('@storage_Key:'+key)
+    const jsonValue = await AsyncStorage.getItem('@storage_Key:' + key)
     return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } catch(e) {
+  } catch (e) {
     // error reading value
     this.notify(e);
     return;
@@ -75,13 +75,12 @@ class LoginScreen extends React.Component {
     };
   }
 
-  checkLogin= async () => {
+  checkLogin = async () => {
 
     console.log('check login');
     var user = await getData("user");
     console.log(user);
-    if(user != null && user.nama != null)
-    {
+    if (user != null && user.nama != null) {
       const { navigation } = this.props;
       navigation.navigate("Home");
 
@@ -120,7 +119,7 @@ class LoginScreen extends React.Component {
     }
     var user = null;
 
-   await firebase
+    await firebase
       .database()
       .ref("users")
       .orderByChild("username")
@@ -130,7 +129,7 @@ class LoginScreen extends React.Component {
           if (child.key != "count" && child.val().dlt != true) {
             if (child.val().password == this.state.password) {
               user = child.val();
-              storeData("user",user);
+              storeData("user", user);
               const { navigation } = this.props;
               navigation.navigate("HomeTab");
             }
@@ -139,17 +138,17 @@ class LoginScreen extends React.Component {
       });
 
     if (user != null && user.userid != "") {
-     
+
     }
     else {
-      this.notify("user Tidak ditemukan");
+      this.notify("User Tidak ditemukan");
     }
   };
 
   componentDidMount() { this.checkLogin(); }
 
   render() {
-    
+
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
