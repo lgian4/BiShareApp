@@ -125,8 +125,8 @@ class ProdukDetailScreen extends React.Component {
     console.log(this.state.connected);
     if (this.state.connected) {
       console.log("load data");
-      await this.loadRekomendasi();
       await this.loadKategori();
+      await this.loadRekomendasi();
       await this.loadProduk();
     } else {
       var tkategori = await getData("kategori");
@@ -135,7 +135,7 @@ class ProdukDetailScreen extends React.Component {
       this.setState({ rekomendasi: trekomendasi });
       var tproduk = await getData("produk");
       this.setState({ produk: tproduk });
-      
+
     }
     this.setState({ isFetching: false });
     await this.loadProdukKategori(this.state.selectedkategori);
@@ -196,13 +196,13 @@ class ProdukDetailScreen extends React.Component {
       this.setState({ kategori: tempkategori });
       await storeData("kategori", tempkategori);
 
-      this.setState({ refreshkategori: !this.state.refreshkategori });      
+      this.setState({ refreshkategori: !this.state.refreshkategori });
     }
   };
   loadRekomendasi = async () => {
-    if (this.state.rekomendasi == null || this.state.rekomendasi.length <= 3) {
-     
-    console.log("load rekomendasi");
+    if (this.state.rekomendasi == null || this.state.rekomendasi.length == 0) {
+
+      console.log("load rekomendasi");
       var temprekomendasi = [];
       var temprekomendasikey = [];
       firebase
@@ -220,12 +220,14 @@ class ProdukDetailScreen extends React.Component {
               });
             }
           });
+
+          console.log(temprekomendasi);
+          this.setState({ rekomendasi: temprekomendasi });
+          this.setState({ rekomendasikey: temprekomendasikey });
+
         });
-        console.log(temprekomendasi);
-      this.setState({ rekomendasi: temprekomendasi });
-      this.setState({ rekomendasikey : temprekomendasikey });
       await storeData("rekomendasi", this.state.rekomendasi);
-      await storeData("rekomendasikey", this.state.rekomendasikey);      
+      await storeData("rekomendasikey", this.state.rekomendasikey);
     }
   };
 
@@ -239,8 +241,8 @@ class ProdukDetailScreen extends React.Component {
 
     } else if (kategori == "Rekomendasi") {
       var tempproduk = [];
-      console.log(this.state.rekomendasikey);      
-      tempproduk = this.state.produk.filter(item =>  this.state.rekomendasikey.includes(item.produkid.toString()));
+      console.log(this.state.rekomendasikey);
+      tempproduk = this.state.produk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
       console.log(tempproduk.length);
 
       this.setState({ viewproduk: tempproduk });
@@ -260,8 +262,8 @@ class ProdukDetailScreen extends React.Component {
 
       this.setState({ viewproduk: tempproduk });
     }
-    
-    console.log( "console.log(this.state.viewproduk.length :" +this.state.viewproduk.length.toString());
+
+    console.log("console.log(this.state.viewproduk.length :" + this.state.viewproduk.length.toString());
     this.setState({ refresh: !this.state.refresh });
     this.setState({ isFetching: false });
 
@@ -297,7 +299,7 @@ class ProdukDetailScreen extends React.Component {
 
       this.setState({ produk: tempproduk });
       await storeData("produk", tempproduk);
-      
+
     }
   };
   onSubmit = async () => {
@@ -359,14 +361,14 @@ class ProdukDetailScreen extends React.Component {
         onPress={async (xitem) => {
           console.log("change kategori");
           console.log(item.kategoriid);
-          
+
           this.loadProdukKategori(item.kategoriid);
-          this.setState({ 
+          this.setState({
             selectedkategori: item.kategoriid,
             refresh: !this.state.refresh,
             refreshkategori: !this.state.refreshkategori
-           });
-          
+          });
+
 
         }}
       >
@@ -443,7 +445,7 @@ class ProdukDetailScreen extends React.Component {
     //this.setState({ refresh: true });
     this.setState({ selectedkategori: "All" });
     this.LoadData();
-    
+
   }
   componentWillUnmount() { }
   render() {
