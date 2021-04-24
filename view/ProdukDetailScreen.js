@@ -88,6 +88,7 @@ class HomeScreen extends React.Component {
         stok: 0,
         produkmedia: {},
         produkname: "...........",
+        tokoname: ""
       },
     };
   }
@@ -135,7 +136,7 @@ class HomeScreen extends React.Component {
           if (
             produkmedia != null &&
             produkmedia.dlt == false &&
-            produkmedia.mediaurl != "" 
+            produkmedia.mediaurl != ""
           ) {
             tempproduk.push({
               key: i++,
@@ -158,17 +159,17 @@ class HomeScreen extends React.Component {
     console.log("render gambar");
     console.log(item.mediaurl);
     return (
-      <TouchableOpacity onPress={async (xitem) => {}}>
+      <TouchableOpacity onPress={async (xitem) => { }}>
         <Image
           source={{ uri: item.mediaurl }}
           style={{
-            
-            height:HEIGHT/2-20,
-            width:WIDTH-30,
-            marginHorizontal:10,            
+
+            height: HEIGHT / 2 - 20,
+            width: WIDTH - 30,
+            marginHorizontal: 10,
             borderWidth: 0,
             borderRadius: 10,
-            
+
           }}
           resizeMode="contain"
         />
@@ -219,19 +220,21 @@ class HomeScreen extends React.Component {
                 {this.state.produk.produkname}
               </Text>
             </View>
-            <View style={{ alignItems: "center", marginTop:20,}}>
-                  <FlatList
-                    data={this.state.produkmedia}
-                    extraData={this.state.refresh}
-                    style={{ flexGrow: 0, height:HEIGHT/2 +20 ,width:WIDTH, }}
-                    horizontal={true}
-                    renderItem={this._renderItem}
-                    keyExtractor={(item) =>
-                      item.mediaid == null ? "" : item.mediaid.toString()
-                      
-                    }
-                  />
-                </View>
+            <View style={{ alignItems: "center", marginTop: 20, }}>
+              <FlatList
+                data={this.state.produkmedia}
+                extraData={this.state.refresh}
+                style={{ flexGrow: 0, height: HEIGHT / 2 + 10, width: WIDTH, }}
+                horizontal={true}
+                renderItem={this._renderItem}
+                keyExtractor={(item) =>
+                  item.mediaid == null ? "" : item.mediaid.toString()
+
+                }
+
+                pagingEnabled={true}
+              />
+            </View>
             <View style={styles.inputContainer}>
               <View
                 style={{
@@ -241,7 +244,63 @@ class HomeScreen extends React.Component {
                 }}
               >
                 
+                <View >
+                  
+                  <View flexDirection="row" style={{ padding: 5 }}>
+                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                      Toko
+                    </Text>
+                    <TouchableOpacity style={{ flex: 3, }}>
+                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                        {this.state.produk.tokoname}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View flexDirection="row" style={{ padding: 5 }}>
+                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                      Kategori
+                    </Text>
+                    <TouchableOpacity style={{ flex: 3, }}>
+                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                        {this.state.produk.kategoriname}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View flexDirection="row" style={{ padding: 5 }}>
+                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                      Stok
+                    </Text>
+                    <TouchableOpacity style={{ flex: 3, }}>
+                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                        {this.state.produk.stok}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View flexDirection="row" style={{ padding: 5 }}>
+                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                      Harga
+                    </Text>
+                    <TouchableOpacity style={{ flex: 3, }}>
+                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                      {currencyFormatter(this.state.produk.harga, defaultOptions)}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View flexDirection="row" style={{ padding: 5 }}>
+                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                      Tanggal
+                    </Text>
+                    <TouchableOpacity style={{ flex: 3, }}>
+                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                        {moment( this.state.produk.produkdate, "YYYYMMDD").fromNow()}
+                        
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                </View>
                 <View style={{ alignItems: "center", marginTop: 20 }}>
+
                   <Text style={{ fontSize: 16, color: "black" }}>
                     Deskripsi
                   </Text>

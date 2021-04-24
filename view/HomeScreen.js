@@ -322,6 +322,12 @@ class ProdukDetailScreen extends React.Component {
                 harga: child.val().harga,
                 produkmedia: child.val().produkmedia ?? null,
                 kategoriid: child.val().kategoriid,
+                kategoriname: child.val().kategoriname,
+                tokoid: child.val().tokoid,
+                tokoname: child.val().tokoname,
+                stok: child.val().stok,
+                produkdate: child.val().produkdate,
+                produkcode: child.val().produkcode,
               });
             }
           });
@@ -452,12 +458,14 @@ class ProdukDetailScreen extends React.Component {
             alignSelf: "flex-start",
             padding: 10,
             marginHorizontal: 10,
+           
+            
           }}
         >
           <Image
             source={{ uri: uriimage }}
             resizeMode="contain"
-            style={{ height: 100 }}
+            style={{ height: 100,borderRadius:20,alignItems: "center",  }}
           />
           <Text
             style={{ fontWeight: "bold", flexWrap: "wrap" }}
@@ -537,7 +545,7 @@ class ProdukDetailScreen extends React.Component {
             <FlatList
               data={this.state.kategori}
               extraData={this.state.refreshkategori}
-              style={{ height: 50, flexGrow: 0 }}
+              style={{ height: 50, flexGrow: 0,alignContent:'center' }}
               horizontal={true}
               renderItem={this._renderItem}
               keyExtractor={(item) => item.kategoriid.toString()}
