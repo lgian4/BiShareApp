@@ -194,19 +194,20 @@ class ProdukDetailScreen extends React.Component {
         .ref("kategori/")
         .on("value", (snapshot) => {
           tempkategori.push({
-            key: "All",
-            kategoricode: "All",
-            kategoridesc: "All",
-            kategoriid: "All",
-            kategoriname: "All",
-          });
-          tempkategori.push({
             key: "Rekomendasi",
             kategoricode: "Rekomendasi",
             kategoridesc: "Rekomendasi",
             kategoriid: "Rekomendasi",
             kategoriname: "Rekomendasi",
           });
+          tempkategori.push({
+            key: "All",
+            kategoricode: "All",
+            kategoridesc: "All",
+            kategoriid: "All",
+            kategoriname: "All",
+          });
+         
           snapshot.forEach((child) => {
             if (child.key != "count" && child.val().dlt != true) {
               tempkategori.push({
@@ -472,7 +473,7 @@ class ProdukDetailScreen extends React.Component {
 
   componentDidMount() {
     //this.setState({ refresh: true });
-    this.setState({ selectedkategori: "All" });
+    this.setState({ selectedkategori: "Rekomendasi" });
     this.LoadData();
 
   }

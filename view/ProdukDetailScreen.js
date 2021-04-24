@@ -162,11 +162,13 @@ class HomeScreen extends React.Component {
         <Image
           source={{ uri: item.mediaurl }}
           style={{
-            height:HEIGHT/3,
-            width:WIDTH-50,
-            borderWidth: 1,
-            borderRadius: 50,
-            borderColor: "black",
+            
+            height:HEIGHT/2-20,
+            width:WIDTH-30,
+            marginHorizontal:10,            
+            borderWidth: 0,
+            borderRadius: 10,
+            
           }}
           resizeMode="contain"
         />
@@ -217,26 +219,28 @@ class HomeScreen extends React.Component {
                 {this.state.produk.produkname}
               </Text>
             </View>
-            <View style={styles.inputContainer}>
-              <View
-                style={{
-                  marginHorizontal: 20,
-                  marginTop: 20,
-                  marginBottom: 20,
-                }}
-              >
-                <View style={{ alignItems: "center", margin: 20 }}>
+            <View style={{ alignItems: "center", marginTop:20,}}>
                   <FlatList
                     data={this.state.produkmedia}
                     extraData={this.state.refresh}
-                    style={{ flexGrow: 0 }}
+                    style={{ flexGrow: 0, height:HEIGHT/2 +20 ,width:WIDTH, }}
                     horizontal={true}
                     renderItem={this._renderItem}
                     keyExtractor={(item) =>
                       item.mediaid == null ? "" : item.mediaid.toString()
+                      
                     }
                   />
                 </View>
+            <View style={styles.inputContainer}>
+              <View
+                style={{
+                  marginHorizontal: 20,
+                  marginTop: 0,
+                  marginBottom: 20,
+                }}
+              >
+                
                 <View style={{ alignItems: "center", marginTop: 20 }}>
                   <Text style={{ fontSize: 16, color: "black" }}>
                     Deskripsi
