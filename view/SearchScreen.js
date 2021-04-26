@@ -39,6 +39,17 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
+Array.prototype.remove = function() {
+  var what, a = arguments, L = a.length, ax;
+  while (L && this.length) {
+      what = a[--L];
+      while ((ax = this.indexOf(what)) !== -1) {
+          this.splice(ax, 1);
+      }
+  }
+  return this;
+};
+
 const storeData = async (key,value) => {
   try {
     const jsonValue = JSON.stringify(value)
@@ -59,6 +70,30 @@ const getData = async (key) => {
     return;
   }
 }
+const defaultOptions = {
+  significantDigits: 2,
+  thousandsSeparator: '.',
+  decimalSeparator: ',',
+  symbol: 'Rp'
+}
+
+
+const currencyFormatter = (value, options) => {
+  console.log("currencyFormatter");
+  console.log(typeof value);
+  if(typeof value != "number"){
+    value = parseInt(value);
+  }
+  if (typeof value !== 'number') value = 0.0
+  options = { ...defaultOptions, ...options }
+  value = value.toFixed(options.significantDigits)
+
+  const [currency, decimal] = value.split('.')
+  return `${options.symbol} ${currency.replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    options.thousandsSeparator
+  )}${options.decimalSeparator}${decimal}`
+}
 
 
 const { width: WIDTH } = Dimensions.get("window");
@@ -78,10 +113,11 @@ class SearchScreen extends React.Component {
       kategori: [],
       produk: [],
       refresh: true,
-      isFetching: true,
+      isFetching: false,
       viewproduk: [],
       searchHistory:[],
-      Search:""
+      Search:"",
+      showProduk : false
     };
   }
   notify = (message) => {
@@ -103,11 +139,96 @@ class SearchScreen extends React.Component {
 
   };
 
-  LoadDataSearch = async () => {
-    console.log("search");
-    console.log(this.state.Search)
+  LoadDataSearch = async (tsearch) => {    
+    this.setState({isFetching:true});
 
+
+    console.log("search");
+    var tsearch =   this.state.Search.toLowerCase();
+    var tsearchhistory = this.state.searchHistory ?? [];
+    
+    console.log(tsearch);
+    console.log( this.state.produk.length);
+    var tempproduk = [];
+    if(tsearch == null || tsearch == "")    {
+      this.setState({ viewproduk: tempproduk,
+        isFetching:false,
+      showProduk : false,
+      searchHistory:tsearchhistory
+      });
+    }
+    else {
+      tsearchhistory.remove(tsearch);
+      tsearchhistory.unshift(tsearch);
+      tempproduk = this.state.produk.filter(obj => {      
+        return obj.produkname.toLowerCase().match(tsearch) || obj.deskripsi.toLowerCase().match(tsearch) || obj.fitur.toLowerCase().match(tsearch) || obj.spesifikasi.toLowerCase().match(tsearch)
+      })
+      if(tempproduk.length == 0){
+        this.notify("Produk tidak ditemukan");
+      }
+      console.log(tempproduk.length);
+      this.setState({ viewproduk: tempproduk,
+        isFetching:false,
+      showProduk :true,
+      searchHistory:tsearchhistory
+      });
+      await storeData("searchHistory",tsearchhistory);
+      
+    }
   };
+  LoadDataSearch2 = async (tsearch) => {    
+    this.setState({isFetching:true});
+
+
+    console.log("search");    
+    var tsearchhistory = this.state.searchHistory ?? [];
+    
+    console.log(tsearch);
+    console.log( this.state.produk.length);
+    var tempproduk = [];
+    if(tsearch == null || tsearch == "")    {
+      this.setState({ viewproduk: tempproduk,
+        isFetching:false,
+      showProduk : false,
+      searchHistory:tsearchhistory
+      });
+    }
+    else {
+      tsearchhistory.remove(tsearch);
+      tsearchhistory.unshift(tsearch);
+      tempproduk = this.state.produk.filter(obj => {      
+        return obj.produkname.toLowerCase().match(tsearch) || obj.deskripsi.toLowerCase().match(tsearch) || obj.fitur.toLowerCase().match(tsearch) || obj.spesifikasi.toLowerCase().match(tsearch)
+      })
+      if(tempproduk.length == 0){
+        this.notify("Produk tidak ditemukan");
+      }
+      console.log(tempproduk.length);
+      this.setState({ viewproduk: tempproduk,
+        isFetching:false,
+      showProduk :true,
+      searchHistory:tsearchhistory
+      });
+      await storeData("searchHistory",tsearchhistory);
+      
+    }
+  };
+
+
+  OnRemoveSearch = (tsearch) => {
+    var tsearchhistory = this.state.searchHistory ?? [];
+    tsearchhistory.remove(tsearch);
+    this.setState({ 
+      refresh:!this.state.refresh,    
+    searchHistory:tsearchhistory
+    });
+     storeData("searchHistory",tsearchhistory);
+  };
+
+  OnSelectSearch = (tsearch) => {
+   this.setState({Search:tsearch});
+   this.LoadDataSearch2(tsearch);
+  };
+
 
   loadProduk = async () => {
     console.log("produk length");
@@ -139,6 +260,11 @@ class SearchScreen extends React.Component {
         this.setState({ refresh: true });
       }
     }
+  };
+  
+  OnProdukDetail = (selectedproduk) => {
+    const { navigation } = this.props;
+    navigation.navigate("ProdukDetail", { params: selectedproduk });
   };
   onSubmit = async () => {
     const { navigation } = this.props;
@@ -220,6 +346,29 @@ class SearchScreen extends React.Component {
     );
   };
 
+  _renderHistory = ({ item }) => {
+    console.log("render history");
+    console.log(item);
+    return (
+      <View style={{ flexDirection:'row',}}>  
+      
+
+          <TouchableOpacity style={{flex:3, paddingVertical:3,marginLeft:5}} onPress={() => this.OnSelectSearch(item)}>
+          <View style={{ flexDirection:'row',}}>  
+            <Icon name={'ios-timer-outline'} size={25} color={'#666872'} />
+            <Text  style={{ fontSize:16}}> {item} </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={{marginTop:10, paddingVertical:3,}} onPress={() => this.OnRemoveSearch(item)}>
+            <Icon name={'ios-close-outline'} size={25} color={'#666872'}  />
+          </TouchableOpacity>
+            
+          
+      
+      </View>      
+    );
+  };
+
   componentDidMount() {
     //this.setState({ refresh: true });
     
@@ -258,72 +407,71 @@ class SearchScreen extends React.Component {
               placeholderTextColor={"#666872"}
               underlineColorAndroid="transparent"              
               onSubmitEditing={this.LoadDataSearch}
-              
+              autoFocus={true}
+              value={this.state.Search}
             />
+            <TouchableOpacity onPress={this.LoadDataSearch} style={styles.inputIcon}>
+
+           
             <Icon
               name={"search"}
               size={25}
               color={"#666872"}
-              style={styles.inputIcon}
+              
             />
+             </TouchableOpacity>
           </View>
-         
+          {  !this.state.showProduk &&
+
          <View style={{paddingHorizontal:25,marginTop:20}}>
            <Text style={{fontSize:16}}>Pencarian Terakhir</Text>
 
-           <View style={{ flexDirection:'row',}}>
-           <Icon name={'ios-timer-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
-              <Text style={{flex:2, fontSize:16, marginTop:11,marginLeft:5}}>Favorit</Text>
-              <Icon name={'ios-close-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
-           </View>
-           <View style={{ flexDirection:'row',}}>
-           <Icon name={'ios-timer-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
-              <Text style={{flex:2, fontSize:16, marginTop:11,marginLeft:5}}>Favorit</Text>
-              <Icon name={'ios-close-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
-           </View>
-           <View style={{ flexDirection:'row',}}>
-           <Icon name={'ios-timer-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
-              <Text style={{flex:2, fontSize:16, marginTop:11,marginLeft:5}}>Favorit</Text>
-              <Icon name={'ios-close-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
-           </View>
+           <FlatList
+  data={this.state.searchHistory}
+  extraData={this.state.refresh}
+  style={{
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+    marginTop: 10,
+    backgroundColor: "#F6F6F6",
+    borderRadius:30,
+  }}
+  scrollEnabled={true}  
+  contentContainerStyle={{ justifyContent: "space-between" }}
+  renderItem={this._renderHistory}
+  keyExtractor={(item) => item.toString()}
+  onRefresh={() => this.LoadDataSearch()}
+  refreshing={this.state.isFetching}
+/>
+
+          
          </View>
-         <FlatList
-          data={this.state.viewproduk}
-          extraData={this.state.refresh}
-          style={{
-            paddingHorizontal: 10,
-            marginTop: -20,
-            backgroundColor: "#F6F6F6",
-          }}
-          scrollEnabled={true}
-          numColumns={2}
-          contentContainerStyle={{ justifyContent: "space-between" }}
-          renderItem={this._renderProduk}
-          keyExtractor={(item) => item.produkid.toString()}
-          onRefresh={() => this.onRefresh()}
-          refreshing={this.state.isFetching}
-        />
-         {/* <TouchableOpacity>
-          <View
-                style={{
-                  width: WIDTH / 2.5,
-                  backgroundColor: "white",
-                  marginTop: 10,
-                  borderRadius: 10,
-                  alignSelf: "flex-start",
-                  padding: 10,
-                  marginHorizontal:10,
-                  borderWidth:1,
-                }}
-              >
-                <Image
-                  source={require("./../assets/produk.png")}
-                  resizeMode="contain"
-                />
-                <Text style={{ fontWeight: "bold" }}>Sendal</Text>
-                <Text>Rp. 20.000</Text>
-              </View>
-      </TouchableOpacity> */}
+  }
+{
+  this.state.showProduk  &&
+
+  <FlatList
+  data={this.state.viewproduk}
+  extraData={this.state.refresh}
+  style={{
+    padding: 10,
+    
+    marginTop: 10,
+    backgroundColor: "#F6F6F6",
+    borderRadius:30,
+
+  }}
+  scrollEnabled={true}
+  numColumns={2}
+  contentContainerStyle={{ justifyContent: "space-between" }}
+  renderItem={this._renderProduk}
+  keyExtractor={(item) => item.produkid.toString()}
+  onRefresh={() => this.LoadDataSearch()}
+  refreshing={this.state.isFetching}
+/>
+}
+        
+        
         </SafeAreaView>
       </View>
     );
@@ -407,7 +555,7 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     position: 'absolute',
-    borderColor: '#666872',
+    
     top: 8,
     left: 37,
     paddingRight: 5,

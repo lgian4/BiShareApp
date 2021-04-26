@@ -127,9 +127,8 @@ class ProdukDetailScreen extends React.Component {
     }
   };
   LoadData = async () => {
-    if (this.state.isFetching == false) {
-      return;
-    }
+    console.log("1. load data");
+    
     console.log("log");
     this.setState({ isFetching: true });
 
