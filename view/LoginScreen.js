@@ -135,14 +135,16 @@ class LoginScreen extends React.Component {
             }
           }
         });
+
+        if (user != null && user.userid != "") {
+
+        }
+        else {
+          this.notify("User tidak ditemukan");
+        }
       });
 
-    if (user != null && user.userid != "") {
-
-    }
-    else {
-      this.notify("User Tidak ditemukan");
-    }
+   
   };
 
   componentDidMount() { this.checkLogin(); }

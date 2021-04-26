@@ -78,6 +78,10 @@ class SearchScreen extends React.Component {
       kategori: [],
       produk: [],
       refresh: true,
+      isFetching: true,
+      viewproduk: [],
+      searchHistory:[],
+      Search:""
     };
   }
   notify = (message) => {
@@ -91,8 +95,17 @@ class SearchScreen extends React.Component {
     }
   };
   LoadData = async () => {
+    var tproduk = await getData("produk");
+    var tsearchHistory = await getData("searchHistory");
+    this.setState({produk:tproduk,
+      searchHistory:tsearchHistory});
+    
 
-   console.log(await getData("user"));
+  };
+
+  LoadDataSearch = async () => {
+    console.log("search");
+    console.log(this.state.Search)
 
   };
 
@@ -150,9 +163,72 @@ class SearchScreen extends React.Component {
     const { navigation } = this.props;
     navigation.navigate("Login");
   };
+  _renderProduk = ({ item }) => {
+    console.log("render produk");
+    var uriimage =
+      "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
+    var fill = false;
+    if (item.produkmedia == null) {
+    } else if (typeof item.produkmedia === "object") {
+      if (
+        Object.keys(item.produkmedia) != null &&
+        Object.keys(item.produkmedia).length >= 1
+      ) {
+        Object.values(item.produkmedia).forEach(function (produkmedia) {
+          if (
+            produkmedia != null &&
+            produkmedia.dlt == false &&
+            produkmedia.mediaurl != "" &&
+            fill == false
+          ) {
+            uriimage = produkmedia.mediaurl;
+            fill = true;
+          }
+        });
+      }
+    }
+
+    return (
+      <TouchableOpacity onPress={() => this.OnProdukDetail(item)}>
+        <View
+          style={{
+            width: WIDTH / 2.5,
+            backgroundColor: "white",
+            marginTop: 10,
+            borderRadius: 10,
+            alignSelf: "flex-start",
+            padding: 10,
+            marginHorizontal: 10,
+           
+            
+          }}
+        >
+          <Image
+            source={{ uri: uriimage }}
+            resizeMode="contain"
+            style={{ height: 100,borderRadius:20,alignItems: "center",  }}
+          />
+          <Text
+            style={{ fontWeight: "bold", flexWrap: "wrap" }}
+            numberOfLines={1}
+          >
+            {item.produkname}
+          </Text>
+          <Text> {currencyFormatter(item.harga)}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  componentDidMount() {
+    //this.setState({ refresh: true });
+    
+    this.LoadData();
+
+  }
 
   render() {
-    this.LoadData();
+    
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
@@ -177,10 +253,12 @@ class SearchScreen extends React.Component {
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              onChangeText={(val) => this.setState({ username: val })}
+              onChangeText={(val) => this.setState({ Search: val })}
               placeholder={"Search "}
               placeholderTextColor={"#666872"}
-              underlineColorAndroid="transparent"
+              underlineColorAndroid="transparent"              
+              onSubmitEditing={this.LoadDataSearch}
+              
             />
             <Icon
               name={"search"}
@@ -209,7 +287,23 @@ class SearchScreen extends React.Component {
               <Icon name={'ios-close-outline'} size={25} color={'#666872'} style={{marginTop:10}} />
            </View>
          </View>
-         <TouchableOpacity>
+         <FlatList
+          data={this.state.viewproduk}
+          extraData={this.state.refresh}
+          style={{
+            paddingHorizontal: 10,
+            marginTop: -20,
+            backgroundColor: "#F6F6F6",
+          }}
+          scrollEnabled={true}
+          numColumns={2}
+          contentContainerStyle={{ justifyContent: "space-between" }}
+          renderItem={this._renderProduk}
+          keyExtractor={(item) => item.produkid.toString()}
+          onRefresh={() => this.onRefresh()}
+          refreshing={this.state.isFetching}
+        />
+         {/* <TouchableOpacity>
           <View
                 style={{
                   width: WIDTH / 2.5,
@@ -229,7 +323,7 @@ class SearchScreen extends React.Component {
                 <Text style={{ fontWeight: "bold" }}>Sendal</Text>
                 <Text>Rp. 20.000</Text>
               </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
         </SafeAreaView>
       </View>
     );

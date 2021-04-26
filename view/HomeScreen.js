@@ -130,7 +130,7 @@ class ProdukDetailScreen extends React.Component {
     if (this.state.isFetching == false) {
       return;
     }
-
+    console.log("log");
     this.setState({ isFetching: true });
 
     var tuser = await getData("user");
@@ -259,6 +259,9 @@ class ProdukDetailScreen extends React.Component {
   };
 
   loadProdukKategori = async (kategori) => {
+    if(this.state.produk.length <= 0){
+      return;
+    }
     console.log("load produk kategori");
     console.log(kategori);
     this.setState({ isFetching: true });
@@ -299,7 +302,7 @@ class ProdukDetailScreen extends React.Component {
     console.log("load produk");
     var tempproduk = [];
     this.setState({ refresh: !this.state.refresh });
-    if (this.state.produk == null || this.state.produk.length <= 0) {
+    if (this.state.produk == null || this.state.produk.length <= 0|| true) {
       firebase
         .database()
         .ref("produk/")
@@ -517,13 +520,18 @@ class ProdukDetailScreen extends React.Component {
             <Text style={{ fontSize: 16 }}>Hi, {this.state.nama ?? ""}</Text>
           </View>
           <View style={styles.inputContainer}>
+            <TouchableOpacity onPress={this.onSearch}>
+
+           
             <TextInput
               style={styles.input}
               onChangeText={(val) => this.setState({ searchtext: val })}
               placeholder={"Search "}
               placeholderTextColor={"#666872"}
               underlineColorAndroid="transparent"
-              onFocus={this.onSearch}
+              
+              editable={false}
+              
             />
             <Icon
               name={"search"}
@@ -531,6 +539,7 @@ class ProdukDetailScreen extends React.Component {
               color={"#666872"}
               style={styles.inputIcon}
             />
+             </TouchableOpacity>
           </View>
           <View
             style={{
