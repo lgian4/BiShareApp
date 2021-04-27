@@ -14,6 +14,7 @@ import {
   FlatList,
   ImageBackground,
   ScrollView,
+  ToastAndroid,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -47,6 +48,27 @@ const defaultOptions = {
   symbol: "Rp",
 };
 
+const storeData = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem("@storage_Key:" + key, jsonValue);
+  } catch (e) {
+    // saving error
+    this.notify(e);
+    return;
+  }
+};
+const getData = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem("@storage_Key:" + key);
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    // error reading value
+   // this.notify(e);
+    return;
+  }
+};
+
 const currencyFormatter = (value, options) => {
   if (typeof value != "number") {
     value = parseInt(value);
@@ -72,8 +94,13 @@ class HomeScreen extends React.Component {
       DateDisplay: "",
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
-
+      user: null,
       kategori: [],
+      produklike: {
+        key: 0,
+        islike:  false,
+        userid: "",                      
+      },
       refresh: true,
       produkmedia: [],
       produk: {
@@ -106,6 +133,17 @@ class HomeScreen extends React.Component {
     this.setState({ visibility: true });
     this.setState({ TextInputDisableStatus: false });
   };
+  notify = (message) => {
+    if (Platform.OS != "android") {
+      // Snackbar.show({
+      //     text: message,
+      //     duration: Snackbar.LENGTH_SHORT,
+      // });
+    } else {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    }
+  };
+
 
   handleConfirm = (date) => {
     this.setState({ DateDisplay: date });
@@ -120,7 +158,10 @@ class HomeScreen extends React.Component {
   getProduk = async () => {
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
-
+    console.log("sampai sini");
+   var tuser = null;
+   tuser =   await getData("user");
+   console.log(tuser);
     var tempproduk = [];
     if (selectedproduk.produkmedia == null) {
       //
@@ -153,11 +194,43 @@ class HomeScreen extends React.Component {
       produkmedia: tempproduk,
       refresh: !this.state.refresh,
     });
+    var tproduklike = null;
+    firebase
+    .database()
+    .ref("produklike/"+ selectedproduk.produkid +"/" +tuser.userid)
+    .on("value", (snapshot) => {
+      snapshot.forEach((child) => {
+        if (
+          child.key != "count" &&
+          child.key != "produkmediacount" &&
+          child.val().dlt != true
+        ) {
+          tproduklike ={
+            key: child.key,
+            islike: child.val().islike ?? false,
+            userid: child.val().userid ?? tuser.userid,                      
+          };
+        }
+      });
+
+      
+       
+    });
+    if(tproduklike == null){
+      tproduklike = {
+        key: tuser.userid,
+        islike:  false,
+        userid: tuser.userid,                      
+      }
+    }
+    this.setState({ produk: tempproduk, user:tuser, produklike:tproduklike });
+        storeData("produk", tempproduk);
+
   };
 
-  _renderItem = ({ item }) => {
-    console.log("render gambar");
-    console.log(item.mediaurl);
+
+
+  _renderItem = ({ item }) => {   
     return (
       <TouchableOpacity onPress={async (xitem) => { }}>
         <Image
@@ -178,6 +251,8 @@ class HomeScreen extends React.Component {
   };
 
   componentDidMount() {
+    var tsuer =  getData("user");
+    this.setState({user:tsuer});
     this.getProduk();
   }
 
@@ -297,6 +372,17 @@ class HomeScreen extends React.Component {
                       </Text>
                     </TouchableOpacity>
                   </View>
+                  <View flexDirection="row" style={{ padding: 5 }}>
+                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                      Like
+                    </Text>
+                    <TouchableOpacity style={{ flex: 3, }}>
+                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                      {this.state.produk.likecount}
+                        
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
 
                 </View>
                 <View style={{ alignItems: "center", marginTop: 20 }}>
@@ -348,6 +434,7 @@ class HomeScreen extends React.Component {
                       height: 3,
                       marginTop: 10,
                       width: 25,
+                      marginBottom:30,
                     }}
                   ></View>
                 </View>
@@ -356,9 +443,12 @@ class HomeScreen extends React.Component {
                 </View>
               </View>
             </View>
-            <View
+
+
+               </ScrollView>
+               <View
               style={{
-                bottom: -100,
+                bottom: 10,
                 alignItems: "center",
                 justifyContent: "space-evenly",
                 width: WIDTH,
@@ -386,16 +476,28 @@ class HomeScreen extends React.Component {
                   elevation: 5,
                 }}
               >
+                { this.state.produklike.islike 
+                ? 
                 <Icon
-                  name={"heart-outline"}
-                  size={25}
-                  color={"#666872"}
-                  style={{ color: "#F24E1E", marginTop: 10 }}
-                />
+                name={"heart"}
+                size={25}
+                color={"#666872"}
+                style={{ color: "#F24E1E", marginTop: 10 }}
+              />
+              :
+              <Icon
+              name={"heart-outline"}
+              size={25}
+              color={"#666872"}
+              style={{ color: "#F24E1E", marginTop: 10 }}
+            />
+                
+                }
+               
                 <Text
                   style={[styles.text, { color: "#F24E1E", marginTop: 10 }]}
                 >
-                  Favorit
+                  Like
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -418,7 +520,7 @@ class HomeScreen extends React.Component {
                 <Text style={styles.text}>Masukkan Ke Keranjang</Text>
               </TouchableOpacity>
             </View>
-          </ScrollView>
+   
         </SafeAreaView>
       </View>
     );

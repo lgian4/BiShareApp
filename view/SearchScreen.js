@@ -419,7 +419,10 @@ class SearchScreen extends React.Component {
               color={"#666872"}
               
             />
-             </TouchableOpacity>
+             </TouchableOpacity >
+             <TouchableOpacity style={{marginTop:10, paddingVertical:3,}} onPress={() => this.OnRemoveSearch(item)}>
+            <Icon name={'ios-close-outline'} size={25} color={'#666872'}  />
+          </TouchableOpacity>
           </View>
           {  !this.state.showProduk &&
 

@@ -14,6 +14,7 @@ import {
   FlatList,
   ImageBackground,
   ScrollView,
+  ToastAndroid,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -57,7 +58,7 @@ const getData = async (key) => {
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     // error reading value
-    this.notify(e);
+ //   this.notify(e);
     return;
   }
 };
@@ -169,6 +170,17 @@ class ProdukDetailScreen extends React.Component {
   onRefresh() {
     this.LoadData();
   }
+  notify = (message) => {
+    if (Platform.OS != "android") {
+      // Snackbar.show({
+      //     text: message,
+      //     duration: Snackbar.LENGTH_SHORT,
+      // });
+    } else {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    }
+  };
+
 
   CekKoneksi = async () => {
     firebase
@@ -330,13 +342,19 @@ class ProdukDetailScreen extends React.Component {
                 stok: child.val().stok,
                 produkdate: child.val().produkdate,
                 produkcode: child.val().produkcode,
+                dlt: child.val().dlt ?? false,
+                produkmediacount: child.val().produkmediacount ?? 0,
+                status: child.val().status ?? "",
+                likecount: child.val().likecount ?? 0,               
               });
             }
           });
-        });
 
-      this.setState({ produk: tempproduk });
-      await storeData("produk", tempproduk);
+          
+           this.setState({ produk: tempproduk });
+            storeData("produk", tempproduk);
+        });
+       
 
     }
   };
