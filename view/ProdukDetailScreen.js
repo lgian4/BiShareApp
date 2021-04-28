@@ -102,6 +102,17 @@ class HomeScreen extends React.Component {
         islike: false,
         userid: "",
       },
+      firstmedia: "",
+      keranjang: {
+        key: 0,
+        dlt: true,
+        produkid: "",
+        userid: "",
+        mediaurl: "",
+        produkname: "",
+        stok : 0,
+        harga : 0
+      },
       refresh: true,
       produkmedia: [],
       produk: {
@@ -189,6 +200,50 @@ class HomeScreen extends React.Component {
 
 
   };
+  onKeranjang = async () => {
+    var tkeranjang = this.state.keranjang;
+    var tproduk = this.state.produk;
+    var tuser = this.state.user;
+    if(tkeranjang== null || tkeranjang.produkid == ""){
+      tkeranjang =   {
+        key: tproduk.produkid,
+        dlt: true,
+        produkid: tproduk.produkid,
+        userid: tuser.userid,
+        mediaurl: this.state. firstmedia,
+        produkname: tproduk.produkname,
+        stok : 0,
+        harga :tproduk.harga
+      }
+    }
+    if (tkeranjang.dlt || tkeranjang.stok <= 0 ) {
+      tkeranjang.dlt = false;
+      tkeranjang.stok = 1;
+      this.notify("Produk berhasil dimasukkan kedalam keranjang");     
+      
+      this.setState({
+        keranjang: tkeranjang,
+        
+      });
+  
+      try {
+  
+        await firebase
+          .database()
+          .ref("keranjang/" + tuser.userid + "/" +tproduk.produkid)
+          .set(tkeranjang);       
+         
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    else {
+      this.notify("Buka Keranjang");     
+    }
+   
+
+
+  };
 
   getProduk = async () => {
     const { navigation, route } = this.props;
@@ -197,9 +252,14 @@ class HomeScreen extends React.Component {
     if (tuser == null)
       tuser = await getData("user");
 
+    var firstmedia = "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var tempproduk = [];
     if (selectedproduk.produkmedia == null) {
-      //
+      tempproduk.push({
+        key: 0,
+        mediaid: 0,
+        mediaurl:  "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e",
+      });
     } else if (typeof selectedproduk.produkmedia === "object") {
       if (
         Object.keys(selectedproduk.produkmedia) != null &&
@@ -214,6 +274,10 @@ class HomeScreen extends React.Component {
             produkmedia.dlt == false &&
             produkmedia.mediaurl != ""
           ) {
+            if(i ==0)
+            {
+              firstmedia = produkmedia.mediaurl
+            }
             tempproduk.push({
               key: i++,
               mediaid: produkmedia.mediaid,
@@ -228,8 +292,10 @@ class HomeScreen extends React.Component {
       produk: selectedproduk,
       produkmedia: tempproduk,
       refresh: !this.state.refresh,
+      firstmedia:firstmedia,
     });
     var tproduklike = null;
+    var tkeranjang = null;
 
     try {
       console.log("produklike/" + selectedproduk.produkid + "/" + tuser.userid);
@@ -249,6 +315,34 @@ class HomeScreen extends React.Component {
               userid: snapshot.val().userid ?? tuser.userid,
               produkid: snapshot.val().produkid ?? selectedproduk.produkid,
             };
+
+            this.setState({  produklike: tproduklike });
+          }
+
+        });
+    } catch (error) {
+      //console.error(error);
+    }
+
+    try {      
+      await firebase
+        .database()
+        .ref("keranjang/" + tuser.userid + "/" + selectedproduk.produkid )
+        .on("value", (snapshot) => {
+          if (snapshot != null && snapshot.val() != null
+          ) {
+            tkeranjang = {           
+              key: snapshot.key,
+              dlt: snapshot.val().dlt ?? false,
+              produkid: snapshot.val().produkid ?? selectedproduk.produkid,
+              userid: snapshot.val().userid ?? tuser.userid,
+              mediaurl:firstmedia,
+              produkname: selectedproduk.produkname,
+              stok : snapshot.val().stok ?? 0,
+              harga : selectedproduk.harga
+            };
+
+            this.setState({  keranjang: tkeranjang });
           }
 
         });
@@ -261,6 +355,18 @@ class HomeScreen extends React.Component {
         key: tuser.userid,
         islike: false,
         userid: tuser.userid,
+      }
+    }
+    if (tkeranjang == null) {
+      tkeranjang =   {
+        key: selectedproduk.produkid,
+        dlt: true,
+        produkid: selectedproduk.produkid,
+        userid: tuser.userid,
+        mediaurl: firstmedia,
+        produkname: selectedproduk.produkname,
+        stok : 0,
+        harga :selectedproduk.harga
       }
     }
     this.setState({ user: tuser, produklike: tproduklike });
@@ -500,7 +606,7 @@ class HomeScreen extends React.Component {
                 fontSize: 16,
                 borderColor: "#F24E1E",
                 borderWidth: 1,
-                justifyContent: "space-evenly",
+                justifyContent: "space-between",
                 flexDirection: "row",
                 backgroundColor: "white",
                 marginTop: 20,
@@ -553,9 +659,19 @@ class HomeScreen extends React.Component {
                 shadowOpacity: 0.8,
                 shadowRadius: 2,
                 elevation: 5,
+                
               }}
+              onPress={this.onKeranjang}
             >
-              <Text style={styles.text}>Masukkan Ke Keranjang</Text>
+               {(this.state.keranjang != null && this.state.keranjang.stok >=1 &&  this.state.keranjang.dlt == false && this.state.keranjang.produkid == this.state.produk.produkid)
+                ?
+                <Text style={styles.text}>Buka Keranjang</Text>
+                :
+               
+                <Text style={styles.text}>Masukkan Ke Keranjang</Text>
+              }
+
+              
             </TouchableOpacity>
           </View>
 
