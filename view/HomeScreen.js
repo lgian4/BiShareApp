@@ -58,7 +58,7 @@ const getData = async (key) => {
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     // error reading value
- //   this.notify(e);
+    //   this.notify(e);
     return;
   }
 };
@@ -73,7 +73,7 @@ const defaultOptions = {
 const currencyFormatter = (value, options) => {
   console.log("currencyFormatter");
   console.log(typeof value);
-  if(typeof value != "number"){
+  if (typeof value != "number") {
     value = parseInt(value);
   }
   if (typeof value !== 'number') value = 0.0
@@ -129,7 +129,7 @@ class ProdukDetailScreen extends React.Component {
   };
   LoadData = async () => {
     console.log("1. load data");
-    
+
     console.log("log");
     this.setState({ isFetching: true });
 
@@ -164,7 +164,7 @@ class ProdukDetailScreen extends React.Component {
 
     }
     this.setState({ isFetching: false });
-    await this.loadProdukKategori(this.state.selectedkategori);
+    await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
   };
 
   onRefresh() {
@@ -218,7 +218,7 @@ class ProdukDetailScreen extends React.Component {
             kategoriid: "All",
             kategoriname: "All",
           });
-         
+
           snapshot.forEach((child) => {
             if (child.key != "count" && child.val().dlt != true) {
               tempkategori.push({
@@ -270,28 +270,30 @@ class ProdukDetailScreen extends React.Component {
   };
 
   loadProdukKategori = async (kategori) => {
-    if(this.state.produk.length <= 0){
+    if (this.state.produk.length <= 0) {
       return;
     }
+    var tproduk = this.state.produk;
     console.log("load produk kategori");
     console.log(kategori);
     this.setState({ isFetching: true });
     this.setState({ selectedkategori: kategori });
     if (kategori == "All") {
-      this.setState({ viewproduk: this.state.produk });
+      this.setState({ viewproduk: tproduk });
 
     } else if (kategori == "Rekomendasi") {
       var tempproduk = [];
       console.log(this.state.rekomendasikey);
-      tempproduk = this.state.produk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
+
+      tempproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
       console.log(tempproduk.length);
 
       this.setState({ viewproduk: tempproduk });
     } else {
 
       var tempproduk = [];
-      console.log(typeof this.state.produk);
-      tempproduk = this.state.produk.filter(obj => {
+      console.log(typeof tproduk);
+      tempproduk = tproduk.filter(obj => {
         return obj.kategoriid == kategori
       })
       // for (var i = 0; i < this.state.produk.length; i++) {
@@ -313,8 +315,8 @@ class ProdukDetailScreen extends React.Component {
     console.log("load produk");
     var tempproduk = [];
     this.setState({ refresh: !this.state.refresh });
-    if (this.state.produk == null || this.state.produk.length <= 0|| true) {
-      firebase
+    if (this.state.produk == null || this.state.produk.length <= 0 || true) {
+      await firebase
         .database()
         .ref("produk/")
         .on("value", (snapshot) => {
@@ -345,16 +347,16 @@ class ProdukDetailScreen extends React.Component {
                 dlt: child.val().dlt ?? false,
                 produkmediacount: child.val().produkmediacount ?? 0,
                 status: child.val().status ?? "",
-                likecount: child.val().likecount ?? 0,               
+                likecount: child.val().likecount ?? 0,
               });
             }
           });
 
-          
-           this.setState({ produk: tempproduk });
-            storeData("produk", tempproduk);
+
+          this.setState({ produk: tempproduk });
+          storeData("produk", tempproduk);
         });
-       
+
 
     }
   };
@@ -478,14 +480,14 @@ class ProdukDetailScreen extends React.Component {
             alignSelf: "flex-start",
             padding: 10,
             marginHorizontal: 10,
-           
-            
+
+
           }}
         >
           <Image
             source={{ uri: uriimage }}
             resizeMode="contain"
-            style={{ height: 100,borderRadius:20,alignItems: "center",  }}
+            style={{ height: 100, borderRadius: 20, alignItems: "center", }}
           />
           <Text
             style={{ fontWeight: "bold", flexWrap: "wrap" }}
@@ -539,24 +541,24 @@ class ProdukDetailScreen extends React.Component {
           <View style={styles.inputContainer}>
             <TouchableOpacity onPress={this.onSearch}>
 
-           
-            <TextInput
-              style={styles.input}
-              onChangeText={(val) => this.setState({ searchtext: val })}
-              placeholder={"Search "}
-              placeholderTextColor={"#666872"}
-              underlineColorAndroid="transparent"
-              
-              editable={false}
-              
-            />
-            <Icon
-              name={"search"}
-              size={25}
-              color={"#666872"}
-              style={styles.inputIcon}
-            />
-             </TouchableOpacity>
+
+              <TextInput
+                style={styles.input}
+                onChangeText={(val) => this.setState({ searchtext: val })}
+                placeholder={"Search "}
+                placeholderTextColor={"#666872"}
+                underlineColorAndroid="transparent"
+
+                editable={false}
+
+              />
+              <Icon
+                name={"search"}
+                size={25}
+                color={"#666872"}
+                style={styles.inputIcon}
+              />
+            </TouchableOpacity>
           </View>
           <View
             style={{
@@ -571,7 +573,7 @@ class ProdukDetailScreen extends React.Component {
             <FlatList
               data={this.state.kategori}
               extraData={this.state.refreshkategori}
-              style={{ height: 50, flexGrow: 0,alignContent:'center' }}
+              style={{ height: 50, flexGrow: 0, alignContent: 'center' }}
               horizontal={true}
               renderItem={this._renderItem}
               keyExtractor={(item) => item.kategoriid.toString()}
@@ -590,7 +592,7 @@ class ProdukDetailScreen extends React.Component {
           numColumns={2}
           contentContainerStyle={{ justifyContent: "space-between" }}
           renderItem={this._renderProduk}
-          keyExtractor={(item) => item.produkid.toString()}
+          keyExtractor={(item) => item.produkid}
           onRefresh={() => this.onRefresh()}
           refreshing={this.state.isFetching}
         />

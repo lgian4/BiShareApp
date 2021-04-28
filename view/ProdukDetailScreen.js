@@ -20,6 +20,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
@@ -64,7 +65,7 @@ const getData = async (key) => {
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     // error reading value
-   // this.notify(e);
+    // this.notify(e);
     return;
   }
 };
@@ -98,8 +99,8 @@ class HomeScreen extends React.Component {
       kategori: [],
       produklike: {
         key: 0,
-        islike:  false,
-        userid: "",                      
+        islike: false,
+        userid: "",
       },
       refresh: true,
       produkmedia: [],
@@ -154,14 +155,48 @@ class HomeScreen extends React.Component {
     const { navigation } = this.props;
     navigation.navigate("Login");
   };
+  onLike = async () => {
+    var tproduklike = this.state.produklike;
+    var tproduk = this.state.produk;
+    var tuser = this.state.user;
+    tproduklike.islike = !tproduklike.islike;
+    if (tproduklike.islike) {
+      this.notify("❤ + 1");
+      tproduk.likecount += 1;
+    }
+    else {
+      this.notify("❤ - 1");
+      tproduk.likecount -= 1;
+    }
+    this.setState({
+      produklike: tproduklike,
+      produk: tproduk
+    });
+
+    try {
+
+      await firebase
+        .database()
+        .ref("produklike/" + tproduk.produkid + "/" + tuser.userid)
+        .set(tproduklike);
+        await firebase
+        .database()
+        .ref("produk/" + tproduk.produkid )
+        .set(tproduk);
+    } catch (error) {
+      console.error(error);
+    }
+
+
+  };
 
   getProduk = async () => {
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
-    console.log("sampai sini");
-   var tuser = null;
-   tuser =   await getData("user");
-   console.log(tuser);
+    var tuser = this.state.user;
+    if (tuser == null)
+      tuser = await getData("user");
+
     var tempproduk = [];
     if (selectedproduk.produkmedia == null) {
       //
@@ -188,49 +223,54 @@ class HomeScreen extends React.Component {
         });
       }
     }
-    console.log;
+
     this.setState({
       produk: selectedproduk,
       produkmedia: tempproduk,
       refresh: !this.state.refresh,
     });
     var tproduklike = null;
-    firebase
-    .database()
-    .ref("produklike/"+ selectedproduk.produkid +"/" +tuser.userid)
-    .on("value", (snapshot) => {
-      snapshot.forEach((child) => {
-        if (
-          child.key != "count" &&
-          child.key != "produkmediacount" &&
-          child.val().dlt != true
-        ) {
-          tproduklike ={
-            key: child.key,
-            islike: child.val().islike ?? false,
-            userid: child.val().userid ?? tuser.userid,                      
-          };
-        }
-      });
 
-      
-       
-    });
-    if(tproduklike == null){
+    try {
+      console.log("produklike/" + selectedproduk.produkid + "/" + tuser.userid);
+      await firebase
+        .database()
+        .ref("produklike/" + selectedproduk.produkid + "/" + tuser.userid)
+        .on("value", (snapshot) => {
+
+          console.log("console.log(snapshot); " + snapshot);
+          console.log("console.log(snapshot.key); " + snapshot.key);
+          console.log("console.log(snapshot.val); " + snapshot.val());
+          if (snapshot != null && snapshot.val() != null
+          ) {
+            tproduklike = {
+              key: snapshot.key,
+              islike: snapshot.val().islike ?? false,
+              userid: snapshot.val().userid ?? tuser.userid,
+              produkid: snapshot.val().produkid ?? selectedproduk.produkid,
+            };
+          }
+
+        });
+    } catch (error) {
+      //console.error(error);
+    }
+
+    if (tproduklike == null) {
       tproduklike = {
         key: tuser.userid,
-        islike:  false,
-        userid: tuser.userid,                      
+        islike: false,
+        userid: tuser.userid,
       }
     }
-    this.setState({ produk: tempproduk, user:tuser, produklike:tproduklike });
-        storeData("produk", tempproduk);
+    this.setState({ user: tuser, produklike: tproduklike });
+    //storeData("produk", tempproduk);
 
   };
 
 
 
-  _renderItem = ({ item }) => {   
+  _renderItem = ({ item }) => {
     return (
       <TouchableOpacity onPress={async (xitem) => { }}>
         <Image
@@ -251,8 +291,8 @@ class HomeScreen extends React.Component {
   };
 
   componentDidMount() {
-    var tsuer =  getData("user");
-    this.setState({user:tsuer});
+    var tsuer = getData("user");
+    this.setState({ user: tsuer });
     this.getProduk();
   }
 
@@ -271,11 +311,9 @@ class HomeScreen extends React.Component {
               }}
             >
               <View style={{ marginTop: 20 }}>
-                <Icon
-                  name={"chevron-back-outline"}
-                  size={25}
-                  color={"#666872"}
-                />
+                <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
+                  <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
+                </TouchableOpacity>
               </View>
 
               <View style={{ marginTop: 20 }}>
@@ -284,15 +322,14 @@ class HomeScreen extends React.Component {
             </View>
 
             <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
+
+              <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}              >
+                {this.state.produk.produkname}
+              </Text>
               <Text
                 style={{ fontSize: 14, color: "#F24E1E", fontWeight: "bold" }}
               >
                 {currencyFormatter(this.state.produk.harga, defaultOptions)}
-              </Text>
-              <Text
-                style={{ fontSize: 28, color: "black", fontWeight: "bold" }}
-              >
-                {this.state.produk.produkname}
               </Text>
             </View>
             <View style={{ alignItems: "center", marginTop: 20, }}>
@@ -318,9 +355,9 @@ class HomeScreen extends React.Component {
                   marginBottom: 20,
                 }}
               >
-                
+
                 <View >
-                  
+
                   <View flexDirection="row" style={{ padding: 5 }}>
                     <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
                       Toko
@@ -357,7 +394,7 @@ class HomeScreen extends React.Component {
                     </Text>
                     <TouchableOpacity style={{ flex: 3, }}>
                       <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                      {currencyFormatter(this.state.produk.harga, defaultOptions)}
+                        {currencyFormatter(this.state.produk.harga, defaultOptions)}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -367,8 +404,8 @@ class HomeScreen extends React.Component {
                     </Text>
                     <TouchableOpacity style={{ flex: 3, }}>
                       <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {moment( this.state.produk.produkdate, "YYYYMMDD").fromNow()}
-                        
+                        {moment(this.state.produk.produkdate, "YYYYMMDD").fromNow()}
+
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -378,8 +415,8 @@ class HomeScreen extends React.Component {
                     </Text>
                     <TouchableOpacity style={{ flex: 3, }}>
                       <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                      {this.state.produk.likecount}
-                        
+                        {this.state.produk.likecount}
+
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -434,7 +471,7 @@ class HomeScreen extends React.Component {
                       height: 3,
                       marginTop: 10,
                       width: 25,
-                      marginBottom:30,
+                      marginBottom: 30,
                     }}
                   ></View>
                 </View>
@@ -445,82 +482,83 @@ class HomeScreen extends React.Component {
             </View>
 
 
-               </ScrollView>
-               <View
+          </ScrollView>
+          <View
+            style={{
+              bottom: 10,
+              alignItems: "center",
+              justifyContent: "space-evenly",
+              width: WIDTH,
+              flexDirection: "row",
+              position: "absolute",
+            }}
+          >
+            <TouchableOpacity
               style={{
-                bottom: 10,
-                alignItems: "center",
+                height: 45,
+                borderRadius: 10,
+                fontSize: 16,
+                borderColor: "#F24E1E",
+                borderWidth: 1,
                 justifyContent: "space-evenly",
-                width: WIDTH,
                 flexDirection: "row",
-                position: "absolute",
+                backgroundColor: "white",
+                marginTop: 20,
+                paddingHorizontal: 10,
+
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.8,
+                shadowRadius: 2,
+                elevation: 5,
+              }}
+              onPress={this.onLike}
+            >
+              {this.state.produklike.islike
+                ?
+                <Icon
+                  name={"heart"}
+                  size={25}
+                  color={"#666872"}
+                  style={{ color: "#F24E1E", marginTop: 10 }}
+                />
+                :
+                <Icon
+                  name={"heart-outline"}
+                  size={25}
+                  color={"#666872"}
+                  style={{ color: "#F24E1E", marginTop: 10 }}
+                />
+
+              }
+
+              <Text
+                style={[styles.text, { color: "#F24E1E", marginTop: 10 }]}
+              >
+                Like
+                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                height: 45,
+                borderRadius: 10,
+                fontSize: 16,
+                backgroundColor: "#F24E1E",
+                justifyContent: "center",
+                marginTop: 20,
+                paddingHorizontal: 10,
+
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.8,
+                shadowRadius: 2,
+                elevation: 5,
               }}
             >
-              <TouchableOpacity
-                style={{
-                  height: 45,
-                  borderRadius: 10,
-                  fontSize: 16,
-                  borderColor: "#F24E1E",
-                  borderWidth: 1,
-                  justifyContent: "space-evenly",
-                  flexDirection: "row",
-                  backgroundColor: "white",
-                  marginTop: 20,
-                  paddingHorizontal: 10,
+              <Text style={styles.text}>Masukkan Ke Keranjang</Text>
+            </TouchableOpacity>
+          </View>
 
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.8,
-                  shadowRadius: 2,
-                  elevation: 5,
-                }}
-              >
-                { this.state.produklike.islike 
-                ? 
-                <Icon
-                name={"heart"}
-                size={25}
-                color={"#666872"}
-                style={{ color: "#F24E1E", marginTop: 10 }}
-              />
-              :
-              <Icon
-              name={"heart-outline"}
-              size={25}
-              color={"#666872"}
-              style={{ color: "#F24E1E", marginTop: 10 }}
-            />
-                
-                }
-               
-                <Text
-                  style={[styles.text, { color: "#F24E1E", marginTop: 10 }]}
-                >
-                  Like
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  height: 45,
-                  borderRadius: 10,
-                  fontSize: 16,
-                  backgroundColor: "#F24E1E",
-                  justifyContent: "center",
-                  marginTop: 20,
-                  paddingHorizontal: 10,
-
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.8,
-                  shadowRadius: 2,
-                  elevation: 5,
-                }}
-              >
-                <Text style={styles.text}>Masukkan Ke Keranjang</Text>
-              </TouchableOpacity>
-            </View>
-   
         </SafeAreaView>
       </View>
     );

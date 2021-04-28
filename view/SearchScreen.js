@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
-import AsyncStorage  from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-community/async-storage";
 import moment from "moment";
 import * as firebase from "firebase";
 
@@ -39,21 +39,21 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
-Array.prototype.remove = function() {
+Array.prototype.remove = function () {
   var what, a = arguments, L = a.length, ax;
   while (L && this.length) {
-      what = a[--L];
-      while ((ax = this.indexOf(what)) !== -1) {
-          this.splice(ax, 1);
-      }
+    what = a[--L];
+    while ((ax = this.indexOf(what)) !== -1) {
+      this.splice(ax, 1);
+    }
   }
   return this;
 };
 
-const storeData = async (key,value) => {
+const storeData = async (key, value) => {
   try {
     const jsonValue = JSON.stringify(value)
-    await AsyncStorage.setItem('@storage_Key:'+key, jsonValue)
+    await AsyncStorage.setItem('@storage_Key:' + key, jsonValue)
   } catch (e) {
     // saving error
     this.notify(e);
@@ -62,9 +62,9 @@ const storeData = async (key,value) => {
 }
 const getData = async (key) => {
   try {
-    const jsonValue = await AsyncStorage.getItem('@storage_Key:'+key)
+    const jsonValue = await AsyncStorage.getItem('@storage_Key:' + key)
     return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } catch(e) {
+  } catch (e) {
     // error reading value
     this.notify(e);
     return;
@@ -81,7 +81,7 @@ const defaultOptions = {
 const currencyFormatter = (value, options) => {
   console.log("currencyFormatter");
   console.log(typeof value);
-  if(typeof value != "number"){
+  if (typeof value != "number") {
     value = parseInt(value);
   }
   if (typeof value !== 'number') value = 0.0
@@ -115,9 +115,9 @@ class SearchScreen extends React.Component {
       refresh: true,
       isFetching: false,
       viewproduk: [],
-      searchHistory:[],
-      Search:"",
-      showProduk : false
+      searchHistory: [],
+      Search: "",
+      showProduk: false
     };
   }
   notify = (message) => {
@@ -133,83 +133,89 @@ class SearchScreen extends React.Component {
   LoadData = async () => {
     var tproduk = await getData("produk");
     var tsearchHistory = await getData("searchHistory");
-    this.setState({produk:tproduk,
-      searchHistory:tsearchHistory});
-    
+    this.setState({
+      produk: tproduk,
+      searchHistory: tsearchHistory
+    });
+
 
   };
 
-  LoadDataSearch = async (tsearch) => {    
-    this.setState({isFetching:true});
+  LoadDataSearch = async (tsearch) => {
+    this.setState({ isFetching: true });
 
 
     console.log("search");
-    var tsearch =   this.state.Search.toLowerCase();
+    var tsearch = this.state.Search.toLowerCase();
     var tsearchhistory = this.state.searchHistory ?? [];
-    
+
     console.log(tsearch);
-    console.log( this.state.produk.length);
+    console.log(this.state.produk.length);
     var tempproduk = [];
-    if(tsearch == null || tsearch == "")    {
-      this.setState({ viewproduk: tempproduk,
-        isFetching:false,
-      showProduk : false,
-      searchHistory:tsearchhistory
+    if (tsearch == null || tsearch == "") {
+      this.setState({
+        viewproduk: tempproduk,
+        isFetching: false,
+        showProduk: false,
+        searchHistory: tsearchhistory
       });
     }
     else {
       tsearchhistory.remove(tsearch);
       tsearchhistory.unshift(tsearch);
-      tempproduk = this.state.produk.filter(obj => {      
+      tempproduk = this.state.produk.filter(obj => {
         return obj.produkname.toLowerCase().match(tsearch) || obj.deskripsi.toLowerCase().match(tsearch) || obj.fitur.toLowerCase().match(tsearch) || obj.spesifikasi.toLowerCase().match(tsearch)
       })
-      if(tempproduk.length == 0){
+      if (tempproduk.length == 0) {
         this.notify("Produk tidak ditemukan");
       }
       console.log(tempproduk.length);
-      this.setState({ viewproduk: tempproduk,
-        isFetching:false,
-      showProduk :true,
-      searchHistory:tsearchhistory
+      this.setState({
+        viewproduk: tempproduk,
+        isFetching: false,
+        showProduk: true,
+        searchHistory: tsearchhistory
       });
-      await storeData("searchHistory",tsearchhistory);
-      
+      await storeData("searchHistory", tsearchhistory);
+
     }
   };
-  LoadDataSearch2 = async (tsearch) => {    
-    this.setState({isFetching:true});
+  LoadDataSearch2 = async (tsearch) => {
+    this.setState({ isFetching: true });
 
 
-    console.log("search");    
+    console.log("search");
     var tsearchhistory = this.state.searchHistory ?? [];
-    
+
     console.log(tsearch);
-    console.log( this.state.produk.length);
+    console.log(this.state.produk.length);
     var tempproduk = [];
-    if(tsearch == null || tsearch == "")    {
-      this.setState({ viewproduk: tempproduk,
-        isFetching:false,
-      showProduk : false,
-      searchHistory:tsearchhistory
+    if (tsearch == null || tsearch == "") {
+      this.setState({
+        viewproduk: tempproduk,
+        isFetching: false,
+        showProduk: false,
+        searchHistory: tsearchhistory
       });
     }
     else {
       tsearchhistory.remove(tsearch);
       tsearchhistory.unshift(tsearch);
-      tempproduk = this.state.produk.filter(obj => {      
+      tempproduk = this.state.produk.filter(obj => {
         return obj.produkname.toLowerCase().match(tsearch) || obj.deskripsi.toLowerCase().match(tsearch) || obj.fitur.toLowerCase().match(tsearch) || obj.spesifikasi.toLowerCase().match(tsearch)
       })
-      if(tempproduk.length == 0){
+      if (tempproduk.length == 0) {
         this.notify("Produk tidak ditemukan");
       }
       console.log(tempproduk.length);
-      this.setState({ viewproduk: tempproduk,
-        isFetching:false,
-      showProduk :true,
-      searchHistory:tsearchhistory
+      this.setState({
+        viewproduk: tempproduk,
+        isFetching: false,
+        showProduk: true,
+        searchHistory: tsearchhistory
       });
-      await storeData("searchHistory",tsearchhistory);
-      
+      await storeData("searchHistory", tsearchhistory);
+
     }
   };
 
@@ -217,16 +223,16 @@ class SearchScreen extends React.Component {
   OnRemoveSearch = (tsearch) => {
     var tsearchhistory = this.state.searchHistory ?? [];
     tsearchhistory.remove(tsearch);
-    this.setState({ 
-      refresh:!this.state.refresh,    
-    searchHistory:tsearchhistory
+    this.setState({
+      refresh: !this.state.refresh,
+      searchHistory: tsearchhistory
     });
-     storeData("searchHistory",tsearchhistory);
+    storeData("searchHistory", tsearchhistory);
   };
 
   OnSelectSearch = (tsearch) => {
-   this.setState({Search:tsearch});
-   this.LoadDataSearch2(tsearch);
+    this.setState({ Search: tsearch });
+    this.LoadDataSearch2(tsearch);
   };
 
 
@@ -261,7 +267,7 @@ class SearchScreen extends React.Component {
       }
     }
   };
-  
+
   OnProdukDetail = (selectedproduk) => {
     const { navigation } = this.props;
     navigation.navigate("ProdukDetail", { params: selectedproduk });
@@ -325,14 +331,14 @@ class SearchScreen extends React.Component {
             alignSelf: "flex-start",
             padding: 10,
             marginHorizontal: 10,
-           
-            
+
+
           }}
         >
           <Image
             source={{ uri: uriimage }}
             resizeMode="contain"
-            style={{ height: 100,borderRadius:20,alignItems: "center",  }}
+            style={{ height: 100, borderRadius: 20, alignItems: "center", }}
           />
           <Text
             style={{ fontWeight: "bold", flexWrap: "wrap" }}
@@ -350,34 +356,34 @@ class SearchScreen extends React.Component {
     console.log("render history");
     console.log(item);
     return (
-      <View style={{ flexDirection:'row',}}>  
-      
+      <View style={{ flexDirection: 'row', }}>
 
-          <TouchableOpacity style={{flex:3, paddingVertical:3,marginLeft:5}} onPress={() => this.OnSelectSearch(item)}>
-          <View style={{ flexDirection:'row',}}>  
+
+        <TouchableOpacity style={{ flex: 3, paddingVertical: 3, marginLeft: 5 }} onPress={() => this.OnSelectSearch(item)}>
+          <View style={{ flexDirection: 'row', }}>
             <Icon name={'ios-timer-outline'} size={25} color={'#666872'} />
-            <Text  style={{ fontSize:16}}> {item} </Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={{marginTop:10, paddingVertical:3,}} onPress={() => this.OnRemoveSearch(item)}>
-            <Icon name={'ios-close-outline'} size={25} color={'#666872'}  />
-          </TouchableOpacity>
-            
-          
-      
-      </View>      
+            <Text style={{ fontSize: 16 }}> {item} </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={{  paddingVertical: 3, }} onPress={() => this.OnRemoveSearch(item)}>
+          <Icon name={'ios-close-outline'}  size={25} color={'red'} />
+        </TouchableOpacity>
+
+
+
+      </View>
     );
   };
 
   componentDidMount() {
     //this.setState({ refresh: true });
-    
+
     this.LoadData();
 
   }
 
   render() {
-    
+
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
@@ -388,13 +394,16 @@ class SearchScreen extends React.Component {
               justifyContent: "space-between",
               paddingHorizontal: 20,
               paddingTop: 10,
-              marginBottom:20
+              marginBottom: 20
             }}
           >
             <View style={{ marginTop: 20 }}>
-              <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
+              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
+                <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
+              </TouchableOpacity>
+
             </View>
-<Text style={{fontSize:16,fontWeight:'bold',marginTop:20}}>Pencarian</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Pencarian</Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"#666872"} />
             </View>
@@ -405,76 +414,77 @@ class SearchScreen extends React.Component {
               onChangeText={(val) => this.setState({ Search: val })}
               placeholder={"Search "}
               placeholderTextColor={"#666872"}
-              underlineColorAndroid="transparent"              
+              underlineColorAndroid="transparent"
               onSubmitEditing={this.LoadDataSearch}
               autoFocus={true}
               value={this.state.Search}
             />
             <TouchableOpacity onPress={this.LoadDataSearch} style={styles.inputIcon}>
-
-           
-            <Icon
-              name={"search"}
-              size={25}
-              color={"#666872"}
-              
-            />
-             </TouchableOpacity >
-             <TouchableOpacity style={{marginTop:10, paddingVertical:3,}} onPress={() => this.OnRemoveSearch(item)}>
-            <Icon name={'ios-close-outline'} size={25} color={'#666872'}  />
-          </TouchableOpacity>
+              <Icon
+                name={"search"}
+                size={25}
+                color={"#666872"}
+              />
+            </TouchableOpacity >
+            <TouchableOpacity onPress={this.LoadDataSearch} style={styles.inputIcon}>
+              <Icon
+                name={"search"}
+                size={25}
+                color={"#666872"}
+              />
+            </TouchableOpacity >
           </View>
-          {  !this.state.showProduk &&
+          {!this.state.showProduk &&
 
-         <View style={{paddingHorizontal:25,marginTop:20}}>
-           <Text style={{fontSize:16}}>Pencarian Terakhir</Text>
+            <View style={{ paddingHorizontal: 25, marginTop: 20 }}>
+              <Text style={{ fontSize: 16 }}>Pencarian Terakhir</Text>
 
-           <FlatList
-  data={this.state.searchHistory}
-  extraData={this.state.refresh}
-  style={{
-    paddingHorizontal: 10,
-    paddingVertical: 15,
-    marginTop: 10,
-    backgroundColor: "#F6F6F6",
-    borderRadius:30,
-  }}
-  scrollEnabled={true}  
-  contentContainerStyle={{ justifyContent: "space-between" }}
-  renderItem={this._renderHistory}
-  keyExtractor={(item) => item.toString()}
-  onRefresh={() => this.LoadDataSearch()}
-  refreshing={this.state.isFetching}
-/>
+              <FlatList
+                data={this.state.searchHistory}
+                extraData={this.state.refresh}
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 15,
+                  marginTop: 10,
+                  backgroundColor: "#F6F6F6",
+                  borderRadius: 30,
+                }}
+                scrollEnabled={true}
+                contentContainerStyle={{ justifyContent: "space-between" }}
+                renderItem={this._renderHistory}
+                keyExtractor={(item) => item.toString()}
+                onRefresh={() => this.LoadDataSearch()}
+                refreshing={this.state.isFetching}
+              />
 
-          
-         </View>
-  }
-{
-  this.state.showProduk  &&
 
-  <FlatList
-  data={this.state.viewproduk}
-  extraData={this.state.refresh}
-  style={{
-    padding: 10,
-    
-    marginTop: 10,
-    backgroundColor: "#F6F6F6",
-    borderRadius:30,
+            </View>
+          }
+          {
+            this.state.showProduk &&
 
-  }}
-  scrollEnabled={true}
-  numColumns={2}
-  contentContainerStyle={{ justifyContent: "space-between" }}
-  renderItem={this._renderProduk}
-  keyExtractor={(item) => item.produkid.toString()}
-  onRefresh={() => this.LoadDataSearch()}
-  refreshing={this.state.isFetching}
-/>
-}
-        
-        
+            <FlatList
+              data={this.state.viewproduk}
+              extraData={this.state.refresh}
+              style={{
+                padding: 10,
+
+                marginTop: 10,
+                backgroundColor: "#F6F6F6",
+                borderRadius: 30,
+
+              }}
+              scrollEnabled={true}
+              numColumns={2}
+              contentContainerStyle={{ justifyContent: "space-between" }}
+              renderItem={this._renderProduk}
+              keyExtractor={(item) => item.produkid.toString()}
+              onRefresh={() => this.LoadDataSearch()}
+              refreshing={this.state.isFetching}
+            />
+          }
+
+
         </SafeAreaView>
       </View>
     );
@@ -550,7 +560,7 @@ const styles = StyleSheet.create({
     borderColor: "#BABABA",
     borderWidth: 1,
   },
- 
+
   btnEye: {
     position: "absolute",
     top: 8,
@@ -558,10 +568,10 @@ const styles = StyleSheet.create({
   },
   inputIcon: {
     position: 'absolute',
-    
+
     top: 8,
     left: 37,
     paddingRight: 5,
-    
+
   },
 });
