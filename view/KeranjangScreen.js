@@ -82,7 +82,7 @@ const currencyFormatter = (value, options) => {
   return `${options.symbol} ${currency.replace(
     /\B(?=(\d{3})+(?!\d))/g,
     options.thousandsSeparator
-  )}${options.decimalSeparator}${decimal}`;
+  )}`;
 };
 
 class KeranjangScreen extends React.Component {
@@ -103,6 +103,7 @@ class KeranjangScreen extends React.Component {
         userid: "",
       },
       firstmedia: "",
+      keranjanglist : [],
       keranjang: {
         key: 0,
         dlt: true,
@@ -114,21 +115,9 @@ class KeranjangScreen extends React.Component {
         harga : 0
       },
       refresh: true,
-      produkmedia: [],
-      produk: {
-        deskripsi: "Loading...........",
-        harga: "...........",
-        key: "0",
-        produkcode: "...........",
-        produkid: 0,
-        deskripsi: "----------------------",
-        fitur: "----------------------",
-        spesifikasi: "----------------------",
-        stok: 0,
-        produkmedia: {},
-        produkname: "...........",
-        tokoname: ""
-      },
+      totalproduk:0,
+      totalharga:0    , 
+      isFetching: true,
     };
   }
 
@@ -164,161 +153,128 @@ class KeranjangScreen extends React.Component {
   };
  
 
-  getProduk = async () => {
-    const { navigation, route } = this.props;
-    const { params: selectedproduk } = route.params;
+  loadKeranjang = async () => {
+    
+
+    this.setState({isFetching:true});
+
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
 
-    var firstmedia = "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
-    var tempproduk = [];
-    if (selectedproduk.produkmedia == null) {
-      tempproduk.push({
-        key: 0,
-        mediaid: 0,
-        mediaurl:  "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e",
-      });
-    } else if (typeof selectedproduk.produkmedia === "object") {
-      if (
-        Object.keys(selectedproduk.produkmedia) != null &&
-        Object.keys(selectedproduk.produkmedia).length >= 1
-      ) {
-        var i = 0;
-        Object.values(selectedproduk.produkmedia).forEach(function (
-          produkmedia
-        ) {
-          if (
-            produkmedia != null &&
-            produkmedia.dlt == false &&
-            produkmedia.mediaurl != ""
-          ) {
-            if(i ==0)
-            {
-              firstmedia = produkmedia.mediaurl
+    console.log(tuser);
+    var tkeranjanglist = this.state.keranjanglist ?? [];
+    var ttotalproduk = this.state.totalproduk ?? 0;
+    var ttotalharga = this.state.totalharga ?? 0;
+      try {      
+        await firebase
+        .database()
+        .ref("keranjang/"+tuser.userid+"/")
+        .on("value", (snapshot) => {
+          console.log(snapshot);
+          snapshot.forEach((child) => {
+            if (
+              child.key != "count" &&
+              child.key != "produkmediacount" &&
+              child.val().dlt != true,
+              child.val().stok >=1
+            ) {
+              ttotalproduk = ttotalproduk +1;
+              ttotalharga=ttotalharga + (child.val().stok * child.val().harga);
+              tkeranjanglist.push({
+                key: child.key,
+                dlt: child.val().dlt,
+                produkid: child.val().produkid,
+                userid: child.val().userid,
+                mediaurl: child.val().mediaurl,
+                produkname: child.val().produkname,
+                stok : child.val().stok,
+                harga :child.val().harga,
+              });
             }
-            tempproduk.push({
-              key: i++,
-              mediaid: produkmedia.mediaid,
-              mediaurl: produkmedia.mediaurl,
-            });
-          }
+          });
+
+
+          this.setState({ keranjanglist: tkeranjanglist,totalproduk:ttotalproduk,totalharga:ttotalharga,isFetching:false });
+          storeData("keranjanglist", tkeranjanglist);
+          console.log(tkeranjanglist);
         });
+      } catch (error) {
+        //console.error(error);
       }
-    }
 
-    this.setState({
-      produk: selectedproduk,
-      produkmedia: tempproduk,
-      refresh: !this.state.refresh,
-      firstmedia:firstmedia,
-    });
-    var tproduklike = null;
-    var tkeranjang = null;
-
-    try {
-      console.log("produklike/" + selectedproduk.produkid + "/" + tuser.userid);
-      await firebase
-        .database()
-        .ref("produklike/" + selectedproduk.produkid + "/" + tuser.userid)
-        .on("value", (snapshot) => {
-
-          console.log("console.log(snapshot); " + snapshot);
-          console.log("console.log(snapshot.key); " + snapshot.key);
-          console.log("console.log(snapshot.val); " + snapshot.val());
-          if (snapshot != null && snapshot.val() != null
-          ) {
-            tproduklike = {
-              key: snapshot.key,
-              islike: snapshot.val().islike ?? false,
-              userid: snapshot.val().userid ?? tuser.userid,
-              produkid: snapshot.val().produkid ?? selectedproduk.produkid,
-            };
-
-            this.setState({  produklike: tproduklike });
-          }
-
-        });
-    } catch (error) {
-      //console.error(error);
-    }
-
-    try {      
-      await firebase
-        .database()
-        .ref("keranjang/" + tuser.userid + "/" + selectedproduk.produkid )
-        .on("value", (snapshot) => {
-          if (snapshot != null && snapshot.val() != null
-          ) {
-            tkeranjang = {           
-              key: snapshot.key,
-              dlt: snapshot.val().dlt ?? false,
-              produkid: snapshot.val().produkid ?? selectedproduk.produkid,
-              userid: snapshot.val().userid ?? tuser.userid,
-              mediaurl:firstmedia,
-              produkname: selectedproduk.produkname,
-              stok : snapshot.val().stok ?? 0,
-              harga : selectedproduk.harga
-            };
-
-            this.setState({  keranjang: tkeranjang });
-          }
-
-        });
-    } catch (error) {
-      //console.error(error);
-    }
-
-    if (tproduklike == null) {
-      tproduklike = {
-        key: tuser.userid,
-        islike: false,
-        userid: tuser.userid,
-      }
-    }
-    if (tkeranjang == null) {
-      tkeranjang =   {
-        key: selectedproduk.produkid,
-        dlt: true,
-        produkid: selectedproduk.produkid,
-        userid: tuser.userid,
-        mediaurl: firstmedia,
-        produkname: selectedproduk.produkname,
-        stok : 0,
-        harga :selectedproduk.harga
-      }
-    }
-    this.setState({ user: tuser, produklike: tproduklike });
-    //storeData("produk", tempproduk);
 
   };
 
+  _renderProduk = ({ item }) => {
+    console.log("render produk");
+    var uriimage =
+      "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
+    var fill = false;
+    if (item.mediaurl != null && item.mediaurl != "") {
+      uriimage = item.mediaurl
+    } 
 
-
-  _renderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={async (xitem) => { }}>
-        <Image
-          source={{ uri: item.mediaurl }}
-          style={{
-
-            height: HEIGHT / 2 - 20,
-            width: WIDTH - 30,
+      <TouchableOpacity >
+        <View
+          style={{            
+            backgroundColor: "white",
+            marginTop: 10,
+            borderRadius: 10,            
+            padding: 10,
             marginHorizontal: 10,
-            borderWidth: 0,
-            borderRadius: 10,
-
+            flexDirection:"row",
+            
           }}
-          resizeMode="contain"
-        />
+        >
+
+          <View style={{ marginRight:10, width: 80, backgroundColor:"#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 10}}>
+            <Image
+              style={{  width: '100%', height: '100%'}}
+              resizeMode={"contain"}
+              source={{ uri: uriimage}}
+            />
+          </View>
+     
+          <View style={{flex:2,}}>
+            <Text style={{ fontWeight: "bold", flexWrap: "wrap",marginBottom:5 }} numberOfLines={1}>
+            {item.produkname}
+            </Text>
+            <Text style={{marginBottom:5}}> {currencyFormatter(item.harga)} </Text>
+
+            <View style={{flexDirection:"row"}}>
+            <View style={{borderWidth:2,borderColor:"#F6F6F6",borderRadius:10}}>
+            <TouchableOpacity>
+             <Icon name={"remove-outline"} size={25} color={"black"} />   
+             </TouchableOpacity>  
+            </View>
+
+            <Text style={{fontSize:20,paddingHorizontal:10}}>1</Text>  
+            <View style={{borderWidth:2,borderColor:"#F6F6F6",borderRadius:10}}>
+            <TouchableOpacity>
+            <Icon name={"add-outline"} size={25} color={"black"} />           
+            </TouchableOpacity>  
+            
+            </View>      
+            
+            </View>
+          </View>
+          <View style={{flex:0.5, justifyContent:"center"}}>
+            <TouchableOpacity>
+            <Icon name={"trash-outline"} style={{alignSelf:"flex-end"}} size={25} color={"red"} />           
+            </TouchableOpacity>
+          </View>
+        </View>
       </TouchableOpacity>
     );
   };
+  
 
   componentDidMount() {
     var tsuer = getData("user");
     this.setState({ user: tsuer });
-   // this.getProduk();
+   this.loadKeranjang();
   }
 
   render() {
@@ -326,13 +282,15 @@ class KeranjangScreen extends React.Component {
     return (
       <View style={styles.container}>
         <SafeAreaView>
-          <ScrollView>
+         
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingHorizontal: 20,
                 paddingTop: 15,
+                paddingBottom:10,
+                backgroundColor:"white"
               }}
             >
               <View style={{ marginTop: 20 }}>
@@ -347,64 +305,34 @@ class KeranjangScreen extends React.Component {
             </View>
 
          <View>
-         <TouchableOpacity >
-        <View
-          style={{
-            width: WIDTH / 2.5,
-            backgroundColor: "white",
-            marginTop: 10,
-            borderRadius: 10,
-            alignSelf: "flex-start",
-            padding: 10,
-            marginHorizontal: 10,
-
-flexDirection:"row"
-          }}
-        >
-
-<View style={{ marginHorizontal:10, width: 90, backgroundColor:"#F6F6F6", height: 90, overflow: 'hidden', borderRadius: 10}}>
-            <Image
-              style={{  width: '100%', height: '100%'}}
-              resizeMode={"contain"}
-              source={{ uri: "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e" }}
+         
+         </View>
+            <View style={{  }}>
+            <FlatList
+              data={this.state.keranjanglist}
+              extraData={this.state.refresh}
+              style={{
+                paddingHorizontal: 10,
+                
+               
+                backgroundColor: "#F6F6F6",
+                paddingBottom:30,
+              }}
+              scrollEnabled={true}
+             
+              contentContainerStyle={{ justifyContent: "space-between" }}
+              renderItem={this._renderProduk}
+              keyExtractor={(item) => item.produkid}
+              onRefresh={() => this.loadKeranjang()}
+              refreshing={this.state.isFetching}
             />
-          </View>
-     
-         <View>
-          <Text style={{ fontWeight: "bold", flexWrap: "wrap" }} numberOfLines={1}>
-            Nama
-          </Text>
-          <Text>Rp 20.000{/* {currencyFormatter(item.harga)} */}</Text>
-
-          <View style={{flexDirection:"row"}}>
-            <Icon name={"minus"} size={25} color={"black"} />           
-          </View>
-         </View>
-          
-        
-        
-        </View>
-      </TouchableOpacity>
-         </View>
-            <View style={{ alignItems: "center", marginTop: 20, }}>
-              <FlatList
-                data={this.state.produkmedia}
-                extraData={this.state.refresh}
-                style={{ flexGrow: 0, height: HEIGHT / 2 + 10, width: WIDTH, }}
-                horizontal={true}
-                renderItem={this._renderItem}
-                keyExtractor={(item) =>
-                  item.mediaid == null ? "" : item.mediaid.toString()
-
-                }
-
-                pagingEnabled={true}
-              />
-            </View>
            
-          </ScrollView>
-        
+            </View>
         </SafeAreaView>
+        <View style={{position:"absolute",bottom:10,padding:10,flexDirection:'row',alignContent:"space-between",width:WIDTH,}}>
+<Text style={{flex:1,textAlign:"left"}}>Total {this.state.totalproduk} Barang</Text>
+<Text style={{fontSize:14,fontWeight:"bold",flex:1,textAlign:"right"}}>{currencyFormatter(this.state.totalharga)}</Text>
+            </View>
       </View>
     );
   }
@@ -415,7 +343,7 @@ export default KeranjangScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F6F6F6",
   },
   image: {
     flex: 1,

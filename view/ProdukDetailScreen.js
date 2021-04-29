@@ -82,7 +82,7 @@ const currencyFormatter = (value, options) => {
   return `${options.symbol} ${currency.replace(
     /\B(?=(\d{3})+(?!\d))/g,
     options.thousandsSeparator
-  )}${options.decimalSeparator}${decimal}`;
+  )}`;
 };
 
 class ProdukDetailScreen extends React.Component {
