@@ -180,6 +180,13 @@ class SearchScreen extends React.Component {
 
     }
   };
+  ClearSearch = async () => {
+    this.setState({      
+      isFetching: false,
+      showProduk: false,
+      Search:""
+    });
+  };
   LoadDataSearch2 = async (tsearch) => {
     this.setState({ isFetching: true });
 
@@ -353,8 +360,7 @@ class SearchScreen extends React.Component {
   };
 
   _renderHistory = ({ item }) => {
-    console.log("render history");
-    console.log(item);
+    console.log("render history");    
     return (
       <View style={{ flexDirection: 'row', }}>
 
@@ -405,7 +411,9 @@ class SearchScreen extends React.Component {
             </View>
             <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Pencarian</Text>
             <View style={{ marginTop: 20 }}>
-              <Icon name={"cart"} size={25} color={"#666872"} />
+            <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
+                <Icon name={"cart"} size={25} color={"#666872"} />
+                </TouchableOpacity>
             </View>
           </View>
           <View style={styles.inputContainer}>
@@ -426,13 +434,13 @@ class SearchScreen extends React.Component {
                 color={"#666872"}
               />
             </TouchableOpacity >
-            <TouchableOpacity onPress={this.LoadDataSearch} style={styles.inputIcon}>
-              <Icon
-                name={"search"}
-                size={25}
-                color={"#666872"}
-              />
-            </TouchableOpacity >
+{this.state.Search != ""  &&
+          <TouchableOpacity onPress={this.ClearSearch} style={styles.inputIconRight}>
+          <Icon name={'ios-close-outline'}  size={25} color={'red'} />
+          </TouchableOpacity >
+
+}
+  
           </View>
           {!this.state.showProduk &&
 
@@ -571,6 +579,14 @@ const styles = StyleSheet.create({
 
     top: 8,
     left: 37,
+    paddingRight: 5,
+
+  },
+  inputIconRight: {
+    position: 'absolute',
+
+    top: 8,
+    right: 37,
     paddingRight: 5,
 
   },

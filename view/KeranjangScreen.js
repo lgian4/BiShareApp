@@ -85,7 +85,7 @@ const currencyFormatter = (value, options) => {
   )}${options.decimalSeparator}${decimal}`;
 };
 
-class ProdukDetailScreen extends React.Component {
+class KeranjangScreen extends React.Component {
   constructor() {
     super();
 
@@ -162,88 +162,7 @@ class ProdukDetailScreen extends React.Component {
     this.setState({ visibility: false });
     this.setState({ TextInputDisableStatus: true });
   };
-  onLogin = async () => {
-    const { navigation } = this.props;
-    navigation.navigate("Login");
-  };
-  onLike = async () => {
-    var tproduklike = this.state.produklike;
-    var tproduk = this.state.produk;
-    var tuser = this.state.user;
-    tproduklike.islike = !tproduklike.islike;
-    if (tproduklike.islike) {
-      this.notify("❤ + 1");
-      tproduk.likecount += 1;
-    }
-    else {
-      this.notify("❤ - 1");
-      tproduk.likecount -= 1;
-    }
-    this.setState({
-      produklike: tproduklike,
-      produk: tproduk
-    });
-
-    try {
-
-      await firebase
-        .database()
-        .ref("produklike/" + tproduk.produkid + "/" + tuser.userid)
-        .set(tproduklike);
-        await firebase
-        .database()
-        .ref("produk/" + tproduk.produkid )
-        .set(tproduk);
-    } catch (error) {
-      console.error(error);
-    }
-
-
-  };
-  onKeranjang = async () => {
-    var tkeranjang = this.state.keranjang;
-    var tproduk = this.state.produk;
-    var tuser = this.state.user;
-    if(tkeranjang== null || tkeranjang.produkid == ""){
-      tkeranjang =   {
-        key: tproduk.produkid,
-        dlt: true,
-        produkid: tproduk.produkid,
-        userid: tuser.userid,
-        mediaurl: this.state. firstmedia,
-        produkname: tproduk.produkname,
-        stok : 0,
-        harga :tproduk.harga
-      }
-    }
-    if (tkeranjang.dlt || tkeranjang.stok <= 0 ) {
-      tkeranjang.dlt = false;
-      tkeranjang.stok = 1;
-      this.notify("Produk berhasil dimasukkan kedalam keranjang");     
-      
-      this.setState({
-        keranjang: tkeranjang,
-        
-      });
-  
-      try {
-  
-        await firebase
-          .database()
-          .ref("keranjang/" + tuser.userid + "/" +tproduk.produkid)
-          .set(tkeranjang);       
-         
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    else {
-      const { navigation } = this.props; navigation.navigate("Keranjang");
-    }
-   
-
-
-  };
+ 
 
   getProduk = async () => {
     const { navigation, route } = this.props;
@@ -399,7 +318,7 @@ class ProdukDetailScreen extends React.Component {
   componentDidMount() {
     var tsuer = getData("user");
     this.setState({ user: tsuer });
-    this.getProduk();
+   // this.getProduk();
   }
 
   render() {
@@ -413,7 +332,7 @@ class ProdukDetailScreen extends React.Component {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingHorizontal: 20,
-                paddingTop: 10,
+                paddingTop: 15,
               }}
             >
               <View style={{ marginTop: 20 }}>
@@ -421,26 +340,52 @@ class ProdukDetailScreen extends React.Component {
                   <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
                 </TouchableOpacity>
               </View>
-
+              <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Keranjang Belanjaan</Text>
               <View style={{ marginTop: 20 }}>
-                <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
-                <Icon name={"cart"} size={25} color={"#666872"} />
-                </TouchableOpacity>
-                
+                <Icon name={"cart"} size={25} color={"white"} />
               </View>
             </View>
 
-            <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
+         <View>
+         <TouchableOpacity >
+        <View
+          style={{
+            width: WIDTH / 2.5,
+            backgroundColor: "white",
+            marginTop: 10,
+            borderRadius: 10,
+            alignSelf: "flex-start",
+            padding: 10,
+            marginHorizontal: 10,
 
-              <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}              >
-                {this.state.produk.produkname}
-              </Text>
-              <Text
-                style={{ fontSize: 14, color: "#F24E1E", fontWeight: "bold" }}
-              >
-                {currencyFormatter(this.state.produk.harga, defaultOptions)}
-              </Text>
-            </View>
+flexDirection:"row"
+          }}
+        >
+
+<View style={{ marginHorizontal:10, width: 90, backgroundColor:"#F6F6F6", height: 90, overflow: 'hidden', borderRadius: 10}}>
+            <Image
+              style={{  width: '100%', height: '100%'}}
+              resizeMode={"contain"}
+              source={{ uri: "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e" }}
+            />
+          </View>
+     
+         <View>
+          <Text style={{ fontWeight: "bold", flexWrap: "wrap" }} numberOfLines={1}>
+            Nama
+          </Text>
+          <Text>Rp 20.000{/* {currencyFormatter(item.harga)} */}</Text>
+
+          <View style={{flexDirection:"row"}}>
+            <Icon name={"minus"} size={25} color={"black"} />           
+          </View>
+         </View>
+          
+        
+        
+        </View>
+      </TouchableOpacity>
+         </View>
             <View style={{ alignItems: "center", marginTop: 20, }}>
               <FlatList
                 data={this.state.produkmedia}
@@ -456,235 +401,16 @@ class ProdukDetailScreen extends React.Component {
                 pagingEnabled={true}
               />
             </View>
-            <View style={styles.inputContainer}>
-              <View
-                style={{
-                  marginHorizontal: 20,
-                  marginTop: 0,
-                  marginBottom: 20,
-                }}
-              >
-
-                <View >
-
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Toko
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.tokoname}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Kategori
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.kategoriname}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Stok
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.stok}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Harga
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {currencyFormatter(this.state.produk.harga, defaultOptions)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Tanggal
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {moment(this.state.produk.produkdate, "YYYYMMDD").fromNow()}
-
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Like
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.likecount}
-
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-
-                </View>
-                <View style={{ alignItems: "center", marginTop: 20 }}>
-
-                  <Text style={{ fontSize: 16, color: "black" }}>
-                    Deskripsi
-                  </Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                      marginBottom: 20,
-                    }}
-                  ></View>
-                </View>
-                <View>
-                  <Text style={{}}>{this.state.produk.deskripsi}</Text>
-                </View>
-                <View style={{ alignItems: "center", marginTop: 20 }}>
-                  <Text style={{ fontSize: 16, color: "black" }}>Fitur</Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                      marginBottom: 20,
-                    }}
-                  ></View>
-                </View>
-                <View>
-                  <Text style={{}}>{this.state.produk.fitur}</Text>
-                </View>
-                <View
-                  style={{
-                    alignItems: "center",
-                    marginTop: 20,
-                    marginBottom: 20,
-                  }}
-                >
-                  <Text style={{ fontSize: 16, color: "black" }}>
-                    Spesifikasi
-                  </Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                      marginBottom: 30,
-                    }}
-                  ></View>
-                </View>
-                <View>
-                  <Text style={{}}>{this.state.produk.spesifikasi}</Text>
-                </View>
-              </View>
-            </View>
-
-
+           
           </ScrollView>
-          <View
-            style={{
-              bottom: 10,
-              alignItems: "center",
-              justifyContent: "space-evenly",
-              width: WIDTH,
-              flexDirection: "row",
-              position: "absolute",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                height: 45,
-                borderRadius: 10,
-                fontSize: 16,
-                borderColor: "#F24E1E",
-                borderWidth: 1,
-                justifyContent: "space-between",
-                flexDirection: "row",
-                backgroundColor: "white",
-                marginTop: 20,
-                paddingHorizontal: 10,
-
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-                elevation: 5,
-              }}
-              onPress={this.onLike}
-            >
-              {this.state.produklike.islike
-                ?
-                <Icon
-                  name={"heart"}
-                  size={25}
-                  color={"#666872"}
-                  style={{ color: "#F24E1E", marginTop: 10 }}
-                />
-                :
-                <Icon
-                  name={"heart-outline"}
-                  size={25}
-                  color={"#666872"}
-                  style={{ color: "#F24E1E", marginTop: 10 }}
-                />
-
-              }
-
-              <Text
-                style={[styles.text, { color: "#F24E1E", marginTop: 10 }]}
-              >
-                Like
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                height: 45,
-                borderRadius: 10,
-                fontSize: 16,
-                backgroundColor: "#F24E1E",
-                justifyContent: "center",
-                marginTop: 20,
-                paddingHorizontal: 10,
-
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-                elevation: 5,
-                
-              }}
-              onPress={this.onKeranjang}
-            >
-               {(this.state.keranjang != null && this.state.keranjang.stok >=1 &&  this.state.keranjang.dlt == false && this.state.keranjang.produkid == this.state.produk.produkid)
-                ?
-                <Text style={styles.text}>Buka Keranjang</Text>
-                :
-               
-                <Text style={styles.text}>Masukkan Ke Keranjang</Text>
-              }
-
-              
-            </TouchableOpacity>
-          </View>
-
+        
         </SafeAreaView>
       </View>
     );
   }
 }
 
-export default ProdukDetailScreen;
+export default KeranjangScreen;
 
 const styles = StyleSheet.create({
   container: {
