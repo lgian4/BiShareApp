@@ -181,10 +181,10 @@ class SearchScreen extends React.Component {
     }
   };
   ClearSearch = async () => {
-    this.setState({      
+    this.setState({
       isFetching: false,
       showProduk: false,
-      Search:""
+      Search: ""
     });
   };
   LoadDataSearch2 = async (tsearch) => {
@@ -360,7 +360,7 @@ class SearchScreen extends React.Component {
   };
 
   _renderHistory = ({ item }) => {
-    console.log("render history");    
+    console.log("render history");
     return (
       <View style={{ flexDirection: 'row', }}>
 
@@ -371,8 +371,8 @@ class SearchScreen extends React.Component {
             <Text style={{ fontSize: 16 }}> {item} </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={{  paddingVertical: 3, }} onPress={() => this.OnRemoveSearch(item)}>
-          <Icon name={'ios-close-outline'}  size={25} color={'red'} />
+        <TouchableOpacity style={{ paddingVertical: 3, }} onPress={() => this.OnRemoveSearch(item)}>
+          <Icon name={'ios-close-outline'} size={25} color={'red'} />
         </TouchableOpacity>
 
 
@@ -411,9 +411,9 @@ class SearchScreen extends React.Component {
             </View>
             <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Pencarian</Text>
             <View style={{ marginTop: 20 }}>
-            <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
+              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
                 <Icon name={"cart"} size={25} color={"#666872"} />
-                </TouchableOpacity>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.inputContainer}>
@@ -434,13 +434,13 @@ class SearchScreen extends React.Component {
                 color={"#666872"}
               />
             </TouchableOpacity >
-{this.state.Search != ""  &&
-          <TouchableOpacity onPress={this.ClearSearch} style={styles.inputIconRight}>
-          <Icon name={'ios-close-outline'}  size={25} color={'red'} />
-          </TouchableOpacity >
+            {this.state.Search != "" &&
+              <TouchableOpacity onPress={this.ClearSearch} style={styles.inputIconRight}>
+                <Icon name={'ios-close-outline'} size={25} color={'red'} />
+              </TouchableOpacity >
 
-}
-  
+            }
+
           </View>
           {!this.state.showProduk &&
 

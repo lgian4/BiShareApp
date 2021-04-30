@@ -87,7 +87,7 @@ const currencyFormatter = (value, options) => {
   )}`
 }
 
-class ProdukDetailScreen extends React.Component {
+class HomeScreen extends React.Component {
   constructor() {
     super();
 
@@ -601,7 +601,7 @@ class ProdukDetailScreen extends React.Component {
   }
 }
 
-export default ProdukDetailScreen;
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {

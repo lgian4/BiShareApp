@@ -110,8 +110,8 @@ class ProdukDetailScreen extends React.Component {
         userid: "",
         mediaurl: "",
         produkname: "",
-        stok : 0,
-        harga : 0
+        stok: 0,
+        harga: 0
       },
       refresh: true,
       produkmedia: [],
@@ -190,9 +190,9 @@ class ProdukDetailScreen extends React.Component {
         .database()
         .ref("produklike/" + tproduk.produkid + "/" + tuser.userid)
         .set(tproduklike);
-        await firebase
+      await firebase
         .database()
-        .ref("produk/" + tproduk.produkid )
+        .ref("produk/" + tproduk.produkid)
         .set(tproduk);
     } catch (error) {
       console.error(error);
@@ -204,35 +204,35 @@ class ProdukDetailScreen extends React.Component {
     var tkeranjang = this.state.keranjang;
     var tproduk = this.state.produk;
     var tuser = this.state.user;
-    if(tkeranjang== null || tkeranjang.produkid == ""){
-      tkeranjang =   {
+    if (tkeranjang == null || tkeranjang.produkid == "") {
+      tkeranjang = {
         key: tproduk.produkid,
         dlt: true,
         produkid: tproduk.produkid,
         userid: tuser.userid,
-        mediaurl: this.state. firstmedia,
+        mediaurl: this.state.firstmedia,
         produkname: tproduk.produkname,
-        stok : 0,
-        harga :tproduk.harga
+        stok: 0,
+        harga: tproduk.harga
       }
     }
-    if (tkeranjang.dlt || tkeranjang.stok <= 0 ) {
+    if (tkeranjang.dlt || tkeranjang.stok <= 0) {
       tkeranjang.dlt = false;
       tkeranjang.stok = 1;
-      this.notify("Produk berhasil dimasukkan kedalam keranjang");     
-      
+      this.notify("Produk berhasil dimasukkan kedalam keranjang");
+
       this.setState({
         keranjang: tkeranjang,
-        
+
       });
-  
+
       try {
-  
+
         await firebase
           .database()
-          .ref("keranjang/" + tuser.userid + "/" +tproduk.produkid)
-          .set(tkeranjang);       
-         
+          .ref("keranjang/" + tuser.userid + "/" + tproduk.produkid)
+          .set(tkeranjang);
+
       } catch (error) {
         console.error(error);
       }
@@ -240,7 +240,7 @@ class ProdukDetailScreen extends React.Component {
     else {
       const { navigation } = this.props; navigation.navigate("Keranjang");
     }
-   
+
 
 
   };
@@ -258,7 +258,7 @@ class ProdukDetailScreen extends React.Component {
       tempproduk.push({
         key: 0,
         mediaid: 0,
-        mediaurl:  "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e",
+        mediaurl: "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e",
       });
     } else if (typeof selectedproduk.produkmedia === "object") {
       if (
@@ -274,8 +274,7 @@ class ProdukDetailScreen extends React.Component {
             produkmedia.dlt == false &&
             produkmedia.mediaurl != ""
           ) {
-            if(i ==0)
-            {
+            if (i == 0) {
               firstmedia = produkmedia.mediaurl
             }
             tempproduk.push({
@@ -292,7 +291,7 @@ class ProdukDetailScreen extends React.Component {
       produk: selectedproduk,
       produkmedia: tempproduk,
       refresh: !this.state.refresh,
-      firstmedia:firstmedia,
+      firstmedia: firstmedia,
     });
     var tproduklike = null;
     var tkeranjang = null;
@@ -316,7 +315,7 @@ class ProdukDetailScreen extends React.Component {
               produkid: snapshot.val().produkid ?? selectedproduk.produkid,
             };
 
-            this.setState({  produklike: tproduklike });
+            this.setState({ produklike: tproduklike });
           }
 
         });
@@ -324,25 +323,25 @@ class ProdukDetailScreen extends React.Component {
       //console.error(error);
     }
 
-    try {      
+    try {
       await firebase
         .database()
-        .ref("keranjang/" + tuser.userid + "/" + selectedproduk.produkid )
+        .ref("keranjang/" + tuser.userid + "/" + selectedproduk.produkid)
         .on("value", (snapshot) => {
           if (snapshot != null && snapshot.val() != null
           ) {
-            tkeranjang = {           
+            tkeranjang = {
               key: snapshot.key,
               dlt: snapshot.val().dlt ?? false,
               produkid: snapshot.val().produkid ?? selectedproduk.produkid,
               userid: snapshot.val().userid ?? tuser.userid,
-              mediaurl:firstmedia,
+              mediaurl: firstmedia,
               produkname: selectedproduk.produkname,
-              stok : snapshot.val().stok ?? 0,
-              harga : selectedproduk.harga
+              stok: snapshot.val().stok ?? 0,
+              harga: selectedproduk.harga
             };
 
-            this.setState({  keranjang: tkeranjang });
+            this.setState({ keranjang: tkeranjang });
           }
 
         });
@@ -358,15 +357,15 @@ class ProdukDetailScreen extends React.Component {
       }
     }
     if (tkeranjang == null) {
-      tkeranjang =   {
+      tkeranjang = {
         key: selectedproduk.produkid,
         dlt: true,
         produkid: selectedproduk.produkid,
         userid: tuser.userid,
         mediaurl: firstmedia,
         produkname: selectedproduk.produkname,
-        stok : 0,
-        harga :selectedproduk.harga
+        stok: 0,
+        harga: selectedproduk.harga
       }
     }
     this.setState({ user: tuser, produklike: tproduklike });
@@ -424,9 +423,9 @@ class ProdukDetailScreen extends React.Component {
 
               <View style={{ marginTop: 20 }}>
                 <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
-                <Icon name={"cart"} size={25} color={"#666872"} />
+                  <Icon name={"cart"} size={25} color={"#666872"} />
                 </TouchableOpacity>
-                
+
               </View>
             </View>
 
@@ -580,12 +579,12 @@ class ProdukDetailScreen extends React.Component {
                       height: 3,
                       marginTop: 10,
                       width: 25,
-                      marginBottom: 30,
+                      
                     }}
                   ></View>
                 </View>
                 <View>
-                  <Text style={{}}>{this.state.produk.spesifikasi}</Text>
+                  <Text style={{marginBottom: 50,}}>{this.state.produk.spesifikasi}</Text>
                 </View>
               </View>
             </View>
@@ -662,19 +661,19 @@ class ProdukDetailScreen extends React.Component {
                 shadowOpacity: 0.8,
                 shadowRadius: 2,
                 elevation: 5,
-                
+
               }}
               onPress={this.onKeranjang}
             >
-               {(this.state.keranjang != null && this.state.keranjang.stok >=1 &&  this.state.keranjang.dlt == false && this.state.keranjang.produkid == this.state.produk.produkid)
+              {(this.state.keranjang != null && this.state.keranjang.stok >= 1 && this.state.keranjang.dlt == false && this.state.keranjang.produkid == this.state.produk.produkid)
                 ?
                 <Text style={styles.text}>Buka Keranjang</Text>
                 :
-               
+
                 <Text style={styles.text}>Masukkan Ke Keranjang</Text>
               }
 
-              
+
             </TouchableOpacity>
           </View>
 
