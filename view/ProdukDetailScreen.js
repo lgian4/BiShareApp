@@ -21,6 +21,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
 import AsyncStorage from "@react-native-community/async-storage";
+import { Rating, AirbnbRating } from 'react-native-ratings';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
@@ -129,6 +130,7 @@ class ProdukDetailScreen extends React.Component {
         produkname: "...........",
         tokoname: ""
       },
+      reviewavg: 0
     };
   }
 
@@ -289,6 +291,7 @@ class ProdukDetailScreen extends React.Component {
 
     this.setState({
       produk: selectedproduk,
+      reviewavg: selectedproduk.reviewavg ?? 0,
       produkmedia: tempproduk,
       refresh: !this.state.refresh,
       firstmedia: firstmedia,
@@ -579,13 +582,42 @@ class ProdukDetailScreen extends React.Component {
                       height: 3,
                       marginTop: 10,
                       width: 25,
-                      
+
                     }}
                   ></View>
                 </View>
                 <View>
-                  <Text style={{marginBottom: 50,}}>{this.state.produk.spesifikasi}</Text>
+                  <Text >{this.state.produk.spesifikasi}</Text>
                 </View>
+                <View>
+
+                  <View style={{ alignItems: "center", marginTop: 20 }}>
+                    <Text style={{ fontSize: 16, color: "black" }}>Review</Text>
+                    <View
+                      style={{
+                        backgroundColor: "#F24E1E",
+                        height: 3,
+                        marginTop: 10,
+                        width: 25,
+                        marginBottom: 20,
+                      }}
+                    ></View>
+                  </View>
+
+                  <AirbnbRating
+                    count={5}
+                    showRating={false}
+                    isDisabled={true}
+                    defaultRating={this.state.produk.reviewavg}
+                    size={20}
+                  />
+
+                  <View>
+                    <Text >Lihat Review</Text>
+                  </View>
+
+                </View>
+                <View style={{ marginBottom: 50, }}></View>
               </View>
             </View>
 

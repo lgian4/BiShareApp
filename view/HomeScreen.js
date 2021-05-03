@@ -348,6 +348,11 @@ class HomeScreen extends React.Component {
                 produkmediacount: child.val().produkmediacount ?? 0,
                 status: child.val().status ?? "",
                 likecount: child.val().likecount ?? 0,
+
+                reviewtotal: child.val().reviewtotal ?? 0,
+                reviewcount: child.val().reviewcount ?? 0,
+                reviewavg: child.val().reviewavg ?? 0,
+                review : child.val().review ?? [],
               });
             }
           });
