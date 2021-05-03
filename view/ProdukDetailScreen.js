@@ -409,13 +409,14 @@ class ProdukDetailScreen extends React.Component {
     return (
       <View style={styles.container}>
         <SafeAreaView>
-          <ScrollView>
+          <ScrollView style={{}}>
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingHorizontal: 20,
                 paddingTop: 10,
+                
               }}
             >
               <View style={{ marginTop: 20 }}>
@@ -464,6 +465,7 @@ class ProdukDetailScreen extends React.Component {
                   marginHorizontal: 20,
                   marginTop: 0,
                   marginBottom: 20,
+                  
                 }}
               >
 
@@ -533,92 +535,96 @@ class ProdukDetailScreen extends React.Component {
                   </View>
 
                 </View>
-                <View style={{ alignItems: "center", marginTop: 20 }}>
+                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
 
-                  <Text style={{ fontSize: 16, color: "black" }}>
+                  <Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
                     Deskripsi
                   </Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                      marginBottom: 20,
-                    }}
-                  ></View>
+                  
                 </View>
                 <View>
                   <Text style={{}}>{this.state.produk.deskripsi}</Text>
                 </View>
-                <View style={{ alignItems: "center", marginTop: 20 }}>
-                  <Text style={{ fontSize: 16, color: "black" }}>Fitur</Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
-                      marginBottom: 20,
-                    }}
-                  ></View>
-                </View>
+                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
+
+<Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
+  Fitur
+</Text>
+
+</View>
                 <View>
                   <Text style={{}}>{this.state.produk.fitur}</Text>
                 </View>
-                <View
-                  style={{
-                    alignItems: "center",
-                    marginTop: 20,
-                    marginBottom: 20,
-                  }}
-                >
-                  <Text style={{ fontSize: 16, color: "black" }}>
-                    Spesifikasi
-                  </Text>
-                  <View
-                    style={{
-                      backgroundColor: "#F24E1E",
-                      height: 3,
-                      marginTop: 10,
-                      width: 25,
+                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
 
-                    }}
-                  ></View>
-                </View>
-                <View>
+<Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
+  Spesifikasi
+</Text>
+
+</View>
+                <View style={{backgroundColor:"white", borderRadius:50}}>
                   <Text >{this.state.produk.spesifikasi}</Text>
                 </View>
-                <View>
+                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
 
-                  <View style={{ alignItems: "center", marginTop: 20 }}>
-                    <Text style={{ fontSize: 16, color: "black" }}>Review</Text>
-                    <View
-                      style={{
-                        backgroundColor: "#F24E1E",
-                        height: 3,
-                        marginTop: 10,
-                        width: 25,
-                        marginBottom: 20,
-                      }}
-                    ></View>
-                  </View>
+                  <Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
+                    Ulasan ({ (this.state.produk.reviewcount ?? 0)})
+                  </Text>
+                  
+                </View>
+       
 
-                  <AirbnbRating
+                 { (this.state.produk.reviewcount ?? 0) ==0
+                 
+                 ?
+                 <TouchableOpacity
+                 style={{
+                   height: 45,
+                   borderRadius: 10,
+                   fontSize: 16,
+                   borderColor: "#F24E1E",
+                   borderWidth: 1,
+                   justifyContent: "center",
+                   flexDirection: "row",
+                   backgroundColor: "white",
+                
+                   paddingHorizontal: 10,
+                  marginHorizontal:10,
+                 
+                 }}
+                 onPress={this.onLike}
+               >
+                
+   
+                 <Text
+                   style={[styles.text, { textAlign:"center", color: "#F24E1E", marginTop: 10 }]}
+                 >
+                   Buat Ulasan 
+                   </Text>
+               </TouchableOpacity>
+                 :
+                 <View style={{backgroundColor:"white",borderColor:"#F24E1E", borderWidth:1, margin:0, borderRadius:30,padding:20 }}>
+                  <View style={{}}>
+                    <AirbnbRating
                     count={5}
-                    showRating={false}
+                    reviews={['1', '2', '3', '4', '5']}
+                    showRating={true}
                     isDisabled={true}
                     defaultRating={this.state.produk.reviewavg}
                     size={20}
-                  />
-
-                  <View>
-                    <Text >Lihat Review</Text>
+                    />
+                    <View>
+                      <Text style={{textAlign:"center"}}>Lihat Semua Ulasan</Text>
+                    </View>
                   </View>
-
-                </View>
-                <View style={{ marginBottom: 50, }}></View>
+                  </View>
+                 }
+                  
+               
               </View>
+            
+              <View style={{ marginBottom: 50, }}></View>
+              
             </View>
 
 
