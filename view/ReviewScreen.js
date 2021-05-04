@@ -107,7 +107,17 @@ class ReviewScreen extends React.Component {
         produkid: "",
         userid: "",
         username: "",
-        reviewtotal: "",
+        reviewtotal: 0,
+        reviewdesc: "",
+        reviewdate: Date.now(),
+      },
+      oldreview: {
+        key: 0,
+        dlt: false,
+        produkid: "",
+        userid: "",
+        username: "",
+        reviewtotal: 0,
         reviewdesc: "",
         reviewdate: Date.now(),
       },
@@ -131,6 +141,52 @@ class ReviewScreen extends React.Component {
     this.setState({ visibility: true });
     this.setState({ TextInputDisableStatus: false });
   };
+
+  onReview = async () => {
+    console.log("save review");
+    this.setState({ isFetching: true })
+    var tproduk = this.state.produk;
+    var tuser = this.state.user;
+    if (tuser == null)
+      tuser = await getData("user");
+    
+    var treview = this.state.review;
+   var toldreview = this.state.oldreview;
+    if(treview.reviewtotal <= 0 ){
+      this.notify("Ulasan kosong");
+      return;
+    }
+    if(toldreview.reviewtotal >= 1) {
+      tproduk.reviewtotal = tproduk.reviewtotal - toldreview.reviewtotal;
+      tproduk.reviewcount = tproduk.reviewcount -1;
+    }
+    if(tproduk.reviewtotal < 0)
+    treview.reviewtotal = 0;
+    if(tproduk.reviewcount < 0)
+    treview.reviewcount = 0;
+   
+    treview.reviewdate = Date.now();
+   treview.userid = tuser.userid;
+   treview.username = tuser.nama;
+   console.log(treview);
+   toldreview = treview;
+   tproduk.reviewtotal = tproduk.reviewtotal + toldreview.reviewtotal;
+   tproduk.reviewcount = tproduk.reviewcount +1;
+  tproduk.reviewavg = tproduk.reviewtotal / tproduk.reviewcount;
+    this.setState({ review: treview,oldreview:toldreview, produk: tproduk,  refresh: !this.state.refresh, isFetching: false });
+   await firebase
+      .database()
+      .ref("review/" + tproduk.produkid + "/" + tuser.userid)
+      .set(treview);
+
+   await   firebase
+      .database()
+      .ref("produk/" + tproduk.produkid)
+      .set(tproduk);
+     
+      await this.LoadReview();
+  }
+
   notify = (message) => {
     if (Platform.OS != "android") {
       // Snackbar.show({
@@ -153,6 +209,7 @@ class ReviewScreen extends React.Component {
 
 
   LoadReview = async () => {
+    console.log("load review");
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
     this.setState({ isFetching: true });
@@ -162,24 +219,65 @@ class ReviewScreen extends React.Component {
       tuser = await getData("user");
     }
 
-console.log(selectedproduk.produkid);
+    console.log(selectedproduk.produkid);
     // console.log(tuser);
     var treviewlist = [];
     var ttotalproduk = 0;
     var ttotalharga = 0;
+    var treview = {
+      key: 0,
+      dlt: false,
+      produkid: "",
+      userid: "",
+      username: "",
+      reviewtotal: "",
+      reviewdesc: "",
+      reviewdate: Date.now(),
+    };
+    var toldreview =  {
+      key: 0,
+      dlt: false,
+      produkid: "",
+      userid: "",
+      username: "",
+      reviewtotal: "",
+      reviewdesc: "",
+      reviewdate: Date.now(),
+    };
     try {
       await firebase
         .database()
         .ref("review/" + selectedproduk.produkid + "/")
         .on("value", (snapshot) => {
-          //console.log(snapshot);
+          console.log(snapshot);
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
               child.key != "produkmediacount" &&
-              child.val().dlt != true,
-              child.val().stok >= 1
-            ) {              
+              child.val().dlt != true
+            ) {       
+              if(child.val().userid == tuser.userid)       {
+                treview = {
+                  key: child.key,
+                  dlt: child.val().dlt,
+                  produkid: child.val().produkid,
+                  userid: child.val().userid,
+                  username: child.val().username,
+                  reviewtotal: child.val().reviewtotal,
+                  reviewdesc: child.val().reviewdesc,
+                  reviewdate: child.val().reviewdate,
+                };
+                toldreview = {
+                  key: child.key,
+                  dlt: child.val().dlt,
+                  produkid: child.val().produkid,
+                  userid: child.val().userid,
+                  username: child.val().username,
+                  reviewtotal: child.val().reviewtotal,
+                  reviewdesc: child.val().reviewdesc,
+                  reviewdate: child.val().reviewdate,
+                };
+              }
               treviewlist.push({
                 key: child.key,
                 dlt: child.val().dlt,
@@ -194,10 +292,11 @@ console.log(selectedproduk.produkid);
           });
 
           console.log(treviewlist.length)
-          this.setState({ reviewlist: treviewlist, isFetching: false, user: tuser });
-          storeData("keranjanglist", treviewlist);
+          this.setState({ reviewlist: treviewlist, });
+          storeData("reviewlist", treviewlist);
           //console.log(tkeranjanglist);
         });
+        this.setState({produk: selectedproduk,oldreview :toldreview, reviewlist: treviewlist,review:treview, isFetching: false, user: tuser });
     } catch (error) {
       //console.error(error);
     }
@@ -221,9 +320,9 @@ console.log(selectedproduk.produkid);
 
     return (
       <View style={{ backgroundColor: "white", marginHorizontal: 20, marginTop: 10, padding: 15, borderRadius: 10 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between",marginBottom:10 }}>
         <Text style={{ fontWeight: "bold" }}>{item.username}</Text>
-        <Text style={{ color: "#7F7F7F" }}> {item.reviewdate}1  Bulan lalu</Text>
+        <Text style={{ color: "#7F7F7F" }}> {moment( item.reviewdate).fromNow()}</Text>
       </View>
       <AirbnbRating
         count={5}
@@ -232,6 +331,7 @@ console.log(selectedproduk.produkid);
         isDisabled={true}
         defaultRating={item.reviewtotal}
         size={20}
+        
         style={{ backgroundColor: "black" }}
       />
       <Text>{item.reviewdesc}</Text>
@@ -282,45 +382,50 @@ console.log(selectedproduk.produkid);
                 reviews={['1', '2', '3', '4', '5']}
                 showRating={false}
                 isDisabled={false}
+                onFinishRating={(val) => {
+                  var treview = this.state.review;
+                  treview.reviewtotal = val;
+                  this.setState({ review: treview })
+                }}
                 defaultRating={this.state.review.reviewtotal}
                 size={20}
               />
 
               <TextInput
-                style={{ height: 60, marginTop: 10 }}
+                style={{ height: 60, marginVertical: 10,backgroundColor:"#fafafa", borderRadius:10,padding:4 }}
                 placeholder={"Jelaskan produk"}
                 onChangeText={(val) => {
                   var treview = this.state.review;
                   treview.reviewdesc = val;
                   this.setState({ review: treview })
                 }}
+                value={this.state.review.reviewdesc}
                 textAlignVertical={"top"}
                 multiline={true}
                 placeholderTextColor={"#666872"}
                 underlineColorAndroid="transparent"
+                
               />
               <TouchableOpacity
                 style={{
 
                   borderRadius: 10,
                   fontSize: 16,
-                  borderColor: "#F24E1E",
-                  borderWidth: 1,
+                  backgroundColor: "#F24E1E",
+                 
                   justifyContent: "center",
                   flexDirection: "row",
-                  backgroundColor: "white",
-
                   paddingHorizontal: 10,
                   paddingVertical: 5,
-                  marginHorizontal: 10,
+                  marginHorizontal: 0,
 
                 }}
-                onPress={this.OnReview}
+                onPress={this.onReview}
               >
 
 
                 <Text
-                  style={[styles.text, { textAlign: "center", color: "#F24E1E" }]}
+                  style={[styles.text, { textAlign: "center", color: "white" }]}
                 >
                   Simpan Ulasan
                    </Text>
@@ -331,7 +436,7 @@ console.log(selectedproduk.produkid);
               data={this.state.reviewlist}
               extraData={this.state.refresh}
               style={{
-                paddingHorizontal: 10,
+                paddingHorizontal: 0,
                 backgroundColor: "#F6F6F6",
                 height: HEIGHT - 80
               }}
@@ -348,8 +453,8 @@ console.log(selectedproduk.produkid);
 
         </SafeAreaView>
         <View style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row', alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }}>
-          <Text style={{ flex: 1, textAlign: "left" }}>Total {this.state.totalproduk} Barang</Text>
-          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right" }}>{currencyFormatter(this.state.totalharga)}</Text>
+          <Text style={{ flex: 1, textAlign: "left" }}>Total {this.state.produk != null ? this.state.produk.reviewcount ?? 0 : 0} Review</Text>
+          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right" }}>{currencyFormatter(this.state.produk != null ? this.state.produk.reviewavg ?? 0 : 0)}</Text>
         </View>
       </View>
     );

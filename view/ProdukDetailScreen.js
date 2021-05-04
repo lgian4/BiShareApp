@@ -174,11 +174,11 @@ class ProdukDetailScreen extends React.Component {
     var tuser = this.state.user;
     tproduklike.islike = !tproduklike.islike;
     if (tproduklike.islike) {
-      this.notify("❤ + 1");
+      //this.notify("❤ + 1");
       tproduk.likecount += 1;
     }
     else {
-      this.notify("❤ - 1");
+      //this.notify("❤ - 1");
       tproduk.likecount -= 1;
     }
     this.setState({
