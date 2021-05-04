@@ -9,6 +9,7 @@ import RegisterScreen from './view/RegisterScreen';
 import HomeScreen from './view/HomeScreen';
 import ProdukDetailScreen from './view/ProdukDetailScreen';
 import KeranjangScreen from './view/KeranjangScreen';
+import ReviewScreen from './view/ReviewScreen';
 import SearchScreen from './view/SearchScreen';
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -47,6 +48,7 @@ const HomeTab = () => {
     >
       <HomeStack.Screen name="Home" component={HomeScreen} />
       <HomeStack.Screen name="ProdukDetail" component={ProdukDetailScreen} />
+      <HomeStack.Screen name="Review" component={ReviewScreen} />
       <HomeStack.Screen name="Keranjang" component={KeranjangScreen} />
       <HomeStack.Screen name="Search" component={SearchScreen} />
       <HomeStack.Screen name="RegisterTab" component={RegisterTab} />

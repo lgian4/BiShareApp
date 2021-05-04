@@ -247,6 +247,11 @@ class ProdukDetailScreen extends React.Component {
 
   };
 
+  OnReview = () => {
+    const { navigation } = this.props;
+    navigation.navigate("Review", { params: this.state.produk });
+  };
+
   getProduk = async () => {
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
@@ -416,7 +421,7 @@ class ProdukDetailScreen extends React.Component {
                 justifyContent: "space-between",
                 paddingHorizontal: 20,
                 paddingTop: 10,
-                
+
               }}
             >
               <View style={{ marginTop: 20 }}>
@@ -465,7 +470,7 @@ class ProdukDetailScreen extends React.Component {
                   marginHorizontal: 20,
                   marginTop: 0,
                   marginBottom: 20,
-                  
+
                 }}
               >
 
@@ -537,94 +542,110 @@ class ProdukDetailScreen extends React.Component {
                 </View>
                 <View style={{ alignItems: "flex-start", marginTop: 20 }}>
 
-                  <Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
+                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
                     Deskripsi
                   </Text>
-                  
+
                 </View>
                 <View>
                   <Text style={{}}>{this.state.produk.deskripsi}</Text>
                 </View>
                 <View style={{ alignItems: "flex-start", marginTop: 20 }}>
 
-<Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
-  Fitur
+                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
+                    Fitur
 </Text>
 
-</View>
+                </View>
                 <View>
                   <Text style={{}}>{this.state.produk.fitur}</Text>
                 </View>
                 <View style={{ alignItems: "flex-start", marginTop: 20 }}>
 
-<Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
-  Spesifikasi
+                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
+                    Spesifikasi
 </Text>
 
-</View>
-                <View style={{backgroundColor:"white", borderRadius:50}}>
+                </View>
+                <View style={{ backgroundColor: "white", borderRadius: 50 }}>
                   <Text >{this.state.produk.spesifikasi}</Text>
                 </View>
                 <View style={{ alignItems: "flex-start", marginTop: 20 }}>
 
-                  <Text style={{ fontSize: 16, color: "black",marginBottom:10 }}>
-                    Ulasan ({ (this.state.produk.reviewcount ?? 0)})
+                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
+                    Ulasan ({(this.state.produk.reviewcount ?? 0)})
                   </Text>
-                  
-                </View>
-       
 
-                 { (this.state.produk.reviewcount ?? 0) ==0
-                 
-                 ?
-                 <TouchableOpacity
-                 style={{
-                   height: 45,
-                   borderRadius: 10,
-                   fontSize: 16,
-                   borderColor: "#F24E1E",
-                   borderWidth: 1,
-                   justifyContent: "center",
-                   flexDirection: "row",
-                   backgroundColor: "white",
-                
-                   paddingHorizontal: 10,
-                  marginHorizontal:10,
-                 
-                 }}
-                 onPress={this.onLike}
-               >
-                
-   
-                 <Text
-                   style={[styles.text, { textAlign:"center", color: "#F24E1E", marginTop: 10 }]}
-                 >
-                   Buat Ulasan 
+                </View>
+
+
+                {(this.state.produk.reviewcount ?? 0) == 0
+
+                  ?
+                  <TouchableOpacity
+                    style={{
+                      height: 45,
+                      borderRadius: 10,
+                      fontSize: 16,
+                      borderColor: "#F24E1E",
+                      borderWidth: 1,
+                      justifyContent: "center",
+                      flexDirection: "row",
+                      backgroundColor: "white",
+
+                      paddingHorizontal: 10,
+                      marginHorizontal: 10,
+
+                    }}
+                    onPress={this.OnReview}
+                  >
+
+
+                    <Text
+                      style={[styles.text, { textAlign: "center", color: "#F24E1E", marginTop: 10 }]}
+                    >
+                      Buat Ulasan
                    </Text>
-               </TouchableOpacity>
-                 :
-                 <View style={{backgroundColor:"white",borderColor:"#F24E1E", borderWidth:1, margin:0, borderRadius:30,padding:20 }}>
-                  <View style={{}}>
-                    <AirbnbRating
-                    count={5}
-                    reviews={['1', '2', '3', '4', '5']}
-                    showRating={true}
-                    isDisabled={true}
-                    defaultRating={this.state.produk.reviewavg}
-                    size={20}
-                    />
-                    <View>
-                      <Text style={{textAlign:"center"}}>Lihat Semua Ulasan</Text>
+                  </TouchableOpacity>
+                  :
+                  <View style={{ backgroundColor: "white", borderColor: "#F24E1E", borderWidth: 1, margin: 0, borderRadius: 30, padding: 20 }}>
+                    <View style={{}}>
+                      <AirbnbRating
+                        count={5}
+                        reviews={['1', '2', '3', '4', '5']}
+                        showRating={true}
+                        isDisabled={true}
+                        defaultRating={this.state.produk.reviewavg}
+                        size={20}
+                      />
+                      <TouchableOpacity
+                        style={{
+                          height: 45,
+                          borderRadius: 10,
+                          fontSize: 16,
+                          borderColor: "#F24E1E",
+                          borderWidth: 1,
+                          justifyContent: "center",
+                          flexDirection: "row",
+                          backgroundColor: "white",
+                          paddingHorizontal: 10,
+                          marginHorizontal: 10,
+                        }}
+                        onPress={this.OnReview}
+                      >
+                        <Text style={[styles.text, { textAlign: "center", color: "#F24E1E", marginTop: 10 }]}>
+                          Lihat Semua Ulasan
+                         </Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
-                  </View>
-                 }
-                  
-               
+                }
+
+
               </View>
-            
+
               <View style={{ marginBottom: 50, }}></View>
-              
+
             </View>
 
 
