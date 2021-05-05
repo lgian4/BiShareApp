@@ -340,10 +340,10 @@ class ReviewScreen extends React.Component {
   };
 
 
-  componentDidMount() {
-    var tsuer = getData("user");
+ async componentDidMount() {
+    var tsuer =await getData("user");
     this.setState({ user: tsuer });
-    this.LoadReview();
+ await  this.LoadReview();
   }
 
   render() {

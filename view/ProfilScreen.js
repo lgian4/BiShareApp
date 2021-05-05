@@ -85,7 +85,7 @@ const currencyFormatter = (value, options) => {
   )}`;
 };
 
-class KeranjangScreen extends React.Component {
+class ProfilScreen extends React.Component {
   constructor() {
     super();
 
@@ -403,11 +403,21 @@ class KeranjangScreen extends React.Component {
     );
   };
 
+  onLogout = async () => {
+    const { navigation } = this.props;
 
+    try {
+      await storeData("user", null);
+      navigation.navigate("RegisterTab");
+    } catch (error) {
+      console.error(error);
+    }
+  };
  async componentDidMount() {
     var tsuer =await getData("user");
+    console.log(tsuer);
     this.setState({ user: tsuer });
-   await this.loadKeranjang();
+  //  this.loadKeranjang();
   }
 
   render() {
@@ -431,44 +441,97 @@ class KeranjangScreen extends React.Component {
                 <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Keranjang Belanjaan</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Profil</Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"white"} />
             </View>
           </View>
 
+<View style={{flexDirection:"row", marginTop:20, marginHorizontal:20,width:WIDTH-40, justifyContent:"space-between", borderRadius:10, backgroundColor:"white"}}>
+  <View style={{borderColor:"black", borderWidth:1, borderRadius:20,marginHorizontal:20,marginVertical:10 }}>
+  <Icon name= "person" size={50} color={"#666872"}/> 
+  </View>
+<View style={{flex:2,justifyContent:"center"}}>
+  <Text style={{fontWeight:"bold", fontSize:16}}>{this.state.user == null ? "" : this.state.user.nama ?? ""}</Text>
+  <Text style={{ color:"#666872" }}>{this.state.user == null ? "" : this.state.user.email ?? ""}</Text>
+</View>
+</View>
+
+<View style={{ marginTop:10,marginHorizontal:0,width:WIDTH,paddingBottom:20,  borderRadius:10, backgroundColor:"white", }}>
+  
+
+<View style={{justifyContent:"center", paddingHorizontal:20, paddingVertical:10}}>
+
+  <Text style={{ color:"#666872"  ,fontSize:16,}}>Menu</Text>
+</View>
+
+<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
+<View style={{justifyContent:"center"}}>
+
+  <Text style={{ color:"black", fontSize:16,  }}>Keranjang</Text>
+</View>
+</TouchableOpacity >
+<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
+<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
+<View style={{justifyContent:"center"}}>
+
+  <Text style={{ color:"black", fontSize:16,  }}>Edit Profil</Text>
+</View>
+</TouchableOpacity >
+<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
+<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
+<View style={{justifyContent:"center"}}>
+
+  <Text style={{ color:"black", fontSize:16,  }}>Pusat Bantuan</Text>
+</View>
+</TouchableOpacity >
+<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
+<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
+<View style={{justifyContent:"center"}}>
+
+  <Text style={{ color:"black", fontSize:16,  }}>Pesan </Text>
+</View>
+</TouchableOpacity >
+<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
+<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
+<View style={{justifyContent:"center"}}>
+
+  <Text style={{ color:"black", fontSize:16,  }}>Laporan</Text>
+</View>
+</TouchableOpacity >
+<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
+<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
+<View style={{justifyContent:"center"}}>
+
+  <Text style={{ color:"black", fontSize:16, fontWeight:"bold"  }}>Hapus Akun</Text>
+</View>
+</TouchableOpacity >
+<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
+<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}} onPress={this.onLogout}>
+<View style={{justifyContent:"center"}}>
+
+  <Text style={{ color:"red", fontSize:16, fontWeight:"bold"  }}>Log Out</Text>
+</View>
+</TouchableOpacity >
+<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
+</View>
 
           <View style={{}}>
-            <FlatList
-              data={this.state.keranjanglist}
-              extraData={this.state.refresh}
-              style={{
-                paddingHorizontal: 10,
-                backgroundColor: "#F6F6F6",
-                height: HEIGHT - 80
-              }}
-
-
-              contentContainerStyle={{ justifyContent: "space-between" }}
-              renderItem={this._renderProduk}
-              keyExtractor={(item) => item.produkid.toString()}
-              onRefresh={() => this.loadKeranjang()}
-              refreshing={this.state.isFetching}
-            />
+          
 
           </View>
 
         </SafeAreaView>
         <View style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row', alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }}>
-          <Text style={{ flex: 1, textAlign: "left" }}>Total {this.state.totalproduk} Barang</Text>
-          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right" }}>{currencyFormatter(this.state.totalharga)}</Text>
+          <Text style={{ flex: 1, textAlign: "left" }}>V 0.0.1</Text>
+          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right", color:"#F24E1E" }}>BiShare</Text>
         </View>
       </View>
     );
   }
 }
 
-export default KeranjangScreen;
+export default ProfilScreen;
 
 const styles = StyleSheet.create({
   container: {

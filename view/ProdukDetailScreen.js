@@ -403,10 +403,10 @@ class ProdukDetailScreen extends React.Component {
     );
   };
 
-  componentDidMount() {
-    var tsuer = getData("user");
+ async componentDidMount() {
+    var tsuer =await getData("user");
     this.setState({ user: tsuer });
-    this.getProduk();
+   await this.getProduk();
   }
 
   render() {

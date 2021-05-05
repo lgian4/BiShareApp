@@ -70,8 +70,7 @@ const defaultOptions = {
   symbol: 'Rp'
 }
 
-const currencyFormatter = (value, options) => {
-  console.log("currencyFormatter");
+const currencyFormatter = (value, options) => {  
   console.log(typeof value);
   if (typeof value != "number") {
     value = parseInt(value);
@@ -139,32 +138,26 @@ class HomeScreen extends React.Component {
       navigation.navigate("RegisterTab");
       return;
     }
-    this.setState({ user: tuser });
-    this.setState({ nama: tuser.nama });
-
     var tloadddate = await getData("loadddate");
-    this.setState({ loadddate: tloadddate });
-
-    await this.CekKoneksi();
-    console.log(this.state.connected);
-    if (this.state.connected) {
+    this.setState({ user: tuser,  nama: tuser.nama , loadddate: tloadddate });
+    // await this.CekKoneksi();
+    // console.log(this.state.connected);
+    
       console.log("load data");
       await this.loadKategori();
       await this.loadRekomendasi();
       await this.loadProduk();
-    } else {
-      var tkategori = await getData("kategori");
-      this.setState({ kategori: tkategori });
-      var trekomendasi = await getData("rekomendasi");
-      this.setState({ rekomendasi: trekomendasi });
-      var trekomendasikey = await getData("rekomendasikey");
-      this.setState({ rekomendasikey: trekomendasikey });
+      if (this.state.produk == null) {
+      var tkategori = await getData("kategori");      
+      var trekomendasi = await getData("rekomendasi");      
+      var trekomendasikey = await getData("rekomendasikey");      
       var tproduk = await getData("produk");
-      this.setState({ produk: tproduk });
+      this.setState({kategori: tkategori, rekomendasi: trekomendasi,rekomendasikey: trekomendasikey, produk: tproduk });
 
     }
-    this.setState({ isFetching: false });
     await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
+    this.setState({ isFetching: false, refresh: !this.state.refresh });
+    
   };
 
   onRefresh() {
@@ -274,41 +267,26 @@ class HomeScreen extends React.Component {
       return;
     }
     var tproduk = this.state.produk;
-    console.log("load produk kategori");
-    console.log(kategori);
-    this.setState({ isFetching: true });
-    this.setState({ selectedkategori: kategori });
+    var tviewproduk = [];
+    console.log("load produk kategori");    
+    this.setState({ isFetching: true, });
+    
     if (kategori == "All") {
-      this.setState({ viewproduk: tproduk });
+      tviewproduk = tproduk;
+      this.setState({ viewproduk: tviewproduk });
 
     } else if (kategori == "Rekomendasi") {
-      var tempproduk = [];
       console.log(this.state.rekomendasikey);
-
-      tempproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
-      console.log(tempproduk.length);
-
-      this.setState({ viewproduk: tempproduk });
+      tviewproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));      
     } else {
-
-      var tempproduk = [];
-      console.log(typeof tproduk);
-      tempproduk = tproduk.filter(obj => {
+      tviewproduk = tproduk.filter(obj => {
         return obj.kategoriid == kategori
       })
-      // for (var i = 0; i < this.state.produk.length; i++) {
-      //   if (this.state.produk[i].kategoriid == this.state.selectedkategori) {
-      //     tempproduk.push(this.state.produk[i]);
-      //   }
-      // }
-      console.log(tempproduk.length);
-
-      this.setState({ viewproduk: tempproduk });
     }
 
     console.log("console.log(this.state.viewproduk.length :" + this.state.viewproduk.length.toString());
-    this.setState({ refresh: !this.state.refresh });
-    this.setState({ isFetching: false });
+    
+    this.setState({viewproduk: tviewproduk, selectedkategori: kategori, refresh: !this.state.refresh, isFetching: false });
 
   };
   loadProduk = async () => {
@@ -396,6 +374,10 @@ class HomeScreen extends React.Component {
     const { navigation } = this.props;
     navigation.navigate("Login");
   };
+  onProfil = async () => {
+    const { navigation } = this.props;
+    navigation.navigate("Profil");
+  };
 
   OnProdukDetail = (selectedproduk) => {
     const { navigation } = this.props;
@@ -449,8 +431,7 @@ class HomeScreen extends React.Component {
       </TouchableOpacity>
     );
   };
-  _renderProduk = ({ item }) => {
-    console.log("render produk");
+  _renderProduk = ({ item }) => {    
     var uriimage =
       "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var fill = false;
@@ -506,10 +487,10 @@ class HomeScreen extends React.Component {
     );
   };
 
-  componentDidMount() {
+ async componentDidMount() {
     //this.setState({ refresh: true });
-    this.setState({ selectedkategori: "Rekomendasi" });
-    this.LoadData();
+ await   this.setState({ selectedkategori: "Rekomendasi" });
+  await  this.LoadData();
 
   }
   componentWillUnmount() { }
@@ -534,8 +515,8 @@ class HomeScreen extends React.Component {
               />
             </View>
 
-            <View style={{ marginTop: 20 }}>
-              <TouchableOpacity onPress={this.onLogout}>
+            <View style={{  }}>
+              <TouchableOpacity onPress={this.onProfil} style={{paddingHorizontal: 10, paddingTop:20}}>
                 <Icon name={"ios-person"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>
