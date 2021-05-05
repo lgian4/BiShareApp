@@ -80,7 +80,7 @@ const currencyFormatter = (value, options) => {
   value = value.toFixed(options.significantDigits);
 
   const [currency, decimal] = value.split(".");
-  return `${options.symbol} ${currency.replace(
+  return `${currency.replace(
     /\B(?=(\d{3})+(?!\d))/g,
     options.thousandsSeparator
   )}`;
@@ -169,11 +169,11 @@ class ReviewScreen extends React.Component {
    treview.userid = tuser.userid;
    treview.username = tuser.nama;
    console.log(treview);
-   toldreview = treview;
-   tproduk.reviewtotal = tproduk.reviewtotal + toldreview.reviewtotal;
+  
+   tproduk.reviewtotal = tproduk.reviewtotal + treview.reviewtotal;
    tproduk.reviewcount = tproduk.reviewcount +1;
   tproduk.reviewavg = tproduk.reviewtotal / tproduk.reviewcount;
-    this.setState({ review: treview,oldreview:toldreview, produk: tproduk,  refresh: !this.state.refresh, isFetching: false });
+    this.setState({ review: treview,oldreview:treview, produk: tproduk,  refresh: !this.state.refresh, isFetching: false });
    await firebase
       .database()
       .ref("review/" + tproduk.produkid + "/" + tuser.userid)
@@ -453,8 +453,8 @@ class ReviewScreen extends React.Component {
 
         </SafeAreaView>
         <View style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row', alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }}>
-          <Text style={{ flex: 1, textAlign: "left" }}>Total {this.state.produk != null ? this.state.produk.reviewcount ?? 0 : 0} Review</Text>
-          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right" }}>{currencyFormatter(this.state.produk != null ? this.state.produk.reviewavg ?? 0 : 0)}</Text>
+          <Text style={{ flex: 1, textAlign: "left" }}>{this.state.produk != null ? this.state.produk.reviewcount ?? 0 : 0} Ulasan</Text>
+          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right" }}>{currencyFormatter(this.state.produk != null ? this.state.produk.reviewavg ?? 0 : 0)} ⭐</Text>
         </View>
       </View>
     );
