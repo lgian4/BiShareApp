@@ -405,13 +405,32 @@ class ProfilScreen extends React.Component {
 
   onLogout = async () => {
     const { navigation } = this.props;
+    
+      Alert.alert(
+        "Log Out",
+        "Apakah anda yakin untuk keluar ?",
+       
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "OK", onPress: async () => {
+              try {
 
-    try {
-      await storeData("user", null);
-      navigation.navigate("RegisterTab");
-    } catch (error) {
-      console.error(error);
-    }
+                await storeData("user", null);
+                navigation.navigate("RegisterTab");
+              } catch (error) {
+                console.error(error);
+              }
+
+            }
+          }
+        ]
+      );
+
+
   };
   async componentDidMount() {
     var tsuer = await getData("user");
@@ -448,9 +467,13 @@ class ProfilScreen extends React.Component {
           </View>
 
           <View style={{ flexDirection: "row", marginTop: 20, marginHorizontal: 20, width: WIDTH - 40, justifyContent: "space-between", borderRadius: 10, backgroundColor: "white" }}>
-            <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 20, marginHorizontal: 20, marginVertical: 10 }}>
-              <Icon name="person" size={50} color={"#666872"} />
+            <View style={{ margin: 10, width: 60, height: 60, overflow: 'hidden', borderRadius: 30 }}>
+              <Image
+                style={{ width: '100%', height: '120%' }}
+                source={require("./../assets/Person.jpg")}
+              />
             </View>
+
             <View style={{ flex: 2, justifyContent: "center" }}>
               <Text style={{ fontWeight: "bold", fontSize: 16 }}>{this.state.user == null ? "" : this.state.user.nama ?? ""}</Text>
               <Text style={{ color: "#666872" }}>{this.state.user == null ? "" : this.state.user.email ?? ""}</Text>

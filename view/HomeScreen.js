@@ -130,7 +130,7 @@ class HomeScreen extends React.Component {
     console.log("1. load data");
 
     console.log("log");
-    this.setState({ isFetching: true });
+    await this.setState({ isFetching: true });
 
     var tuser = await getData("user");
     if (tuser == null || tuser.userid == "") {
@@ -139,23 +139,26 @@ class HomeScreen extends React.Component {
       return;
     }
     var tloadddate = await getData("loadddate");
-    this.setState({ user: tuser, nama: tuser.nama, loadddate: tloadddate });
+    await this.setState({ user: tuser, nama: tuser.nama, loadddate: tloadddate });
     // await this.CekKoneksi();
     // console.log(this.state.connected);
 
     console.log("load data");
     await this.loadKategori();
     await this.loadRekomendasi();
-    await this.loadProduk();
+  var tp =  await this.loadProduk();
+  await new Promise(r => setTimeout(r, 2000));
+    await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
+
     if (this.state.produk == null) {
       var tkategori = await getData("kategori");
       var trekomendasi = await getData("rekomendasi");
       var trekomendasikey = await getData("rekomendasikey");
       var tproduk = await getData("produk");
       await this.setState({ kategori: tkategori, rekomendasi: trekomendasi, rekomendasikey: trekomendasikey, produk: tproduk });
-
+      await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
     }
-    await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
+
     await this.setState({ isFetching: false, refresh: !this.state.refresh });
 
   };
@@ -236,10 +239,10 @@ class HomeScreen extends React.Component {
       console.log("load rekomendasi");
       var temprekomendasi = [];
       var temprekomendasikey = [];
-      firebase
+      await firebase
         .database()
         .ref("rekomendasi/")
-        .on("value", (snapshot) => {
+        .on("value", async (snapshot) => {
           snapshot.forEach((child) => {
             if (child.key != "count" && child.val().dlt != true) {
               temprekomendasikey.push(child.val().produkid);
@@ -253,28 +256,28 @@ class HomeScreen extends React.Component {
           });
 
           console.log(temprekomendasi);
-          this.setState({ rekomendasi: temprekomendasi });
-          this.setState({ rekomendasikey: temprekomendasikey });
+          await this.setState({ rekomendasi: temprekomendasi, rekomendasikey: temprekomendasikey });
+          await storeData("rekomendasi", this.state.rekomendasi);
+          await storeData("rekomendasikey", this.state.rekomendasikey);
 
         });
-      await storeData("rekomendasi", this.state.rekomendasi);
-      await storeData("rekomendasikey", this.state.rekomendasikey);
+
     }
   };
 
   loadProdukKategori = async (kategori) => {
-    if (this.state.produk.length <= 0) {
+    var tproduk = this.state.produk;
+    if (tproduk.length <= 0) {
+      console.log("load produk kosong");
       return;
     }
-    var tproduk = this.state.produk;
+
     var tviewproduk = [];
     console.log("load produk kategori");
-    this.setState({ isFetching: true, });
+    await this.setState({ isFetching: true, });
 
     if (kategori == "All") {
       tviewproduk = tproduk;
-      this.setState({ viewproduk: tviewproduk });
-
     } else if (kategori == "Rekomendasi") {
       console.log(this.state.rekomendasikey);
       tviewproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
@@ -286,18 +289,18 @@ class HomeScreen extends React.Component {
 
     console.log("console.log(this.state.viewproduk.length :" + this.state.viewproduk.length.toString());
 
-    this.setState({ viewproduk: tviewproduk, selectedkategori: kategori, refresh: !this.state.refresh, isFetching: false });
+    await this.setState({ viewproduk: tviewproduk, selectedkategori: kategori, refresh: !this.state.refresh, isFetching: false });
 
   };
   loadProduk = async () => {
     console.log("load produk");
     var tempproduk = [];
-    this.setState({ refresh: !this.state.refresh });
-    if (this.state.produk == null || this.state.produk.length <= 0 || true) {
+    await this.setState({ refresh: !this.state.refresh });
+  
       await firebase
         .database()
         .ref("produk/")
-        .on("value", (snapshot) => {
+        .on("value", async (snapshot) => {
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
@@ -334,14 +337,13 @@ class HomeScreen extends React.Component {
               });
             }
           });
+          console.log("produk " + tempproduk.length)
+          await this.setState({ produk: tempproduk });
+          await storeData("produk", tempproduk);
+          return tempproduk;
 
-
-          this.setState({ produk: tempproduk });
-          storeData("produk", tempproduk);
         });
 
-
-    }
   };
   onSubmit = async () => {
     const { navigation } = this.props;
@@ -491,7 +493,7 @@ class HomeScreen extends React.Component {
     //this.setState({ refresh: true });
     await this.setState({ selectedkategori: "Rekomendasi" });
     await this.LoadData();
-
+    await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
   }
   componentWillUnmount() { }
   render() {
