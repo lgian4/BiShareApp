@@ -652,12 +652,15 @@ class ProdukDetailScreen extends React.Component {
           </ScrollView>
           <View
             style={{
-              bottom: 10,
+              bottom: 0,
               alignItems: "center",
               justifyContent: "space-evenly",
               width: WIDTH,
               flexDirection: "row",
               position: "absolute",
+              backgroundColor:"white",
+              paddingBottom:10,
+              paddingTop:5
             }}
           >
             <TouchableOpacity
@@ -670,7 +673,7 @@ class ProdukDetailScreen extends React.Component {
                 justifyContent: "space-between",
                 flexDirection: "row",
                 backgroundColor: "white",
-                marginTop: 20,
+                
                 paddingHorizontal: 10,
 
                 shadowColor: "#000",
@@ -712,7 +715,7 @@ class ProdukDetailScreen extends React.Component {
                 fontSize: 16,
                 backgroundColor: "#F24E1E",
                 justifyContent: "center",
-                marginTop: 20,
+               
                 paddingHorizontal: 10,
 
                 shadowColor: "#000",

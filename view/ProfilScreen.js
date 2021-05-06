@@ -362,7 +362,7 @@ class ProfilScreen extends React.Component {
           }}
         >
 
-          <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 10 }}>
+          <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 20 }}>
             <Image
               style={{ width: '100%', height: '100%' }}
               resizeMode={"contain"}
@@ -488,14 +488,14 @@ class ProfilScreen extends React.Component {
               <Text style={{ color: "#666872", fontSize: 16, }}>Menu</Text>
             </View>
 
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Keranjang</Text>
               </View>
             </TouchableOpacity >
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.navigate("EditProfil"); }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Edit Profil</Text>
