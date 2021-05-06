@@ -15,12 +15,15 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
+  KeyboardAvoidingView
+
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
 import AsyncStorage from "@react-native-community/async-storage";
+import { Picker } from '@react-native-community/picker';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
@@ -131,6 +134,12 @@ class EditProfilScreen extends React.Component {
     this.setState({ TextInputDisableStatus: true });
   };
 
+  handleConfirmTglLahir = (date) => {
+    this.setState({ tanggallahir: date })
+    this.setState({ visibility: false })
+    this.setState({ TextInputDisableStatus: true })
+
+  }
   onPressButton = () => {
     this.setState({ visibility: true });
     this.setState({ TextInputDisableStatus: false });
@@ -220,8 +229,10 @@ class EditProfilScreen extends React.Component {
               <Icon name={"cart"} size={25} color={"white"} />
             </View>
           </View>
-
-
+          <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : null}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
+<ScrollView style={{height:HEIGHT}}> 
           <View style={{ marginTop: 10, marginHorizontal: 0, width: WIDTH, paddingBottom: 20, borderRadius: 10, backgroundColor: "white", }}>
 
 
@@ -230,37 +241,114 @@ class EditProfilScreen extends React.Component {
               <Text style={{ color: "#666872", fontSize: 16, }}>Data User</Text>
             </View>
 
-            <View style={styles.inputContainer}>
+            <View style={{marginHorizontal:20, marginTop:10}}>
+              <Text style={{fontSize: 16,marginTop:5 }}>Nama</Text>
               <TextInput
-                style={styles.input}
-                placeholder={"Password"}
+                style={{fontSize:16}}
+                placeholder={"Masukkan nama"}
                 onChangeText={(val) => this.setState({ password: val })}
-                secureTextEntry={this.state.showPass}
+                autoCapitalize={"words"}
                 placeholderTextColor={"#666872"}
                 underlineColorAndroid="transparent"
-              />
-              <Icon
-                name={"ios-lock-closed-outline"}
-                size={25}
-                color={"#666872"}
-                style={styles.inputIcon}
-              />
+                maxLength={35}
+                textContentType={"name"}
+              />              
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH-40 }}></View>
 
-              
+              <Text style={{fontSize: 16,marginTop:5 }}>Username</Text>
+              <TextInput
+                style={{fontSize:16}}
+                placeholder={"Masukkan Username"}
+                onChangeText={(val) => this.setState({ password: val })}
+                
+                placeholderTextColor={"#666872"}
+                underlineColorAndroid="transparent"
+                maxLength={35}
+                textContentType={"username"}
+                autoCompleteType={"username"}
+              />              
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH-40 }}></View>
+
+              <Text style={{fontSize: 16,marginTop:5 }}>No HP</Text>
+              <TextInput
+                style={{fontSize:16}}
+                placeholder={"Masukkan No HP"}
+                onChangeText={(val) => this.setState({ password: val })}
+                
+                placeholderTextColor={"#666872"}
+                underlineColorAndroid="transparent"
+                maxLength={35}
+                keyboardType={"phone-pad"}
+                textContentType={"telephoneNumber"}
+                autoCompleteType={"tel"}
+              />              
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH-40 }}></View>
+
+              <Text style={{fontSize: 16,marginTop:5 }}>Jenis Kelamin</Text>
+              <Picker
+ 
+  style={{ height: 50, width: 100 }}
+  onValueChange={(itemValue, itemIndex) => this.setState({ language: itemValue })}>
+  <Picker.Item label="Male" value="m" />
+  <Picker.Item label="Female" value="f" />
+</Picker>
+
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH-40 }}></View>
+              <Text style={{fontSize: 16,marginTop:5 }}>Tanggal Lahir</Text>
+              <TextInput
+                 style={{fontSize:16}}
+                    placeholder={'Tanggal Lahir Kamu'}
+                    placeholderTextColor={'#666872'}
+                    underlineColorAndroid='transparent'
+                    // pointerEvents="none"
+                    editable={this.state.TextInputDisableStatus}
+
+                    pointerEvents="none"
+                    selectTextOnFocus={false}
+                    onTouchStart={this.onPressButton}
+                    value={this.state.tanggallahir ? moment(this.state.tanggallahir).format(this.state.displayFormat) : ''}
+                  />
+                  <DateTimePickerModal
+                    mode="date"
+                    isVisible={this.state.visibility}
+                    onConfirm={this.handleConfirmTglLahir}
+                    onCancel={this.onPressCancel} />
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH-40 }}></View>
+
+              <Text style={{fontSize: 16,marginTop:5 }}>Alamat</Text>
+              <TextInput
+                style={{fontSize:16, height:100}}
+                placeholder={"Masukkan Alamat"}
+                onChangeText={(val) => this.setState({ password: val })}
+                
+                placeholderTextColor={"#666872"}
+                underlineColorAndroid="transparent"
+                textAlignVertical={"top"}
+                textBreakStrategy={"highQuality"}
+                multiline={true}
+                keyboardType={"default"}
+                textContentType={"fullStreetAddress"}
+                autoCompleteType={"street-address"}
+              />              
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH-40 }}></View>
             </View>
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+          
           </View>
-
+          </ScrollView>
+          </KeyboardAvoidingView>
           <View style={{}}>
 
 
           </View>
 
         </SafeAreaView>
-        <View style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row', alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }}>
-          <Text style={{ flex: 1, textAlign: "left" }}>V 0.0.1</Text>
-          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right", color: "#F24E1E" }}>BiShare</Text>
-        </View>
+        <TouchableOpacity  style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row',borderColor:"#F24E1E", alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }}>
+        
+        
+        <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "center", color: "#F24E1E" }}>Simpan</Text>       
+          
+        
+        </TouchableOpacity>
       </View>
     );
   }

@@ -15,6 +15,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
+  
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -146,8 +147,15 @@ class HomeScreen extends React.Component {
     console.log("load data");
     await this.loadKategori();
     await this.loadRekomendasi();
-  var tp =  await this.loadProduk();
-  await new Promise(r => setTimeout(r, 2000));
+    var tp =  await this.loadProduk();
+    if(this.state.produk == null || this.state.produk.length == 0)
+      await new Promise(r => setTimeout(r, 1000));
+    if(this.state.produk == null || this.state.produk.length == 0)
+      await new Promise(r => setTimeout(r, 1000));
+    if(this.state.produk == null || this.state.produk.length == 0)
+      await new Promise(r => setTimeout(r, 1000));
+    if(this.state.produk == null || this.state.produk.length == 0)
+      await new Promise(r => setTimeout(r, 1000));
     await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
 
     if (this.state.produk == null) {
@@ -463,7 +471,7 @@ class HomeScreen extends React.Component {
           style={{
             width: WIDTH / 2.5,
             backgroundColor: "white",
-            marginTop: 10,
+            marginVertical: 5,
             borderRadius: 10,
             alignSelf: "flex-start",
             padding: 10,
@@ -575,6 +583,7 @@ class HomeScreen extends React.Component {
             paddingHorizontal: 10,
             marginTop: -20,
             backgroundColor: "#F6F6F6",
+            paddingBottom:20
           }}
           scrollEnabled={true}
           numColumns={2}
