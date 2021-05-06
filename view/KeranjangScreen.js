@@ -167,13 +167,13 @@ class KeranjangScreen extends React.Component {
     });
     console.log(tkeranjanglist.length);
 
-   // this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk,  });
+    // this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk,  });
     firebase
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-     await this.loadKeranjang();
+    await this.loadKeranjang();
   }
   onMinusStok = async (item) => {
     this.setState({ isFetching: true })
@@ -203,7 +203,7 @@ class KeranjangScreen extends React.Component {
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-      await this.loadKeranjang();
+    await this.loadKeranjang();
   }
 
   onDeleteStok = async (item) => {
@@ -289,7 +289,7 @@ class KeranjangScreen extends React.Component {
     }
 
 
-   // console.log(tuser);
+    // console.log(tuser);
     var tkeranjanglist = [];
     var ttotalproduk = 0;
     var ttotalharga = 0;
@@ -394,7 +394,7 @@ class KeranjangScreen extends React.Component {
             </View>
           </View>
           <View style={{ flex: 0.5, justifyContent: "center" }}>
-            <TouchableOpacity  onPress={async () => { this.onDeleteStok(item) }}>
+            <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
               <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
             </TouchableOpacity>
           </View>
@@ -404,10 +404,10 @@ class KeranjangScreen extends React.Component {
   };
 
 
- async componentDidMount() {
-    var tsuer =await getData("user");
+  async componentDidMount() {
+    var tsuer = await getData("user");
     this.setState({ user: tsuer });
-   await this.loadKeranjang();
+    await this.loadKeranjang();
   }
 
   render() {

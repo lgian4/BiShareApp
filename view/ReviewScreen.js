@@ -149,42 +149,42 @@ class ReviewScreen extends React.Component {
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
-    
+
     var treview = this.state.review;
-   var toldreview = this.state.oldreview;
-    if(treview.reviewtotal <= 0 ){
+    var toldreview = this.state.oldreview;
+    if (treview.reviewtotal <= 0) {
       this.notify("Ulasan kosong");
       return;
     }
-    if(toldreview.reviewtotal >= 1) {
+    if (toldreview.reviewtotal >= 1) {
       tproduk.reviewtotal = tproduk.reviewtotal - toldreview.reviewtotal;
-      tproduk.reviewcount = tproduk.reviewcount -1;
+      tproduk.reviewcount = tproduk.reviewcount - 1;
     }
-    if(tproduk.reviewtotal < 0)
-    treview.reviewtotal = 0;
-    if(tproduk.reviewcount < 0)
-    treview.reviewcount = 0;
-   
+    if (tproduk.reviewtotal < 0)
+      treview.reviewtotal = 0;
+    if (tproduk.reviewcount < 0)
+      treview.reviewcount = 0;
+
     treview.reviewdate = Date.now();
-   treview.userid = tuser.userid;
-   treview.username = tuser.nama;
-   console.log(treview);
-  
-   tproduk.reviewtotal = tproduk.reviewtotal + treview.reviewtotal;
-   tproduk.reviewcount = tproduk.reviewcount +1;
-  tproduk.reviewavg = tproduk.reviewtotal / tproduk.reviewcount;
-    this.setState({ review: treview,oldreview:treview, produk: tproduk,  refresh: !this.state.refresh, isFetching: false });
-   await firebase
+    treview.userid = tuser.userid;
+    treview.username = tuser.nama;
+    console.log(treview);
+
+    tproduk.reviewtotal = tproduk.reviewtotal + treview.reviewtotal;
+    tproduk.reviewcount = tproduk.reviewcount + 1;
+    tproduk.reviewavg = tproduk.reviewtotal / tproduk.reviewcount;
+    this.setState({ review: treview, oldreview: treview, produk: tproduk, refresh: !this.state.refresh, isFetching: false });
+    await firebase
       .database()
       .ref("review/" + tproduk.produkid + "/" + tuser.userid)
       .set(treview);
 
-   await   firebase
+    await firebase
       .database()
       .ref("produk/" + tproduk.produkid)
       .set(tproduk);
-     
-      await this.LoadReview();
+
+    await this.LoadReview();
   }
 
   notify = (message) => {
@@ -234,7 +234,7 @@ class ReviewScreen extends React.Component {
       reviewdesc: "",
       reviewdate: Date.now(),
     };
-    var toldreview =  {
+    var toldreview = {
       key: 0,
       dlt: false,
       produkid: "",
@@ -255,8 +255,8 @@ class ReviewScreen extends React.Component {
               child.key != "count" &&
               child.key != "produkmediacount" &&
               child.val().dlt != true
-            ) {       
-              if(child.val().userid == tuser.userid)       {
+            ) {
+              if (child.val().userid == tuser.userid) {
                 treview = {
                   key: child.key,
                   dlt: child.val().dlt,
@@ -296,7 +296,7 @@ class ReviewScreen extends React.Component {
           storeData("reviewlist", treviewlist);
           //console.log(tkeranjanglist);
         });
-        this.setState({produk: selectedproduk,oldreview :toldreview, reviewlist: treviewlist,review:treview, isFetching: false, user: tuser });
+      this.setState({ produk: selectedproduk, oldreview: toldreview, reviewlist: treviewlist, review: treview, isFetching: false, user: tuser });
     } catch (error) {
       //console.error(error);
     }
@@ -320,30 +320,30 @@ class ReviewScreen extends React.Component {
 
     return (
       <View style={{ backgroundColor: "white", marginHorizontal: 20, marginTop: 10, padding: 15, borderRadius: 10 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between",marginBottom:10 }}>
-        <Text style={{ fontWeight: "bold" }}>{item.username}</Text>
-        <Text style={{ color: "#7F7F7F" }}> {moment( item.reviewdate).fromNow()}</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
+          <Text style={{ fontWeight: "bold" }}>{item.username}</Text>
+          <Text style={{ color: "#7F7F7F" }}> {moment(item.reviewdate).fromNow()}</Text>
+        </View>
+        <AirbnbRating
+          count={5}
+          reviews={['1', '2', '3', '4', '5']}
+          showRating={false}
+          isDisabled={true}
+          defaultRating={item.reviewtotal}
+          size={20}
+
+          style={{ backgroundColor: "black" }}
+        />
+        <Text>{item.reviewdesc}</Text>
       </View>
-      <AirbnbRating
-        count={5}
-        reviews={['1', '2', '3', '4', '5']}
-        showRating={false}
-        isDisabled={true}
-        defaultRating={item.reviewtotal}
-        size={20}
-        
-        style={{ backgroundColor: "black" }}
-      />
-      <Text>{item.reviewdesc}</Text>
-    </View>
     );
   };
 
 
- async componentDidMount() {
-    var tsuer =await getData("user");
+  async componentDidMount() {
+    var tsuer = await getData("user");
     this.setState({ user: tsuer });
- await  this.LoadReview();
+    await this.LoadReview();
   }
 
   render() {
@@ -392,7 +392,7 @@ class ReviewScreen extends React.Component {
               />
 
               <TextInput
-                style={{ height: 60, marginVertical: 10,backgroundColor:"#fafafa", borderRadius:10,padding:4 }}
+                style={{ height: 60, marginVertical: 10, backgroundColor: "#fafafa", borderRadius: 10, padding: 4 }}
                 placeholder={"Jelaskan produk"}
                 onChangeText={(val) => {
                   var treview = this.state.review;
@@ -404,7 +404,7 @@ class ReviewScreen extends React.Component {
                 multiline={true}
                 placeholderTextColor={"#666872"}
                 underlineColorAndroid="transparent"
-                
+
               />
               <TouchableOpacity
                 style={{
@@ -412,7 +412,7 @@ class ReviewScreen extends React.Component {
                   borderRadius: 10,
                   fontSize: 16,
                   backgroundColor: "#F24E1E",
-                 
+
                   justifyContent: "center",
                   flexDirection: "row",
                   paddingHorizontal: 10,
@@ -431,7 +431,7 @@ class ReviewScreen extends React.Component {
                    </Text>
               </TouchableOpacity>
             </View>
-          
+
             <FlatList
               data={this.state.reviewlist}
               extraData={this.state.refresh}

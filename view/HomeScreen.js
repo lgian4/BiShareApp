@@ -70,7 +70,7 @@ const defaultOptions = {
   symbol: 'Rp'
 }
 
-const currencyFormatter = (value, options) => {  
+const currencyFormatter = (value, options) => {
   console.log(typeof value);
   if (typeof value != "number") {
     value = parseInt(value);
@@ -139,25 +139,25 @@ class HomeScreen extends React.Component {
       return;
     }
     var tloadddate = await getData("loadddate");
-    this.setState({ user: tuser,  nama: tuser.nama , loadddate: tloadddate });
+    this.setState({ user: tuser, nama: tuser.nama, loadddate: tloadddate });
     // await this.CekKoneksi();
     // console.log(this.state.connected);
-    
-      console.log("load data");
-      await this.loadKategori();
-      await this.loadRekomendasi();
-      await this.loadProduk();
-      if (this.state.produk == null) {
-      var tkategori = await getData("kategori");      
-      var trekomendasi = await getData("rekomendasi");      
-      var trekomendasikey = await getData("rekomendasikey");      
+
+    console.log("load data");
+    await this.loadKategori();
+    await this.loadRekomendasi();
+    await this.loadProduk();
+    if (this.state.produk == null) {
+      var tkategori = await getData("kategori");
+      var trekomendasi = await getData("rekomendasi");
+      var trekomendasikey = await getData("rekomendasikey");
       var tproduk = await getData("produk");
-      this.setState({kategori: tkategori, rekomendasi: trekomendasi,rekomendasikey: trekomendasikey, produk: tproduk });
+      await this.setState({ kategori: tkategori, rekomendasi: trekomendasi, rekomendasikey: trekomendasikey, produk: tproduk });
 
     }
     await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
-    this.setState({ isFetching: false, refresh: !this.state.refresh });
-    
+    await this.setState({ isFetching: false, refresh: !this.state.refresh });
+
   };
 
   onRefresh() {
@@ -268,16 +268,16 @@ class HomeScreen extends React.Component {
     }
     var tproduk = this.state.produk;
     var tviewproduk = [];
-    console.log("load produk kategori");    
+    console.log("load produk kategori");
     this.setState({ isFetching: true, });
-    
+
     if (kategori == "All") {
       tviewproduk = tproduk;
       this.setState({ viewproduk: tviewproduk });
 
     } else if (kategori == "Rekomendasi") {
       console.log(this.state.rekomendasikey);
-      tviewproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));      
+      tviewproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
     } else {
       tviewproduk = tproduk.filter(obj => {
         return obj.kategoriid == kategori
@@ -285,8 +285,8 @@ class HomeScreen extends React.Component {
     }
 
     console.log("console.log(this.state.viewproduk.length :" + this.state.viewproduk.length.toString());
-    
-    this.setState({viewproduk: tviewproduk, selectedkategori: kategori, refresh: !this.state.refresh, isFetching: false });
+
+    this.setState({ viewproduk: tviewproduk, selectedkategori: kategori, refresh: !this.state.refresh, isFetching: false });
 
   };
   loadProduk = async () => {
@@ -330,7 +330,7 @@ class HomeScreen extends React.Component {
                 reviewtotal: child.val().reviewtotal ?? 0,
                 reviewcount: child.val().reviewcount ?? 0,
                 reviewavg: child.val().reviewavg ?? 0,
-                review : child.val().review ?? [],
+                review: child.val().review ?? [],
               });
             }
           });
@@ -431,7 +431,7 @@ class HomeScreen extends React.Component {
       </TouchableOpacity>
     );
   };
-  _renderProduk = ({ item }) => {    
+  _renderProduk = ({ item }) => {
     var uriimage =
       "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var fill = false;
@@ -487,10 +487,10 @@ class HomeScreen extends React.Component {
     );
   };
 
- async componentDidMount() {
+  async componentDidMount() {
     //this.setState({ refresh: true });
- await   this.setState({ selectedkategori: "Rekomendasi" });
-  await  this.LoadData();
+    await this.setState({ selectedkategori: "Rekomendasi" });
+    await this.LoadData();
 
   }
   componentWillUnmount() { }
@@ -515,8 +515,8 @@ class HomeScreen extends React.Component {
               />
             </View>
 
-            <View style={{  }}>
-              <TouchableOpacity onPress={this.onProfil} style={{paddingHorizontal: 10, paddingTop:20}}>
+            <View style={{}}>
+              <TouchableOpacity onPress={this.onProfil} style={{ paddingHorizontal: 10, paddingTop: 20 }}>
                 <Icon name={"ios-person"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>

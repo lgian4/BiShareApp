@@ -381,10 +381,10 @@ class SearchScreen extends React.Component {
     );
   };
 
- async componentDidMount() {
+  async componentDidMount() {
     //this.setState({ refresh: true });
 
- await  this.LoadData();
+    await this.LoadData();
 
   }
 

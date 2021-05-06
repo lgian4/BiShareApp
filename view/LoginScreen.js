@@ -144,10 +144,10 @@ class LoginScreen extends React.Component {
         }
       });
 
-   
+
   };
 
- async componentDidMount() {await this.checkLogin(); }
+  async componentDidMount() { await this.checkLogin(); }
 
   render() {
 

@@ -167,13 +167,13 @@ class ProfilScreen extends React.Component {
     });
     console.log(tkeranjanglist.length);
 
-   // this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk,  });
+    // this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk,  });
     firebase
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-     await this.loadKeranjang();
+    await this.loadKeranjang();
   }
   onMinusStok = async (item) => {
     this.setState({ isFetching: true })
@@ -203,7 +203,7 @@ class ProfilScreen extends React.Component {
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-      await this.loadKeranjang();
+    await this.loadKeranjang();
   }
 
   onDeleteStok = async (item) => {
@@ -289,7 +289,7 @@ class ProfilScreen extends React.Component {
     }
 
 
-   // console.log(tuser);
+    // console.log(tuser);
     var tkeranjanglist = [];
     var ttotalproduk = 0;
     var ttotalharga = 0;
@@ -394,7 +394,7 @@ class ProfilScreen extends React.Component {
             </View>
           </View>
           <View style={{ flex: 0.5, justifyContent: "center" }}>
-            <TouchableOpacity  onPress={async () => { this.onDeleteStok(item) }}>
+            <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
               <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
             </TouchableOpacity>
           </View>
@@ -413,11 +413,11 @@ class ProfilScreen extends React.Component {
       console.error(error);
     }
   };
- async componentDidMount() {
-    var tsuer =await getData("user");
+  async componentDidMount() {
+    var tsuer = await getData("user");
     console.log(tsuer);
     this.setState({ user: tsuer });
-  //  this.loadKeranjang();
+    //  this.loadKeranjang();
   }
 
   render() {
@@ -447,84 +447,84 @@ class ProfilScreen extends React.Component {
             </View>
           </View>
 
-<View style={{flexDirection:"row", marginTop:20, marginHorizontal:20,width:WIDTH-40, justifyContent:"space-between", borderRadius:10, backgroundColor:"white"}}>
-  <View style={{borderColor:"black", borderWidth:1, borderRadius:20,marginHorizontal:20,marginVertical:10 }}>
-  <Icon name= "person" size={50} color={"#666872"}/> 
-  </View>
-<View style={{flex:2,justifyContent:"center"}}>
-  <Text style={{fontWeight:"bold", fontSize:16}}>{this.state.user == null ? "" : this.state.user.nama ?? ""}</Text>
-  <Text style={{ color:"#666872" }}>{this.state.user == null ? "" : this.state.user.email ?? ""}</Text>
-</View>
-</View>
+          <View style={{ flexDirection: "row", marginTop: 20, marginHorizontal: 20, width: WIDTH - 40, justifyContent: "space-between", borderRadius: 10, backgroundColor: "white" }}>
+            <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 20, marginHorizontal: 20, marginVertical: 10 }}>
+              <Icon name="person" size={50} color={"#666872"} />
+            </View>
+            <View style={{ flex: 2, justifyContent: "center" }}>
+              <Text style={{ fontWeight: "bold", fontSize: 16 }}>{this.state.user == null ? "" : this.state.user.nama ?? ""}</Text>
+              <Text style={{ color: "#666872" }}>{this.state.user == null ? "" : this.state.user.email ?? ""}</Text>
+            </View>
+          </View>
 
-<View style={{ marginTop:10,marginHorizontal:0,width:WIDTH,paddingBottom:20,  borderRadius:10, backgroundColor:"white", }}>
-  
+          <View style={{ marginTop: 10, marginHorizontal: 0, width: WIDTH, paddingBottom: 20, borderRadius: 10, backgroundColor: "white", }}>
 
-<View style={{justifyContent:"center", paddingHorizontal:20, paddingVertical:10}}>
 
-  <Text style={{ color:"#666872"  ,fontSize:16,}}>Menu</Text>
-</View>
+            <View style={{ justifyContent: "center", paddingHorizontal: 20, paddingVertical: 10 }}>
 
-<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
-<View style={{justifyContent:"center"}}>
+              <Text style={{ color: "#666872", fontSize: 16, }}>Menu</Text>
+            </View>
 
-  <Text style={{ color:"black", fontSize:16,  }}>Keranjang</Text>
-</View>
-</TouchableOpacity >
-<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
-<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
-<View style={{justifyContent:"center"}}>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+              <View style={{ justifyContent: "center" }}>
 
-  <Text style={{ color:"black", fontSize:16,  }}>Edit Profil</Text>
-</View>
-</TouchableOpacity >
-<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
-<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
-<View style={{justifyContent:"center"}}>
+                <Text style={{ color: "black", fontSize: 16, }}>Keranjang</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+              <View style={{ justifyContent: "center" }}>
 
-  <Text style={{ color:"black", fontSize:16,  }}>Pusat Bantuan</Text>
-</View>
-</TouchableOpacity >
-<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
-<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
-<View style={{justifyContent:"center"}}>
+                <Text style={{ color: "black", fontSize: 16, }}>Edit Profil</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+              <View style={{ justifyContent: "center" }}>
 
-  <Text style={{ color:"black", fontSize:16,  }}>Pesan </Text>
-</View>
-</TouchableOpacity >
-<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
-<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
-<View style={{justifyContent:"center"}}>
+                <Text style={{ color: "black", fontSize: 16, }}>Pusat Bantuan</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+              <View style={{ justifyContent: "center" }}>
 
-  <Text style={{ color:"black", fontSize:16,  }}>Laporan</Text>
-</View>
-</TouchableOpacity >
-<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
-<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}}>
-<View style={{justifyContent:"center"}}>
+                <Text style={{ color: "black", fontSize: 16, }}>Pesan </Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+              <View style={{ justifyContent: "center" }}>
 
-  <Text style={{ color:"black", fontSize:16, fontWeight:"bold"  }}>Hapus Akun</Text>
-</View>
-</TouchableOpacity >
-<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
-<TouchableOpacity style={{ marginVertical:10, paddingHorizontal:20}} onPress={this.onLogout}>
-<View style={{justifyContent:"center"}}>
+                <Text style={{ color: "black", fontSize: 16, }}>Laporan</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+              <View style={{ justifyContent: "center" }}>
 
-  <Text style={{ color:"red", fontSize:16, fontWeight:"bold"  }}>Log Out</Text>
-</View>
-</TouchableOpacity >
-<View style={{borderWidth:1,borderColor:"#F3F3F3", width:WIDTH}}></View>
-</View>
+                <Text style={{ color: "black", fontSize: 16, fontWeight: "bold" }}>Hapus Akun</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={this.onLogout}>
+              <View style={{ justifyContent: "center" }}>
+
+                <Text style={{ color: "red", fontSize: 16, fontWeight: "bold" }}>Log Out</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+          </View>
 
           <View style={{}}>
-          
+
 
           </View>
 
         </SafeAreaView>
         <View style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row', alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }}>
           <Text style={{ flex: 1, textAlign: "left" }}>V 0.0.1</Text>
-          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right", color:"#F24E1E" }}>BiShare</Text>
+          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right", color: "#F24E1E" }}>BiShare</Text>
         </View>
       </View>
     );
