@@ -13,6 +13,7 @@ import ReviewScreen from './view/ReviewScreen';
 import SearchScreen from './view/SearchScreen';
 import ProfilScreen from './view/ProfilScreen';
 import EditProfilScreen from './view/EditProfilScreen';
+import TokoScreen from './view/TokoScreen';
 import ChangePasswordScreen from './view/ChangePasswordScreen';
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -56,6 +57,7 @@ const HomeTab = () => {
       <HomeStack.Screen name="Search" component={SearchScreen} />
       <HomeStack.Screen name="Profil" component={ProfilScreen} />
       <HomeStack.Screen name="EditProfil" component={EditProfilScreen} />
+      <HomeStack.Screen name="Toko" component={TokoScreen} />
       <HomeStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <HomeStack.Screen name="RegisterTab" component={RegisterTab} />
     </HomeStack.Navigator>

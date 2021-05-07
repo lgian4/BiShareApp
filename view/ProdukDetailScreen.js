@@ -381,6 +381,10 @@ class ProdukDetailScreen extends React.Component {
 
   };
 
+  OnToko = () => {
+    const { navigation } = this.props;
+    navigation.navigate("Toko", { params: this.state.produk.tokoid });
+  };
 
 
   _renderItem = ({ item }) => {
@@ -480,7 +484,7 @@ class ProdukDetailScreen extends React.Component {
                     <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
                       Toko
                     </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
+                    <TouchableOpacity style={{ flex: 3, }} onPress={this.OnToko}>
                       <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                         {this.state.produk.tokoname}
                       </Text>
