@@ -166,7 +166,7 @@ class ProdukDetailScreen extends React.Component {
   };
   onLogin = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Login");
+    navigation.push("Login");
   };
   onLike = async () => {
     var tproduklike = this.state.produklike;
@@ -240,7 +240,7 @@ class ProdukDetailScreen extends React.Component {
       }
     }
     else {
-      const { navigation } = this.props; navigation.navigate("Keranjang");
+      const { navigation } = this.props; navigation.push("Keranjang");
     }
 
 
@@ -249,7 +249,7 @@ class ProdukDetailScreen extends React.Component {
 
   OnReview = () => {
     const { navigation } = this.props;
-    navigation.navigate("Review", { params: this.state.produk });
+    navigation.push("Review", { params: this.state.produk });
   };
 
   getProduk = async () => {
@@ -383,7 +383,7 @@ class ProdukDetailScreen extends React.Component {
 
   OnToko = () => {
     const { navigation } = this.props;
-    navigation.navigate("Toko", { params: this.state.produk.tokoid });
+    navigation.push("Toko", { params: this.state.produk.tokoid });
   };
 
 
@@ -435,7 +435,7 @@ class ProdukDetailScreen extends React.Component {
               </View>
 
               <View style={{ marginTop: 20 }}>
-                <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
+                <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.push("Keranjang"); }}>
                   <Icon name={"cart"} size={25} color={"#666872"} />
                 </TouchableOpacity>
 

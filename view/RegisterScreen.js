@@ -198,7 +198,7 @@ class RegisterScreen extends React.Component {
     if (user != null && user.userid != "") {
       await storeData("user", user);
       const { navigation } = this.props;
-      navigation.navigate("HomeTab");
+      navigation.push("HomeTab");
     }
 
 
@@ -227,7 +227,7 @@ class RegisterScreen extends React.Component {
   }
   onLogin = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Login")
+    navigation.push("Login")
 
   }
 

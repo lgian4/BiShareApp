@@ -232,7 +232,7 @@ class EditProfilScreen extends React.Component {
             try {
 
               await storeData("user", null);
-              navigation.navigate("RegisterTab");
+              navigation.push("RegisterTab");
             } catch (error) {
               console.error(error);
             }

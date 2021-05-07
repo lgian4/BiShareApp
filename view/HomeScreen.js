@@ -136,7 +136,7 @@ class HomeScreen extends React.Component {
     var tuser = await getData("user");
     if (tuser == null || tuser.userid == "") {
       const { navigation } = this.props;
-      navigation.navigate("RegisterTab");
+      navigation.push("RegisterTab");
       return;
     }
     var tloadddate = await getData("loadddate");
@@ -378,21 +378,21 @@ class HomeScreen extends React.Component {
   };
   onSearch = () => {
     const { navigation } = this.props;
-    navigation.navigate("Search");
+    navigation.push("Search");
   };
 
   onLogin = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Login");
+    navigation.push("Login");
   };
   onProfil = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Profil");
+    navigation.push("Profil");
   };
 
   OnProdukDetail = (selectedproduk) => {
     const { navigation } = this.props;
-    navigation.navigate("ProdukDetail", { params: selectedproduk });
+    navigation.push("ProdukDetail", { params: selectedproduk });
   };
 
   onLogout = async () => {
@@ -400,7 +400,7 @@ class HomeScreen extends React.Component {
 
     try {
       await storeData("user", null);
-      navigation.navigate("RegisterTab");
+      navigation.push("RegisterTab");
     } catch (error) {
       console.error(error);
     }

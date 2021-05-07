@@ -277,7 +277,7 @@ class SearchScreen extends React.Component {
 
   OnProdukDetail = (selectedproduk) => {
     const { navigation } = this.props;
-    navigation.navigate("ProdukDetail", { params: selectedproduk });
+    navigation.push("ProdukDetail", { params: selectedproduk });
   };
   onSubmit = async () => {
     const { navigation } = this.props;
@@ -300,7 +300,7 @@ class SearchScreen extends React.Component {
   };
   onLogin = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Login");
+    navigation.push("Login");
   };
   _renderProduk = ({ item }) => {
     console.log("render produk");
@@ -411,7 +411,7 @@ class SearchScreen extends React.Component {
             </View>
             <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Pencarian</Text>
             <View style={{ marginTop: 20 }}>
-              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
+              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.push("Keranjang"); }}>
                 <Icon name={"cart"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>

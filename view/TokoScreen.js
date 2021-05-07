@@ -112,6 +112,15 @@ class TokoScreen extends React.Component {
 
       kategori: [],
       produk: [],
+      toko: {
+        key: "",
+        tokocode: "",
+        tokoname: "",
+        tokoid: "",
+        tokodate: "",
+        tokodesc: "",
+        usernama: "",
+      },
       refresh: true,
       isFetching: false,
       viewproduk: [],
@@ -131,12 +140,87 @@ class TokoScreen extends React.Component {
     }
   };
   LoadData = async () => {
-    var tproduk = await getData("produk");
-    var tsearchHistory = await getData("searchHistory");
-    this.setState({
-      produk: tproduk,
-      searchHistory: tsearchHistory
-    });
+    const { navigation, route } = this.props;
+    const { params: tokoid } = route.params;
+    // get toko
+    var ttoko = null;
+    if (tokoid == null && tokoid != "") {
+      this.notify("Toko Kosong");
+      navigation.goBack();
+      return;
+    }
+    await firebase
+      .database()
+      .ref("toko/" + tokoid)
+      .on("value", async (snapshot) => {
+        if (
+          snapshot.key != "count" &&
+          snapshot.key != "produkmediacount" &&
+          snapshot.val().dlt != true && snapshot.val().tokoid == tokoid
+        ) {
+          ttoko = {
+            key: snapshot.key,
+            tokocode: snapshot.val().tokocode,
+            tokoname: snapshot.val().tokoname,
+            tokoid: snapshot.val().tokoid,
+            tokodate: snapshot.val().tokodate,
+            tokodesc: snapshot.val().tokodesc,
+            usernama: snapshot.val().usernama,
+          };
+        }
+        await this.setState({ toko: ttoko });
+
+      });
+    // get produk list
+
+    console.log("load produk");
+    var tempproduk = [];
+    await this.setState({ refresh: !this.state.refresh });
+
+    await firebase
+      .database()
+      .ref("produk/")
+      .on("value", async (snapshot) => {
+        snapshot.forEach((child) => {
+          if (
+            child.key != "count" &&
+            child.key != "produkmediacount" &&
+            child.val().dlt != true && child.val().tokoid == tokoid
+          ) {
+            tempproduk.push({
+              key: child.key,
+              produkcode: child.val().produkcode,
+              deskripsi: child.val().deskripsi,
+              fitur: child.val().fitur,
+              spesifikasi: child.val().spesifikasi,
+              stok: child.val().stok,
+              produkid: child.val().produkid,
+              produkname: child.val().produkname,
+              harga: child.val().harga,
+              produkmedia: child.val().produkmedia ?? null,
+              kategoriid: child.val().kategoriid,
+              kategoriname: child.val().kategoriname,
+              tokoid: child.val().tokoid,
+              tokoname: child.val().tokoname,
+              stok: child.val().stok,
+              produkdate: child.val().produkdate,
+              produkcode: child.val().produkcode,
+              dlt: child.val().dlt ?? false,
+              produkmediacount: child.val().produkmediacount ?? 0,
+              status: child.val().status ?? "",
+              likecount: child.val().likecount ?? 0,
+
+              reviewtotal: child.val().reviewtotal ?? 0,
+              reviewcount: child.val().reviewcount ?? 0,
+              reviewavg: child.val().reviewavg ?? 0,
+              review: child.val().review ?? [],
+            });
+          }
+        });
+        console.log("produk " + tempproduk.length)
+        await this.setState({ produk: tempproduk, viewproduk: tempproduk });
+
+      });
 
 
   };
@@ -277,7 +361,7 @@ class TokoScreen extends React.Component {
 
   OnProdukDetail = (selectedproduk) => {
     const { navigation } = this.props;
-    navigation.navigate("ProdukDetail", { params: selectedproduk });
+    navigation.push("ProdukDetail", { params: selectedproduk });
   };
   onSubmit = async () => {
     const { navigation } = this.props;
@@ -300,7 +384,7 @@ class TokoScreen extends React.Component {
   };
   onLogin = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Login");
+    navigation.push("Login");
   };
   _renderProduk = ({ item }) => {
     console.log("render produk");
@@ -411,80 +495,81 @@ class TokoScreen extends React.Component {
             </View>
             <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Toko</Text>
             <View style={{ marginTop: 20 }}>
-              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
+              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.push("Keranjang"); }}>
                 <Icon name={"cart"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>
           </View>
-          <View style={{ paddingHorizontal: 20 }}>
+          <ScrollView style={{ height: HEIGHT - 40 }}>
+            <View style={{ paddingHorizontal: 20 }}>
 
-            <View flexDirection="row" style={{ padding: 5 }}>
-              <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                Code
+              <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                  Code
   </Text>
-              <TouchableOpacity style={{ flex: 3, }} onPress={this.OnToko}>
-                <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                 test
+                <TouchableOpacity style={{ flex: 3, }} onPress={this.OnToko}>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                    {this.state.toko.tokocode}
                 </Text>
-              </TouchableOpacity>
-            </View>
-            <View flexDirection="row" style={{ padding: 5 }}>
-              <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                Nama
+                </TouchableOpacity>
+              </View>
+              <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                  Nama
   </Text>
-              <TouchableOpacity style={{ flex: 3, }}>
-                <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                 asdfa
+                <TouchableOpacity style={{ flex: 3, }}>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                  {this.state.toko.tokoname}
                 </Text>
-              </TouchableOpacity>
-            </View>
-            <View flexDirection="row" style={{ padding: 5 }}>
-              <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                Date   
+                </TouchableOpacity>
+              </View>
+              <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                  Date
   </Text>
-              <TouchableOpacity style={{ flex: 3, }}>
-                <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                 dfadfa
+                <TouchableOpacity style={{ flex: 3, }}>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                  {this.state.toko.tokodate}
                 </Text>
-              </TouchableOpacity>
-            </View>
-            <View flexDirection="row" style={{ padding: 5 }}>
-              <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                Dekripsi
+                </TouchableOpacity>
+              </View>
+              <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                  Dekripsi
   </Text>
-              <TouchableOpacity style={{ flex: 3, }}>
-                <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                 sfaf
+                <TouchableOpacity style={{ flex: 3, }}>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                  {this.state.toko.tokodesc}
                 </Text>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </View>
+
+
             </View>
-            
-
-          </View>
 
 
 
-          <FlatList
-            data={this.state.viewproduk}
-            extraData={this.state.refresh}
-            style={{
-              padding: 10,
+            <FlatList
+              data={this.state.viewproduk}
+              extraData={this.state.refresh}
+              style={{
+                padding: 10,
 
-              marginTop: 10,
-              backgroundColor: "#F6F6F6",
-              borderRadius: 30,
+                marginTop: 10,
+                backgroundColor: "#F6F6F6",
+                borderRadius: 30,
 
-            }}
-            scrollEnabled={true}
-            numColumns={2}
-            contentContainerStyle={{ justifyContent: "space-between" }}
-            renderItem={this._renderProduk}
-            keyExtractor={(item) => item.produkid.toString()}
-            onRefresh={() => this.LoadDataSearch()}
-            refreshing={this.state.isFetching}
-          />
+              }}
+              scrollEnabled={false}
+              numColumns={2}
+              contentContainerStyle={{ justifyContent: "space-between" }}
+              renderItem={this._renderProduk}
+              keyExtractor={(item) => item.produkid.toString()}
+              onRefresh={() => this.LoadDataSearch()}
+              refreshing={this.state.isFetching}
+            />
 
-
+          </ScrollView>
 
         </SafeAreaView>
       </View>

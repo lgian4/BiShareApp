@@ -110,7 +110,7 @@ class LoginScreen extends React.Component {
   };
   onRegister = async () => {
     const { navigation } = this.props;
-    navigation.navigate("Register");
+    navigation.push("Register");
   };
   onLogin = async () => {
     if (this.state.username == "" || this.state.password == "") {
