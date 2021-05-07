@@ -494,6 +494,13 @@ class ProfilScreen extends React.Component {
               </View>
             </TouchableOpacity >
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.navigate("ChangePassword"); }}>
+              <View style={{ justifyContent: "center" }}>
+
+                <Text style={{ color: "black", fontSize: 16, }}>Change Password</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
             <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.navigate("Keranjang"); }}>
               <View style={{ justifyContent: "center" }}>
 

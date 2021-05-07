@@ -88,7 +88,7 @@ const currencyFormatter = (value, options) => {
   )}`;
 };
 
-class EditProfilScreen extends React.Component {
+class ChangePasswordScreen extends React.Component {
   constructor() {
     super();
 
@@ -119,7 +119,6 @@ class EditProfilScreen extends React.Component {
         jeniskelamin: "m",
         nohp: "m",
       },
-      
       refresh: true,
       totalproduk: 0,
       totalharga: 0,
@@ -272,7 +271,7 @@ class EditProfilScreen extends React.Component {
                 <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Edit Profil</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Change Password</Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"white"} />
             </View>
@@ -428,7 +427,7 @@ class EditProfilScreen extends React.Component {
   }
 }
 
-export default EditProfilScreen;
+export default ChangePasswordScreen;
 
 const styles = StyleSheet.create({
   container: {

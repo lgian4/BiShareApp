@@ -15,7 +15,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
-  
+
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -147,14 +147,15 @@ class HomeScreen extends React.Component {
     console.log("load data");
     await this.loadKategori();
     await this.loadRekomendasi();
-    var tp =  await this.loadProduk();
-    if(this.state.produk == null || this.state.produk.length == 0)
+    var tp = await this.loadProduk();
+
+    if (this.state.produk == null || this.state.produk.length == 0)
       await new Promise(r => setTimeout(r, 1000));
-    if(this.state.produk == null || this.state.produk.length == 0)
+    if (this.state.produk == null || this.state.produk.length == 0)
       await new Promise(r => setTimeout(r, 1000));
-    if(this.state.produk == null || this.state.produk.length == 0)
+    if (this.state.produk == null || this.state.produk.length == 0)
       await new Promise(r => setTimeout(r, 1000));
-    if(this.state.produk == null || this.state.produk.length == 0)
+    if (this.state.produk == null || this.state.produk.length == 0)
       await new Promise(r => setTimeout(r, 1000));
     await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
 
@@ -304,53 +305,53 @@ class HomeScreen extends React.Component {
     console.log("load produk");
     var tempproduk = [];
     await this.setState({ refresh: !this.state.refresh });
-  
-      await firebase
-        .database()
-        .ref("produk/")
-        .on("value", async (snapshot) => {
-          snapshot.forEach((child) => {
-            if (
-              child.key != "count" &&
-              child.key != "produkmediacount" &&
-              child.val().dlt != true
-            ) {
-              tempproduk.push({
-                key: child.key,
-                produkcode: child.val().produkcode,
-                deskripsi: child.val().deskripsi,
-                fitur: child.val().fitur,
-                spesifikasi: child.val().spesifikasi,
-                stok: child.val().stok,
-                produkid: child.val().produkid,
-                produkname: child.val().produkname,
-                harga: child.val().harga,
-                produkmedia: child.val().produkmedia ?? null,
-                kategoriid: child.val().kategoriid,
-                kategoriname: child.val().kategoriname,
-                tokoid: child.val().tokoid,
-                tokoname: child.val().tokoname,
-                stok: child.val().stok,
-                produkdate: child.val().produkdate,
-                produkcode: child.val().produkcode,
-                dlt: child.val().dlt ?? false,
-                produkmediacount: child.val().produkmediacount ?? 0,
-                status: child.val().status ?? "",
-                likecount: child.val().likecount ?? 0,
 
-                reviewtotal: child.val().reviewtotal ?? 0,
-                reviewcount: child.val().reviewcount ?? 0,
-                reviewavg: child.val().reviewavg ?? 0,
-                review: child.val().review ?? [],
-              });
-            }
-          });
-          console.log("produk " + tempproduk.length)
-          await this.setState({ produk: tempproduk });
-          await storeData("produk", tempproduk);
-          return tempproduk;
+    await firebase
+      .database()
+      .ref("produk/")
+      .on("value", async (snapshot) => {
+        snapshot.forEach((child) => {
+          if (
+            child.key != "count" &&
+            child.key != "produkmediacount" &&
+            child.val().dlt != true
+          ) {
+            tempproduk.push({
+              key: child.key,
+              produkcode: child.val().produkcode,
+              deskripsi: child.val().deskripsi,
+              fitur: child.val().fitur,
+              spesifikasi: child.val().spesifikasi,
+              stok: child.val().stok,
+              produkid: child.val().produkid,
+              produkname: child.val().produkname,
+              harga: child.val().harga,
+              produkmedia: child.val().produkmedia ?? null,
+              kategoriid: child.val().kategoriid,
+              kategoriname: child.val().kategoriname,
+              tokoid: child.val().tokoid,
+              tokoname: child.val().tokoname,
+              stok: child.val().stok,
+              produkdate: child.val().produkdate,
+              produkcode: child.val().produkcode,
+              dlt: child.val().dlt ?? false,
+              produkmediacount: child.val().produkmediacount ?? 0,
+              status: child.val().status ?? "",
+              likecount: child.val().likecount ?? 0,
 
+              reviewtotal: child.val().reviewtotal ?? 0,
+              reviewcount: child.val().reviewcount ?? 0,
+              reviewavg: child.val().reviewavg ?? 0,
+              review: child.val().review ?? [],
+            });
+          }
         });
+        console.log("produk " + tempproduk.length)
+        await this.setState({ produk: tempproduk });
+        await storeData("produk", tempproduk);
+        return tempproduk;
+
+      });
 
   };
   onSubmit = async () => {
@@ -583,7 +584,7 @@ class HomeScreen extends React.Component {
             paddingHorizontal: 10,
             marginTop: -20,
             backgroundColor: "#F6F6F6",
-            paddingBottom:20
+            paddingBottom: 20
           }}
           scrollEnabled={true}
           numColumns={2}
