@@ -105,7 +105,12 @@ class ChangePasswordScreen extends React.Component {
         islike: false,
         userid: "",
       },
-      showPass: true,
+      showOldPass: true,
+      showNewPass: true,
+      showConfirmPass: true,
+      oldpPass: "",
+      newPass: "",
+      confirmpPass: "",
       firstmedia: "",
       keranjanglist: [],
       user: {
@@ -158,26 +163,39 @@ class ChangePasswordScreen extends React.Component {
   OnSimpan = async () => {
     const { navigation } = this.props;
     var tuser = this.state.user;
-    if (tuser.nama == "" || tuser.nama == null) {
-      ToastAndroid.show("Nama Kosong", ToastAndroid.SHORT);
+    var tOldPass = this.state.oldpPass;
+    var tNewPass = this.state.newPass;
+    var tConfirmPass = this.state.confirmpPass;
+    if (tOldPass == "" || tOldPass == null) {
+      ToastAndroid.show("Password Lama Kosong", ToastAndroid.SHORT);
       return;
     }
-    if (tuser.username == "" || tuser.username == null) {
-      ToastAndroid.show("Username Kosong", ToastAndroid.SHORT);
+    if (tNewPass == "" || tNewPass == null) {
+      ToastAndroid.show("Password Baru Kosong", ToastAndroid.SHORT);
       return;
     }
-    if (tuser.jeniskelamin == "" || tuser.jeniskelamin == null) {
-      ToastAndroid.show("Jenis Kelamin Kosong", ToastAndroid.SHORT);
+    if (tConfirmPass == "" || tConfirmPass == null) {
+      ToastAndroid.show("Password Konfrimasi Kosong", ToastAndroid.SHORT);
       return;
     }
-    if (tuser.tanggallahir == "" || tuser.tanggallahir == null) {
-      ToastAndroid.show("Tanggal Lahir Kosong", ToastAndroid.SHORT);
+
+    if (tuser.password != tOldPass) {
+      ToastAndroid.show("Password lama tidak sama", ToastAndroid.SHORT);
       return;
     }
-    console.log(tuser);    
+    if (tNewPass != tConfirmPass) {
+      ToastAndroid.show("Password Baru tidak sama", ToastAndroid.SHORT);
+      return;
+    }
+    if (tOldPass == tNewPass) {
+      ToastAndroid.show("Password baru sama dengan password lama", ToastAndroid.SHORT);
+      return;
+    }
+    tuser.password = tNewPass;
+    console.log(tuser);
     Alert.alert(
-      "Simpan",
-      "Data diri seperti nama yang sudah tercatat di review dan lainnya tidak akan berubah\n\nApakah anda yakin untuk menyimpan data?",
+      "Ganti Password",
+      "Apakah anda yakin untuk menyimpan data?",
 
       [
         {
@@ -189,12 +207,12 @@ class ChangePasswordScreen extends React.Component {
 
             await firebase
               .database()
-              .ref("users/" + tuser.userid )
+              .ref("users/" + tuser.userid)
               .set(tuser);
-            await storeData("user",tuser);
-           
+            await storeData("user", tuser);
+
             await new Promise(r => setTimeout(r, 1000));
-            ToastAndroid.show("Data Berhasil Disimpan", ToastAndroid.SHORT);
+            ToastAndroid.show("Password berhasil Disimpan", ToastAndroid.SHORT);
           }
         }
       ]
@@ -211,7 +229,28 @@ class ChangePasswordScreen extends React.Component {
   };
 
 
-
+  showOldPass = async () => {
+    if (this.state.showOldPass != false) {
+      this.setState({ showOldPass: false });
+    } else {
+      this.setState({ showOldPass: true });
+    }
+  };
+  showNewPass = async () => {
+    console.log(this.state.showNewPass)
+    if (this.state.showNewPass != false) {
+      this.setState({ showNewPass: false });
+    } else {
+      this.setState({ showNewPass: true});
+    }
+  };
+  showConfirmPass = async () => {
+    if (this.state.showConfirmPass != false) {
+      this.setState({ showConfirmPass: false});
+    } else {
+      this.setState({ showConfirmPass: true });
+    }
+  };
 
 
   onLogout = async () => {
@@ -280,7 +319,7 @@ class ChangePasswordScreen extends React.Component {
             behavior={Platform.OS === "ios" ? "padding" : null}
             keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
             <ScrollView style={{ height: HEIGHT }}>
-              <View style={{ marginTop: 10, marginHorizontal: 0, width: WIDTH, height: HEIGHT + 150, paddingBottom: 5, borderRadius: 10, backgroundColor: "white", }}>
+              <View style={{ marginTop: 10, marginHorizontal: 0, width: WIDTH,  paddingBottom: 5, borderRadius: 10, backgroundColor: "white", }}>
 
 
                 <View style={{ justifyContent: "center", paddingHorizontal: 20, paddingVertical: 10 }}>
@@ -289,121 +328,100 @@ class ChangePasswordScreen extends React.Component {
                 </View>
 
                 <View style={{ marginHorizontal: 20, marginTop: 10 }}>
-                  <Text style={{ fontSize: 16, marginTop: 5 }}>Nama</Text>
-                  <TextInput
-                    style={{ fontSize: 16 }}
-                    placeholder={"Masukkan nama"}
-                    onChangeText={async (val) => {
-                      var tuser = this.state.user;
-                      tuser.nama = val;
-                      await this.setState({ user: tuser })
-                    }}
-                    autoCapitalize={"words"}
-                    placeholderTextColor={"#666872"}
-                    underlineColorAndroid="transparent"
-                    maxLength={35}
-                    defaultValue={this.state.user.nama}
-                    textContentType={"name"}
-                  />
-                  <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH - 40 }}></View>
-
-                  <Text style={{ fontSize: 16, marginTop: 5 }}>Username</Text>
-                  <TextInput
-                    style={{ fontSize: 16 }}
-                    placeholder={"Masukkan Username"}
-                    onChangeText={async (val) => {
-                      var tuser = this.state.user;
-                      tuser.username = val;
-                      await this.setState({ user: tuser })
-                    }}
-                    defaultValue={this.state.user.username}
-                    placeholderTextColor={"#666872"}
-                    underlineColorAndroid="transparent"
-                    maxLength={35}
-                    textContentType={"username"}
-                    autoCompleteType={"username"}
-                  />
-                  <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH - 40 }}></View>
-
-                  <Text style={{ fontSize: 16, marginTop: 5 }}>No HP</Text>
-                  <TextInput
-                    style={{ fontSize: 16 }}
-                    placeholder={"Masukkan No HP"}
-                    onChangeText={async (val) => {
-                      var tuser = this.state.user;
-                      tuser.nohp = val;
-                      await this.setState({ user: tuser })
-                    }}
-                    defaultValue={this.state.user.nohp}
-                    placeholderTextColor={"#666872"}
-                    underlineColorAndroid="transparent"
-                    maxLength={35}
-                    keyboardType={"phone-pad"}
-                    textContentType={"telephoneNumber"}
-                    autoCompleteType={"tel"}
-                  />
-                  <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH - 40 }}></View>
-
-                  <Text style={{ fontSize: 16, marginTop: 5 }}>Jenis Kelamin</Text>
-                  <Picker
-                    selectedValue={this.state.user.jeniskelamin}
-                    style={{ height: 50, width: WIDTH - 50 }}
-                    onValueChange={async (val) => {
-                      var tuser = this.state.user;
-                      tuser.jeniskelamin = val;
-                      await this.setState({ user: tuser })
-                    }}
-                  >
-                    <Picker.Item label="Please select an option..." value="" />
-                    <Picker.Item label="Laki-Laki" value="m" />
-                    <Picker.Item label="Perempuan" value="f" />
-                    
-                  </Picker>
+                  <Text style={{ fontSize: 16, marginTop: 5 }}>Password Lama</Text>
+                  <View>
+                    <TextInput
+                      style={{ fontSize: 16, height: 40 }}
+                      placeholder={"Masukkan Password Lama"}
+                      onChangeText={async (val) => {
+                        await this.setState({ oldpPass: val })
+                      }}
+                      autoCapitalize={"none"}
+                      placeholderTextColor={"#666872"}
+                      underlineColorAndroid="transparent"
+                      maxLength={35}
+                      autoFocus={true}
+                      secureTextEntry={this.state.showOldPass}
+                      textContentType={"password"}
+                      autoCompleteType={"password"}
+                    />
+                    <TouchableOpacity style={styles.btnEye} onPress={this.showOldPass}>
+                      <Icon name={
+                        this.state.showOldPass != false
+                          ? "ios-eye-outline"
+                          : "ios-eye-off-outline"
+                      }
+                        size={25}
+                        color={"#666872"}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
                   <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH - 40 }}></View>
-                  <Text style={{ fontSize: 16, marginTop: 5 }}>Tanggal Lahir</Text>
-                  <TextInput
-                    style={{ fontSize: 16 }}
-                    placeholder={'Tanggal Lahir Kamu'}
-                    placeholderTextColor={'#666872'}
-                    underlineColorAndroid='transparent'
-                    // pointerEvents="none"
-                    editable={this.state.TextInputDisableStatus}
 
-                    pointerEvents="none"
-                    selectTextOnFocus={false}
-                    onTouchStart={this.onPressButton}
-                    value={this.state.user != null ? moment(this.state.user.tanggallahir).format(this.state.displayFormat) : ''}
-                  />
-                  <DateTimePickerModal
-                    mode="date"
+                  <Text style={{ fontSize: 16, marginTop: 5 }}>Password Baru</Text>
+                  <View>
+                    <TextInput
+                      style={{ fontSize: 16, height: 40 }}
+                      placeholder={"Masukkan Password Baru"}
+                      onChangeText={async (val) => {
+                        await this.setState({ newPass: val })
+                      }}
+                      autoCapitalize={"none"}
+                      placeholderTextColor={"#666872"}
+                      underlineColorAndroid="transparent"
+                      maxLength={35}
+                      multiline={false}
+                      
+                      secureTextEntry={this.state.showNewPass}
+                      textContentType={"password"}
+                      autoCompleteType={"password"}
+                    />
+                    <TouchableOpacity style={styles.btnEye} onPress={this.showNewPass}>
+                      <Icon name={
+                         this.state.showNewPass != false
+                          ? "ios-eye-outline"
+                          : "ios-eye-off-outline"
+                      }
+                        size={25}
+                        color={"#666872"}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
-                    isVisible={this.state.visibility}
-                    onConfirm={this.handleConfirmTglLahir}
-                    onCancel={this.onPressCancel} />
                   <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH - 40 }}></View>
 
-                  <Text style={{ fontSize: 16, marginTop: 5 }}>Alamat</Text>
-                  <TextInput
-                    style={{ fontSize: 16, height: 100 }}
-                    placeholder={"Masukkan Alamat"}
-                    onChangeText={async (val) => {
-                      var tuser = this.state.user;
-                      tuser.alamat = val;
-                      await this.setState({ user: tuser })
-                    }}
-                    defaultValue={this.state.user.alamat}
+                  <Text style={{ fontSize: 16, marginTop: 5 }}>Konfimrasi Password</Text>
+                  <View>
+                    <TextInput
+                      style={{ fontSize: 16, height: 40 }}
+                      placeholder={"Masukkan Password Baru"}
+                      onChangeText={async (val) => {
+                        await this.setState({ confirmpPass: val })
+                      }}
+                      autoCapitalize={"none"}
+                      placeholderTextColor={"#666872"}
+                      underlineColorAndroid="transparent"
+                      maxLength={35}                      
+                      secureTextEntry={this.state.showConfirmPass}
+                      textContentType={"password"}
+                      autoCompleteType={"password"}
+                    />
+                    <TouchableOpacity style={styles.btnEye} onPress={this.showConfirmPass.bind(this)}>
+                      <Icon name={
+                         this.state.showConfirmPass != false
+                          ? "ios-eye-outline"
+                          : "ios-eye-off-outline"
+                      }
+                        size={25}
+                        color={"#666872"}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
-                    placeholderTextColor={"#666872"}
-                    underlineColorAndroid="transparent"
-                    textAlignVertical={"top"}
-                    textBreakStrategy={"highQuality"}
-                    multiline={true}
-                    keyboardType={"default"}
-                    textContentType={"fullStreetAddress"}
-                    autoCompleteType={"street-address"}
-                  />
                   <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH - 40 }}></View>
+
+
                 </View>
 
               </View>
@@ -418,7 +436,7 @@ class ChangePasswordScreen extends React.Component {
         <TouchableOpacity style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row', borderColor: "#F24E1E", borderWidth: 1, marginBottom: -1, alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }} onPress={this.OnSimpan}>
 
 
-          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "center", color: "#F24E1E" }}>Simpan</Text>
+          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "center", color: "#F24E1E" }}>Ganti Password</Text>
 
 
         </TouchableOpacity>
@@ -501,6 +519,6 @@ const styles = StyleSheet.create({
   btnEye: {
     position: "absolute",
     top: 8,
-    right: 37,
+    right: 20,
   },
 });
