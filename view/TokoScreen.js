@@ -565,7 +565,7 @@ class TokoScreen extends React.Component {
               contentContainerStyle={{ justifyContent: "space-between" }}
               renderItem={this._renderProduk}
               keyExtractor={(item) => item.produkid.toString()}
-              onRefresh={() => this.LoadDataSearch()}
+              onRefresh={() => this.LoadData()}
               refreshing={this.state.isFetching}
             />
 
