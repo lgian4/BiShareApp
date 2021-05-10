@@ -487,6 +487,13 @@ class ProfilScreen extends React.Component {
 
               <Text style={{ color: "#666872", fontSize: 16, }}>Menu</Text>
             </View>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("ChatDetail"); }}>
+              <View style={{ justifyContent: "center" }}>
+
+                <Text style={{ color: "black", fontSize: 16, }}>Pesan</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
             <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("EditProfil"); }}>
               <View style={{ justifyContent: "center" }}>
 
