@@ -17,7 +17,8 @@ import {
   ToastAndroid,
 } from "react-native";
 import { Audio, Video } from 'expo-av';
-import { GiftedChat } from 'react-native-gifted-chat'
+import ParsedText from 'react-native-parsed-text';
+import { GiftedChat } from 'react-native-gifted-chat';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
@@ -496,7 +497,7 @@ class ChatDetailScreen extends React.Component {
           user: {
             _id: 2,
             name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+            
           },
           video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
         }
@@ -509,9 +510,11 @@ class ChatDetailScreen extends React.Component {
       <GiftedChat
         messages={this.state.messages}
         onSend={(messages) => this.onSend(messages)}
-        
+        alwaysShowSend ={true}
+        showUserAvatar ={true}
         user={{
           _id: 1,
+          name: 'React Tative',
         }}
       />
     );
