@@ -16,6 +16,7 @@ import {
   ScrollView,
   ToastAndroid,
 } from "react-native";
+import { Audio, Video } from 'expo-av';
 import { GiftedChat } from 'react-native-gifted-chat'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -100,7 +101,7 @@ class ChatDetailScreen extends React.Component {
       displayFormat: "YYYY-MM-DD",
       user: null,
       messages: null,
-      setMessages: null,
+
       kategori: [],
       produklike: {
         key: 0,
@@ -136,6 +137,21 @@ class ChatDetailScreen extends React.Component {
       },
       reviewavg: 0
     };
+  }
+
+  onSend(messages = []) {
+    this.setState((previousState) => ({
+      messages: GiftedChat.append(previousState.messages, messages),
+    }));
+  }
+
+  renderBubble = (props) => {
+    console.log(props);
+    return (
+      <View>
+        <Video style={styles.video} resizeMode="cover" source={{ uri: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4" }} />
+      </View>
+    );
   }
 
   onSubmit = async () => {
@@ -415,340 +431,89 @@ class ChatDetailScreen extends React.Component {
     // var tsuer = await getData("user");
     // this.setState({ user: tsuer });
     // await this.getProduk();
+    console.log("detail");
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+          },
+          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+        },
+        {
+          _id: 2,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+          },
+          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+        },
+        {
+          _id: 3,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+          },
+          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+        },
+        {
+          _id: 4,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+          },
+          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+        },
+        {
+          _id: 5,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+          },
+          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+        },
+        {
+          _id: 6,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://facebook.github.io/react/img/logo_og.png',
+          },
+          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+        }
+      ]
+    });
   }
 
   render() {
-    const { navigation } = this.props;
     return (
-      <View style={styles.container}>
-        <SafeAreaView>
-          <ScrollView style={{}}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: 20,
-                paddingTop: 10,
-
-              }}
-            >
-              <View style={{ marginTop: 20 }}>
-                <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
-                  <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
-                </TouchableOpacity>
-              </View>
-
-              <View style={{ marginTop: 20 }}>
-                <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.push("Keranjang"); }}>
-                  <Icon name={"cart"} size={25} color={"#666872"} />
-                </TouchableOpacity>
-
-              </View>
-            </View>
-
-            <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
-
-
-              <GiftedChat
-                messages={messages}
-                onSend={messages => onSend(messages)}
-                user={{
-                  _id: 1,
-                }}
-              />
-            </View>
-            <View style={{ alignItems: "center", marginTop: 20, }}>
-              <FlatList
-                data={this.state.produkmedia}
-                extraData={this.state.refresh}
-                style={{ flexGrow: 0, height: HEIGHT / 2 + 10, width: WIDTH, }}
-                horizontal={true}
-                renderItem={this._renderItem}
-                keyExtractor={(item) =>
-                  item.mediaid == null ? "" : item.mediaid.toString()
-
-                }
-
-                pagingEnabled={true}
-              />
-            </View>
-            <View style={styles.inputContainer}>
-              <View
-                style={{
-                  marginHorizontal: 20,
-                  marginTop: 0,
-                  marginBottom: 20,
-
-                }}
-              >
-
-                <View >
-
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Toko
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }} onPress={this.OnToko}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.tokoname}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Kategori
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.kategoriname}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Stok
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.stok}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Harga
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {currencyFormatter(this.state.produk.harga, defaultOptions)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Tanggal
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {moment(this.state.produk.produkdate, "YYYYMMDD").fromNow()}
-
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View flexDirection="row" style={{ padding: 5 }}>
-                    <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                      Like
-                    </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
-                      <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                        {this.state.produk.likecount}
-
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-
-                </View>
-                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
-
-                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
-                    Deskripsi
-                  </Text>
-
-                </View>
-                <View>
-                  <Text style={{}}>{this.state.produk.deskripsi}</Text>
-                </View>
-                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
-
-                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
-                    Fitur
-</Text>
-
-                </View>
-                <View>
-                  <Text style={{}}>{this.state.produk.fitur}</Text>
-                </View>
-                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
-
-                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
-                    Spesifikasi
-</Text>
-
-                </View>
-                <View style={{ backgroundColor: "white", borderRadius: 50 }}>
-                  <Text >{this.state.produk.spesifikasi}</Text>
-                </View>
-                <View style={{ alignItems: "flex-start", marginTop: 20 }}>
-
-                  <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
-                    Ulasan ({(this.state.produk.reviewcount ?? 0)})
-                  </Text>
-
-                </View>
-
-
-                {(this.state.produk.reviewcount ?? 0) == 0
-
-                  ?
-                  <TouchableOpacity
-                    style={{
-                      height: 45,
-                      borderRadius: 10,
-                      fontSize: 16,
-                      borderColor: "#F24E1E",
-                      borderWidth: 1,
-                      justifyContent: "center",
-                      flexDirection: "row",
-                      backgroundColor: "white",
-
-                      paddingHorizontal: 10,
-                      marginHorizontal: 10,
-
-                    }}
-                    onPress={this.OnReview}
-                  >
-
-
-                    <Text
-                      style={[styles.text, { textAlign: "center", color: "#F24E1E", marginTop: 10 }]}
-                    >
-                      Buat Ulasan
-                   </Text>
-                  </TouchableOpacity>
-                  :
-                  <View style={{ backgroundColor: "white", borderColor: "#F24E1E", borderWidth: 1, margin: 0, borderRadius: 30, padding: 20 }}>
-                    <View style={{}}>
-                      <AirbnbRating
-                        count={5}
-                        reviews={['1', '2', '3', '4', '5']}
-                        showRating={true}
-                        isDisabled={true}
-                        defaultRating={this.state.produk.reviewavg}
-                        size={20}
-                      />
-                      <TouchableOpacity
-                        style={{
-                          height: 45,
-                          borderRadius: 10,
-                          fontSize: 16,
-                          borderColor: "#F24E1E",
-                          borderWidth: 1,
-                          justifyContent: "center",
-                          flexDirection: "row",
-                          backgroundColor: "white",
-                          paddingHorizontal: 10,
-                          marginHorizontal: 10,
-                        }}
-                        onPress={this.OnReview}
-                      >
-                        <Text style={[styles.text, { textAlign: "center", color: "#F24E1E", marginTop: 10 }]}>
-                          Lihat Semua Ulasan
-                         </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                }
-
-
-              </View>
-
-              <View style={{ marginBottom: 50, }}></View>
-
-            </View>
-
-
-          </ScrollView>
-          <View
-            style={{
-              bottom: 0,
-              alignItems: "center",
-              justifyContent: "space-evenly",
-              width: WIDTH,
-              flexDirection: "row",
-              position: "absolute",
-              backgroundColor: "white",
-              paddingBottom: 10,
-              paddingTop: 5
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                height: 45,
-                borderRadius: 10,
-                fontSize: 16,
-                borderColor: "#F24E1E",
-                borderWidth: 1,
-                justifyContent: "space-between",
-                flexDirection: "row",
-                backgroundColor: "white",
-
-                paddingHorizontal: 10,
-
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-                elevation: 5,
-              }}
-              onPress={this.onLike}
-            >
-              {this.state.produklike.islike
-                ?
-                <Icon
-                  name={"heart"}
-                  size={25}
-                  color={"#666872"}
-                  style={{ color: "#F24E1E", marginTop: 10 }}
-                />
-                :
-                <Icon
-                  name={"heart-outline"}
-                  size={25}
-                  color={"#666872"}
-                  style={{ color: "#F24E1E", marginTop: 10 }}
-                />
-
-              }
-
-              <Text
-                style={[styles.text, { color: "#F24E1E", marginTop: 10 }]}
-              >
-                Like
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                height: 45,
-                borderRadius: 10,
-                fontSize: 16,
-                backgroundColor: "#F24E1E",
-                justifyContent: "center",
-
-                paddingHorizontal: 10,
-
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-                elevation: 5,
-
-              }}
-              onPress={this.onKeranjang}
-            >
-              {(this.state.keranjang != null && this.state.keranjang.stok >= 1 && this.state.keranjang.dlt == false && this.state.keranjang.produkid == this.state.produk.produkid)
-                ?
-                <Text style={styles.text}>Buka Keranjang</Text>
-                :
-
-                <Text style={styles.text}>Masukkan Ke Keranjang</Text>
-              }
-
-
-            </TouchableOpacity>
-          </View>
-
-        </SafeAreaView>
-      </View>
+      <GiftedChat
+        messages={this.state.messages}
+        onSend={(messages) => this.onSend(messages)}
+        
+        user={{
+          _id: 1,
+        }}
+      />
     );
   }
 }
@@ -828,4 +593,8 @@ const styles = StyleSheet.create({
     top: 8,
     right: 37,
   },
+  video: {
+    width: 200,
+    height: 200
+  }
 });
