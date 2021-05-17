@@ -112,13 +112,28 @@ class LoginScreen extends React.Component {
     const { navigation } = this.props;
     navigation.push("Register");
   };
+  loginSuccess = () => {
+    console.log('login successful, navigate to chat.');
+    return;
+    this.props.navigation.navigate('Chat', {
+      name: this.state.name,
+      email: this.state.email,
+    });
+  };loginFailed = () => {
+    alert('Login failure. Please tried again.');
+  };
   onLogin = async () => {
     if (this.state.username == "" || this.state.password == "") {
       this.notify("Email atau password kosong");
       return;
     }
     var user = null;
-
+     user = {
+      email: this.state.username,
+      password: this.state.password,
+    };
+    firebase.login(user, this.loginSuccess, this.loginFailed);
+    return;
     await firebase
       .database()
       .ref("users")

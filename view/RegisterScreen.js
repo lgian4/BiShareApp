@@ -97,7 +97,33 @@ class RegisterScreen extends React.Component {
   }
   onSubmit = async () => {
     await this.setState({ isLoading: true });
-    
+    // var user =
+    // {
+    //   userid: count,
+    //   usercode: "APP" + count,
+    //   userdate: Date.now(),
+    //   nama: this.state.nama,
+    //   jeniskelamin: this.state.jeniskelamin,
+    //   tanggallahir: this.state.tanggallahir,
+    //   email: this.state.email,
+    //   nohp: this.state.nohp,
+    //   alamat: "",
+    //   status: "customer",
+    //   dlt: false,
+    //   username: this.state.username,
+    //   password: this.state.password
+    // }
+    //   ;
+    // console.log(user);
+    // await firebase.auth()
+    //   .createUserWithEmailAndPassword( user.email,user.password      )
+    //   .then(() =>console.log("sukses"))
+    //   .catch(error => console.log(error));
+    //   await this.setState({ isLoading: false });
+    //  var fuser=   await firebase.getCurrentUser();
+    //  fuser.sendEmailVerification();
+    //   return;
+
     if (this.state.nama == "") {
       this.notify("Nama kosong");
       return;
@@ -181,6 +207,8 @@ class RegisterScreen extends React.Component {
     await firebase.database()
       .ref("users/count").set(count);
 
+
+
     await new Promise(r => setTimeout(r, 1000));
     var user =
     {
@@ -199,7 +227,7 @@ class RegisterScreen extends React.Component {
       password: this.state.password
     }
       ;
-    console.log(user);
+    
 
     await firebase.database()
       .ref("users/" + user.userid).set(user);
@@ -248,10 +276,12 @@ class RegisterScreen extends React.Component {
     const { navigation } = this.props;
     return (
 
-      <View style={{ flex: 1,
-        justifyContent: "center"}} >
-       
-   
+      <View style={{
+        flex: 1,
+        justifyContent: "center"
+      }} >
+
+
         <ImageBackground source={require('./../assets/background.png')} style={styles.image} >
           <SafeAreaView>
 
@@ -275,7 +305,7 @@ class RegisterScreen extends React.Component {
                 <View style={styles.inputContainer}>
                   <TextInput
                     style={styles.input}
-                    onChangeText={val => this.setState({ email: val })}
+                    onChangeText={val => this.setState({ email: val.trim() })}
                     placeholder={'Email'}
                     placeholderTextColor={'#666872'}
                     underlineColorAndroid='transparent'
@@ -386,14 +416,14 @@ class RegisterScreen extends React.Component {
                   </TouchableOpacity>
                 </View>
                 <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} />
-                <TouchableOpacity onPress={this.onSubmit} style={styles.btnLogin} >                   
+                <TouchableOpacity onPress={this.onSubmit} style={styles.btnLogin} >
                   <Text style={styles.text}>Daftar</Text>
                 </TouchableOpacity>
-               
+
                 <TouchableOpacity onPress={this.onLogin} style={styles.btnDaftar} >
                   <Text style={styles.text}>Sudah Punya akun? Login Disini</Text>
                 </TouchableOpacity>
-<View style={{height:HEIGHT/4}}></View>
+                <View style={{ height: HEIGHT / 4 }}></View>
 
               </View>
             </ScrollView>
