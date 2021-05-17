@@ -145,21 +145,22 @@ class ProdukDetailScreen extends React.Component {
     this.setState({ visibility: false });
     this.setState({ TextInputDisableStatus: true });
   };
-  onShare = async() => {
-    var shareoption = {     
-      title:this.state.produk.produkname, 
-      //message: this.state.produk.produkname+ "\nHarga : " +this.state.produk.harga+"\n"+ this.state.produk.deskripsi, // Note that according to the documentation at least one of "message" or "url" fields is required
+  onShare = async () => {
+    var url = this.state.firstmedia;
+    console.log("first media : " + url);
+    var shareoption = {
+      title: this.state.produk.produkname,
+      message: this.state.produk.produkname + "\nHarga : " + this.state.produk.harga + "\n" + this.state.produk.deskripsi + "\nBishare - Marketplace Polibatam",
       url: this.state.firstmedia
-      
-
     }
     Share.share(shareoption)
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      err && console.log(err);
-    });
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        err && console.log(err);
+      });
+
   };
 
   onPressButton = () => {
@@ -761,33 +762,33 @@ class ProdukDetailScreen extends React.Component {
 
             </TouchableOpacity>
             <TouchableOpacity
-             style={{
-              height: 45,
-              borderRadius: 10,
-              fontSize: 16,
-              borderColor: "#F24E1E",
-              borderWidth: 1,
-              justifyContent: "space-between",
-              flexDirection: "row",
-              backgroundColor: "white",
+              style={{
+                height: 45,
+                borderRadius: 10,
+                fontSize: 16,
+                borderColor: "#F24E1E",
+                borderWidth: 1,
+                justifyContent: "space-between",
+                flexDirection: "row",
+                backgroundColor: "white",
 
-              paddingHorizontal: 10,
+                paddingHorizontal: 10,
 
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.8,
-              shadowRadius: 2,
-              elevation: 5,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.8,
+                shadowRadius: 2,
+                elevation: 5,
 
               }}
               onPress={this.onShare}
             >
               <Icon
-                  name={"share"}
-                  size={25}
-                  color={"#666872"}
-                  style={{ color: "#F24E1E", marginTop: 10 }}
-                />
+                name={"ios-share-social-outline"}
+                size={25}
+                color={"#666872"}
+                style={{ color: "#F24E1E", marginTop: 10 }}
+              />
 
 
             </TouchableOpacity>

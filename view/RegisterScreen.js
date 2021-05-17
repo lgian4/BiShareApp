@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { SafeAreaView, StyleSheet, ToastAndroid, Text, View, Image, Button, Dimensions, TouchableOpacity, TextInput, Alert, ImageBackground } from 'react-native';
+import { SafeAreaView, StyleSheet, ToastAndroid, Text, View, Image, Button, Dimensions, TouchableOpacity, TextInput, Alert, ImageBackground, ActivityIndicator } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from "@react-native-community/async-storage";
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -72,7 +72,7 @@ class RegisterScreen extends React.Component {
       username: "",
       password: "",
       repassword: "",
-
+      isLoading: false,
     }
 
   }
@@ -96,8 +96,8 @@ class RegisterScreen extends React.Component {
     }
   }
   onSubmit = async () => {
-
-
+    await this.setState({ isLoading: true });
+    
     if (this.state.nama == "") {
       this.notify("Nama kosong");
       return;
@@ -121,7 +121,7 @@ class RegisterScreen extends React.Component {
     var user = null;
     var validate = true;
     //cek username duplicate
-    firebase
+    await firebase
       .database()
       .ref("users")
       .orderByChild("username")
@@ -133,13 +133,14 @@ class RegisterScreen extends React.Component {
           }
         });
       });
+    await new Promise(r => setTimeout(r, 1000));
     if (!validate) {
       this.notify("Username sudah ada");
       return;
     }
     //cek email duplicate
 
-    firebase
+    await firebase
       .database()
       .ref("users")
       .orderByChild("email")
@@ -152,6 +153,7 @@ class RegisterScreen extends React.Component {
           }
         });
       });
+    await new Promise(r => setTimeout(r, 1000));
     if (!validate) {
       this.notify("Email sudah ada");
       return;
@@ -160,17 +162,26 @@ class RegisterScreen extends React.Component {
 
     //ambil userid
     var count = 0;
-    firebase.database()
+    await firebase.database()
       .ref("users/count").on("value", (snapshot) => {
-        count = snapshot.val() ;
+        count = snapshot.val();
 
       });
+    if (count == 0 || count == null)
+      await new Promise(r => setTimeout(r, 1000));
+    if (count == 0 || count == null)
+      await new Promise(r => setTimeout(r, 1000));
+    if (count == 0 || count == null)
+      await new Promise(r => setTimeout(r, 1000));
+    if (count == 0 || count == null)
+      await new Promise(r => setTimeout(r, 1000));
 
-      count++;
-    firebase.database()
+    count++;
+
+    await firebase.database()
       .ref("users/count").set(count);
 
-
+    await new Promise(r => setTimeout(r, 1000));
     var user =
     {
       userid: count,
@@ -190,10 +201,10 @@ class RegisterScreen extends React.Component {
       ;
     console.log(user);
 
-    firebase.database()
+    await firebase.database()
       .ref("users/" + user.userid).set(user);
 
-  
+
 
     if (user != null && user.userid != "") {
       await storeData("user", user);
@@ -201,7 +212,7 @@ class RegisterScreen extends React.Component {
       navigation.push("HomeTab");
     }
 
-
+    await this.setState({ isLoading: false });
   }
 
 
@@ -237,7 +248,10 @@ class RegisterScreen extends React.Component {
     const { navigation } = this.props;
     return (
 
-      <View style={styles.container} >
+      <View style={{ flex: 1,
+        justifyContent: "center"}} >
+       
+   
         <ImageBackground source={require('./../assets/background.png')} style={styles.image} >
           <SafeAreaView>
 
@@ -371,15 +385,15 @@ class RegisterScreen extends React.Component {
                     <Icon name={this.state.press == false ? 'ios-eye-outline' : 'ios-eye-off-outline'} size={25} color={'#666872'} />
                   </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity onPress={this.onSubmit} style={styles.btnLogin} >
+                <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} />
+                <TouchableOpacity onPress={this.onSubmit} style={styles.btnLogin} >                   
                   <Text style={styles.text}>Daftar</Text>
                 </TouchableOpacity>
-
+               
                 <TouchableOpacity onPress={this.onLogin} style={styles.btnDaftar} >
                   <Text style={styles.text}>Sudah Punya akun? Login Disini</Text>
                 </TouchableOpacity>
-
+<View style={{height:HEIGHT/4}}></View>
 
               </View>
             </ScrollView>
@@ -420,8 +434,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   logoContainer: {
-    marginTop: HEIGHT / 25,
-
+    marginTop: 100,
     justifyContent: 'center',
 
   },
