@@ -85,7 +85,7 @@ const currencyFormatter = (value, options) => {
   )}`;
 };
 
-class ProfilScreen extends React.Component {
+class ChatScreen extends React.Component {
   constructor() {
     super();
 
@@ -104,7 +104,7 @@ class ProfilScreen extends React.Component {
       },
       firstmedia: "",
       keranjanglist: [],
-      
+      userchats: [],
       keranjang: {
         key: 0,
         dlt: true,
@@ -174,7 +174,7 @@ class ProfilScreen extends React.Component {
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-    await this.loadKeranjang();
+    await this.loadChat();
   }
   onMinusStok = async (item) => {
     this.setState({ isFetching: true })
@@ -204,7 +204,7 @@ class ProfilScreen extends React.Component {
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-    await this.loadKeranjang();
+    await this.loadChat();
   }
 
   onDeleteStok = async (item) => {
@@ -233,7 +233,7 @@ class ProfilScreen extends React.Component {
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
-    await this.loadKeranjang();
+    await this.loadChat();
   }
 
 
@@ -279,10 +279,10 @@ class ProfilScreen extends React.Component {
     navigation.push("ProdukDetail", { params: tempproduk });
   };
 
-  loadKeranjang = async () => {
+  loadChat = async () => {
 
 
-    this.setState({ isFetching: true });
+  await  this.setState({ isFetching: true });
 
     var tuser = this.state.user;
     if (tuser == null) {
@@ -290,41 +290,35 @@ class ProfilScreen extends React.Component {
     }
 
 
-    // console.log(tuser);
-    var tkeranjanglist = [];
+    //console.log(tuser);
+    var tuserchats = [];
     var ttotalproduk = 0;
     var ttotalharga = 0;
     try {
       await firebase
         .database()
-        .ref("keranjang/" + tuser.userid + "/")
+        .ref("userchats/" + tuser.userid + "/")
         .on("value", (snapshot) => {
-          //console.log(snapshot);
+          console.log(snapshot);
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
-              child.key != "produkmediacount" &&
-              child.val().dlt != true,
-              child.val().stok >= 1
+              child.key != "produkmediacount" 
             ) {
-              ttotalproduk = ttotalproduk + 1;
-              ttotalharga = ttotalharga + (child.val().stok * child.val().harga);
-              tkeranjanglist.push({
+              tuserchats.push({
                 key: child.key,
-                dlt: child.val().dlt,
-                produkid: child.val().produkid,
+
+                lastmessage: child.val().lastmessage,
                 userid: child.val().userid,
-                mediaurl: child.val().mediaurl,
-                produkname: child.val().produkname,
-                stok: child.val().stok,
-                harga: child.val().harga,
+                tokoid: child.val().tokoid,
+                name: child.val().name,
               });
             }
           });
 
-          console.log(tkeranjanglist.length)
-          this.setState({ keranjanglist: tkeranjanglist, totalproduk: ttotalproduk, totalharga: ttotalharga, isFetching: false, user: tuser });
-          storeData("keranjanglist", tkeranjanglist);
+
+          this.setState({ userchats: tuserchats, isFetching: false, user: tuser });
+          storeData("userchats", tuserchats);
           //console.log(tkeranjanglist);
         });
     } catch (error) {
@@ -340,12 +334,7 @@ class ProfilScreen extends React.Component {
     //   <View></View>
     // )
     console.log("render produk");
-    var uriimage =
-      "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
-    var fill = false;
-    if (item.mediaurl != null && item.mediaurl != "") {
-      uriimage = item.mediaurl
-    }
+   
 
 
     return (
@@ -363,81 +352,32 @@ class ProfilScreen extends React.Component {
           }}
         >
 
-          <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 20 }}>
+          <View style={{ margin: 5, width: 30, height: 30, overflow: 'hidden', borderRadius: 15 }}>
             <Image
-              style={{ width: '100%', height: '100%' }}
-              resizeMode={"contain"}
-              source={{ uri: uriimage }}
+              style={{ width: '100%', height: '120%' }}
+              source={require("./../assets/Person.jpg")}
             />
           </View>
 
           <View style={{ flex: 2, }}>
             <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
-              {item.produkname}
+              {item.name}
             </Text>
-            <Text style={{ marginBottom: 5 }}> {currencyFormatter(item.harga)} </Text>
+            <Text style={{ marginBottom: 5 }}> {item.lastmessage} </Text>
 
-            <View style={{ flexDirection: "row" }}>
-              <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
-                <TouchableOpacity onPress={async () => { this.onMinusStok(item) }}>
-                  <Icon name={"remove-outline"} size={25} color={"black"} />
-                </TouchableOpacity>
-              </View>
-
-              <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>{item.stok}</Text>
-              <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
-                <TouchableOpacity onPress={async () => { this.onAddStok(item) }}>
-                  <Icon name={"add-outline"} size={25} color={"black"} />
-                </TouchableOpacity>
-
-              </View>
-
-            </View>
+           
           </View>
-          <View style={{ flex: 0.5, justifyContent: "center" }}>
-            <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
-              <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
-            </TouchableOpacity>
-          </View>
+        
         </View>
       </TouchableOpacity>
     );
   };
 
-  onLogout = async () => {
-    const { navigation } = this.props;
-    
-      Alert.alert(
-        "Log Out",
-        "Apakah anda yakin untuk keluar ?",
-       
-        [
-          {
-            text: "Cancel",
-            style: "cancel"
-          },
-          {
-            text: "OK", onPress: async () => {
-              try {
 
-                await storeData("user", null);
-                navigation.navigate("RegisterTab");
-              } catch (error) {
-                console.error(error);
-              }
-
-            }
-          }
-        ]
-      );
-
-
-  };
   async componentDidMount() {
     var tsuer = await getData("user");
-    console.log(tsuer);
     this.setState({ user: tsuer });
-    //  this.loadKeranjang();
+    await this.loadChat();
   }
 
   render() {
@@ -461,115 +401,41 @@ class ProfilScreen extends React.Component {
                 <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Profil</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Pesan</Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"white"} />
             </View>
           </View>
 
-          <View style={{ flexDirection: "row", marginTop: 20, marginHorizontal: 20, width: WIDTH - 40, justifyContent: "space-between", borderRadius: 10, backgroundColor: "white" }}>
-            <View style={{ margin: 10, width: 60, height: 60, overflow: 'hidden', borderRadius: 30 }}>
-              <Image
-                style={{ width: '100%', height: '120%' }}
-                source={require("./../assets/Person.jpg")}
-              />
-            </View>
-
-            <View style={{ flex: 2, justifyContent: "center" }}>
-              <Text style={{ fontWeight: "bold", fontSize: 16 }}>{this.state.user == null ? "" : this.state.user.nama ?? ""}</Text>
-              <Text style={{ color: "#666872" }}>{this.state.user == null ? "" : this.state.user.email ?? ""}</Text>
-            </View>
-          </View>
-
-          <View style={{ marginTop: 10, marginHorizontal: 0, width: WIDTH, paddingBottom: 20, borderRadius: 10, backgroundColor: "white", }}>
-
-
-            <View style={{ justifyContent: "center", paddingHorizontal: 20, paddingVertical: 10 }}>
-
-              <Text style={{ color: "#666872", fontSize: 16, }}>Menu</Text>
-            </View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("Chat"); }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, }}>Pesan</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("EditProfil"); }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, }}>Edit Profil</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("ChangePassword"); }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, }}>Change Password</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("Keranjang"); }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, }}>Keranjang</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-           
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, }}>Pusat Bantuan</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, }}>Pesan </Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, }}>Laporan</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "black", fontSize: 16, fontWeight: "bold" }}>Hapus Akun</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={this.onLogout}>
-              <View style={{ justifyContent: "center" }}>
-
-                <Text style={{ color: "red", fontSize: 16, fontWeight: "bold" }}>Log Out</Text>
-              </View>
-            </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-          </View>
 
           <View style={{}}>
+            <FlatList
+              data={this.state.userchats}
+              extraData={this.state.refresh}
+              style={{
+                paddingHorizontal: 10,
+                backgroundColor: "#F6F6F6",
+                height: HEIGHT - 80
+              }}
 
+
+              contentContainerStyle={{ justifyContent: "space-between" }}
+              renderItem={this._renderProduk}
+              keyExtractor={(item) => item.key}
+              onRefresh={() => this.loadChat()}
+              refreshing={this.state.isFetching}
+            />
 
           </View>
 
         </SafeAreaView>
-        <View style={{ position: "absolute", bottom: 0, padding: 15, flexDirection: 'row', alignContent: "space-between", width: WIDTH, backgroundColor: "white", borderTopRightRadius: 15, borderTopLeftRadius: 15, paddingBottom: 20 }}>
-          <Text style={{ flex: 1, textAlign: "left" }}>V 0.0.1</Text>
-          <Text style={{ fontSize: 14, fontWeight: "bold", flex: 1, textAlign: "right", color: "#F24E1E" }}>BiShare</Text>
-        </View>
+       
       </View>
     );
   }
 }
 
-export default ProfilScreen;
+export default ChatScreen;
 
 const styles = StyleSheet.create({
   container: {

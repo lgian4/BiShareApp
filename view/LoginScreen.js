@@ -132,8 +132,8 @@ class LoginScreen extends React.Component {
       email: this.state.username,
       password: this.state.password,
     };
-    firebase.login(user, this.loginSuccess, this.loginFailed);
-    return;
+    // firebase.login(user, this.loginSuccess, this.loginFailed);
+    // return;
     await firebase
       .database()
       .ref("users")
