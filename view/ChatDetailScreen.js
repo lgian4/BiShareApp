@@ -185,145 +185,16 @@ class ChatDetailScreen extends React.Component {
     this.setState({ visibility: false });
     this.setState({ TextInputDisableStatus: true });
   };
-  onLogin = async () => {
-    const { navigation } = this.props;
-    navigation.push("Login");
-  };
-  onLike = async () => {
-    var tproduklike = this.state.produklike;
-    var tproduk = this.state.produk;
-    var tuser = this.state.user;
-    tproduklike.islike = !tproduklike.islike;
-    if (tproduklike.islike) {
-      //this.notify("❤ + 1");
-      tproduk.likecount += 1;
-    }
-    else {
-      //this.notify("❤ - 1");
-      tproduk.likecount -= 1;
-    }
-    this.setState({
-      produklike: tproduklike,
-      produk: tproduk
-    });
-
-    try {
-
-      await firebase
-        .database()
-        .ref("produklike/" + tproduk.produkid + "/" + tuser.userid)
-        .set(tproduklike);
-      await firebase
-        .database()
-        .ref("produk/" + tproduk.produkid)
-        .set(tproduk);
-    } catch (error) {
-      console.error(error);
-    }
 
 
-  };
-  onKeranjang = async () => {
-    var tkeranjang = this.state.keranjang;
-    var tproduk = this.state.produk;
-    var tuser = this.state.user;
-    if (tkeranjang == null || tkeranjang.produkid == "") {
-      tkeranjang = {
-        key: tproduk.produkid,
-        dlt: true,
-        produkid: tproduk.produkid,
-        userid: tuser.userid,
-        mediaurl: this.state.firstmedia,
-        produkname: tproduk.produkname,
-        stok: 0,
-        harga: tproduk.harga
-      }
-    }
-    if (tkeranjang.dlt || tkeranjang.stok <= 0) {
-      tkeranjang.dlt = false;
-      tkeranjang.stok = 1;
-      this.notify("Produk berhasil dimasukkan kedalam keranjang");
-
-      this.setState({
-        keranjang: tkeranjang,
-
-      });
-
-      try {
-
-        await firebase
-          .database()
-          .ref("keranjang/" + tuser.userid + "/" + tproduk.produkid)
-          .set(tkeranjang);
-
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    else {
-      const { navigation } = this.props; navigation.push("Keranjang");
-    }
-
-
-
-  };
-
-  OnReview = () => {
-    const { navigation } = this.props;
-    navigation.push("Review", { params: this.state.produk });
-  };
-
-  getProduk = async () => {
+  LoadChatFirst = async () => {
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
+
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
-
-    var firstmedia = "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
-    var tempproduk = [];
-    if (selectedproduk.produkmedia == null) {
-      tempproduk.push({
-        key: 0,
-        mediaid: 0,
-        mediaurl: "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e",
-      });
-    } else if (typeof selectedproduk.produkmedia === "object") {
-      if (
-        Object.keys(selectedproduk.produkmedia) != null &&
-        Object.keys(selectedproduk.produkmedia).length >= 1
-      ) {
-        var i = 0;
-        Object.values(selectedproduk.produkmedia).forEach(function (
-          produkmedia
-        ) {
-          if (
-            produkmedia != null &&
-            produkmedia.dlt == false &&
-            produkmedia.mediaurl != ""
-          ) {
-            if (i == 0) {
-              firstmedia = produkmedia.mediaurl
-            }
-            tempproduk.push({
-              key: i++,
-              mediaid: produkmedia.mediaid,
-              mediaurl: produkmedia.mediaurl,
-            });
-          }
-        });
-      }
-    }
-
-    this.setState({
-      produk: selectedproduk,
-      reviewavg: selectedproduk.reviewavg ?? 0,
-      produkmedia: tempproduk,
-      refresh: !this.state.refresh,
-      firstmedia: firstmedia,
-    });
-    var tproduklike = null;
-    var tkeranjang = null;
+    // load message
 
     try {
       console.log("produklike/" + selectedproduk.produkid + "/" + tuser.userid);
@@ -378,25 +249,7 @@ class ChatDetailScreen extends React.Component {
       //console.error(error);
     }
 
-    if (tproduklike == null) {
-      tproduklike = {
-        key: tuser.userid,
-        islike: false,
-        userid: tuser.userid,
-      }
-    }
-    if (tkeranjang == null) {
-      tkeranjang = {
-        key: selectedproduk.produkid,
-        dlt: true,
-        produkid: selectedproduk.produkid,
-        userid: tuser.userid,
-        mediaurl: firstmedia,
-        produkname: selectedproduk.produkname,
-        stok: 0,
-        harga: selectedproduk.harga
-      }
-    }
+   
     this.setState({ user: tuser, produklike: tproduklike });
     //storeData("produk", tempproduk);
 
@@ -433,6 +286,7 @@ class ChatDetailScreen extends React.Component {
     // this.setState({ user: tsuer });
     // await this.getProduk();
     console.log("detail");
+this.LoadChatFirst();
     this.setState({
       messages: [
         {

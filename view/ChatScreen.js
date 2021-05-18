@@ -243,40 +243,9 @@ class ChatScreen extends React.Component {
     this.setState({ TextInputDisableStatus: true });
   };
 
-  OnProdukDetail = async (selectedproduk) => {
+  OnChatDetail = (selectedproduk) => {
     const { navigation } = this.props;
-    var tempproduk = null;
-    await firebase
-      .database()
-      .ref("produk/" + selectedproduk.produkid)
-      .on("value", (snapshot) => {
-
-        tempproduk = {
-          key: snapshot.key,
-          produkcode: snapshot.val().produkcode,
-          deskripsi: snapshot.val().deskripsi,
-          fitur: snapshot.val().fitur,
-          spesifikasi: snapshot.val().spesifikasi,
-          stok: snapshot.val().stok,
-          produkid: snapshot.val().produkid,
-          produkname: snapshot.val().produkname,
-          harga: snapshot.val().harga,
-          produkmedia: snapshot.val().produkmedia ?? null,
-          kategoriid: snapshot.val().kategoriid,
-          kategoriname: snapshot.val().kategoriname,
-          tokoid: snapshot.val().tokoid,
-          tokoname: snapshot.val().tokoname,
-          stok: snapshot.val().stok,
-          produkdate: snapshot.val().produkdate,
-          produkcode: snapshot.val().produkcode,
-          dlt: snapshot.val().dlt ?? false,
-          produkmediacount: snapshot.val().produkmediacount ?? 0,
-          status: snapshot.val().status ?? "",
-          likecount: snapshot.val().likecount ?? 0,
-        };
-      });
-
-    navigation.push("ProdukDetail", { params: tempproduk });
+    navigation.push("ChatDetail", { params: selectedproduk });
   };
 
   loadChat = async () => {
@@ -338,7 +307,7 @@ class ChatScreen extends React.Component {
 
 
     return (
-      <TouchableOpacity onPress={async () => { this.OnProdukDetail(item) }}>
+      <TouchableOpacity onPress={async () => { this.OnChatDetail(item) }}>
         <View
           style={{
             backgroundColor: "white",
