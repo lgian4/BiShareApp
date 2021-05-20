@@ -120,6 +120,22 @@ class ChatDetailScreen extends React.Component {
         stok: 0,
         harga: 0
       },
+      userchats: {
+        key: 0,
+        lastmessage: "....",
+        name: "nama",
+        tokoid: "",
+        userid: "1",
+
+      },
+      chats: {
+        key: 0,
+        lastmessage: "....",
+        name: "nama",
+        tokoid: "",
+        userid: "1",
+
+      },
       refresh: true,
       produkmedia: [],
       produk: {
@@ -249,7 +265,7 @@ class ChatDetailScreen extends React.Component {
       //console.error(error);
     }
 
-   
+
     this.setState({ user: tuser, produklike: tproduklike });
     //storeData("produk", tempproduk);
 
@@ -286,7 +302,7 @@ class ChatDetailScreen extends React.Component {
     // this.setState({ user: tsuer });
     // await this.getProduk();
     console.log("detail");
-this.LoadChatFirst();
+    this.LoadChatFirst();
     this.setState({
       messages: [
         {
@@ -351,7 +367,7 @@ this.LoadChatFirst();
           user: {
             _id: 2,
             name: 'React Native',
-            
+
           },
           video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
         }
@@ -361,16 +377,46 @@ this.LoadChatFirst();
 
   render() {
     return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={(messages) => this.onSend(messages)}
-        alwaysShowSend ={true}
-        showUserAvatar ={true}
-        user={{
-          _id: 1,
-          name: 'React Tative',
-        }}
-      />
+      <View style={styles.container}>
+
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            paddingTop: 15,
+            paddingBottom: 10,
+            backgroundColor: "white"
+          }}
+        >
+          <View style={{ marginTop: 20 }}>
+            <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
+              <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
+            </TouchableOpacity>
+          </View>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>{this.state.userchats.name}</Text>
+          <View style={{ marginTop: 20 }}>
+            <Icon name={"cart"} size={25} color={"white"} />
+          </View>
+        </View>
+
+
+        <GiftedChat
+
+          messages={this.state.messages}
+          onSend={(messages) => this.onSend(messages)}
+          alwaysShowSend={true}
+          showUserAvatar={true}
+          user={{
+            _id: this.state.userchats.userid ?? this.state.tokoid,
+            name: this.state.userchats.name,
+          }}
+        />
+
+      </View>
+
+
     );
   }
 }
