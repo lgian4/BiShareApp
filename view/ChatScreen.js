@@ -339,6 +339,7 @@ class ChatScreen extends React.Component {
         
         </View>
       </TouchableOpacity>
+   
     );
   };
 
@@ -382,7 +383,7 @@ class ChatScreen extends React.Component {
               data={this.state.userchats}
               extraData={this.state.refresh}
               style={{
-                paddingHorizontal: 10,
+                paddingHorizontal: 0,
                 backgroundColor: "#F6F6F6",
                 height: HEIGHT - 80
               }}

@@ -120,6 +120,32 @@ class ChatDetailScreen extends React.Component {
         stok: 0,
         harga: 0
       },
+      userchats: {
+        key: 0,
+        lastmessage: "....",
+        name: "nama",
+        tokoid: "",
+        userid: "1",
+
+      },
+      chats: {
+        key: 1,
+        iswithtoko: false,
+        userid1: 1,
+        username1: "admin",
+        tokoid: "",
+        tokoname: "",
+        userid2: 1,
+        username2: "admin",
+      },
+      chatmessage: [{
+        key: 1,
+        dlt: false,
+        message: "test pesan",
+        messagedate: "2021-04-08 08:18:46",
+        sentby: 1,
+        sentname:"admin"        
+      }],
       refresh: true,
       produkmedia: [],
       produk: {
@@ -270,7 +296,7 @@ class ChatDetailScreen extends React.Component {
       //console.error(error);
     }
 
-   
+
     this.setState({ user: tuser, produklike: tproduklike });
     //storeData("produk", tempproduk);
 
@@ -314,7 +340,7 @@ class ChatDetailScreen extends React.Component {
       )
     );
     console.log("detail");
-this.LoadChatFirst();
+    this.LoadChatFirst();
     this.setState({
       messages: [
         {
@@ -326,79 +352,55 @@ this.LoadChatFirst();
             name: 'React Native',
             avatar: 'https://facebook.github.io/react/img/logo_og.png',
           },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+         
         },
-        {
-          _id: 2,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 3,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 4,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 5,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 6,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        }
+        
       ]
     });
   }
 
   render() {
     return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={(messages) => this.onSend(messages)}
-        alwaysShowSend ={true}
-        showUserAvatar ={true}
-        user={{
-          _id: 1,
-          name: 'React Tative',
-        }}
-      />
+      <View style={styles.container}>
+
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            paddingTop: 15,
+            paddingBottom: 10,
+            backgroundColor: "white"
+          }}
+        >
+          <View style={{ marginTop: 20 }}>
+            <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
+              <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
+            </TouchableOpacity>
+          </View>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>{this.state.userchats.name}</Text>
+          <View style={{ marginTop: 20 }}>
+            <Icon name={"cart"} size={25} color={"white"} />
+          </View>
+        </View>
+
+
+        <GiftedChat
+
+          messages={this.state.messages}
+          onSend={(messages) => this.onSend(messages)}
+          alwaysShowSend={true}
+          showUserAvatar={true}
+          user={{
+            _id: this.state.userchats.userid ?? this.state.tokoid,
+            name: this.state.userchats.name,
+          }}
+        />
+
+      </View>
+
+
     );
   }
 }
