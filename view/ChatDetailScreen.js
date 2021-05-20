@@ -129,13 +129,23 @@ class ChatDetailScreen extends React.Component {
 
       },
       chats: {
-        key: 0,
-        lastmessage: "....",
-        name: "nama",
+        key: 1,
+        iswithtoko: false,
+        userid1: 1,
+        username1: "admin",
         tokoid: "",
-        userid: "1",
-
+        tokoname: "",
+        userid2: 1,
+        username2: "admin",
       },
+      chatmessage: [{
+        key: 1,
+        dlt: false,
+        message: "test pesan",
+        messagedate: "2021-04-08 08:18:46",
+        sentby: 1,
+        sentname:"admin"        
+      }],
       refresh: true,
       produkmedia: [],
       produk: {
@@ -314,63 +324,9 @@ class ChatDetailScreen extends React.Component {
             name: 'React Native',
             avatar: 'https://facebook.github.io/react/img/logo_og.png',
           },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
+         
         },
-        {
-          _id: 2,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 3,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 4,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 5,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        },
-        {
-          _id: 6,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-
-          },
-          video: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4"
-        }
+        
       ]
     });
   }
