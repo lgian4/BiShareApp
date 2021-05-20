@@ -154,6 +154,27 @@ class ChatDetailScreen extends React.Component {
       </View>
     );
   }
+  refOn = callback => {
+    this.ref
+      .limitToLast(20)
+      .on('child_added', snapshot => callback(this.parse(snapshot)));
+  }
+  
+  parse = snapshot => {
+    const { timestamp: numberStamp, text, user } = snapshot.val();
+    const { key: _id } = snapshot;
+    const timestamp = new Date(numberStamp);
+    const message = {_id, timestamp, text, user};
+    return message;
+  };
+
+  send = messages => {
+    for (let i = 0; i < messages.length; i++) {
+      const { text, user } = messages[i];
+      const message = {text, user, createdAt: this.timestamp, };
+      this.ref.push(message);
+    }
+  };
 
   onSubmit = async () => {
     const { navigation } = this.props;
@@ -285,6 +306,13 @@ class ChatDetailScreen extends React.Component {
     // var tsuer = await getData("user");
     // this.setState({ user: tsuer });
     // await this.getProduk();
+
+    firebaseSvc.refOn(message => 
+      this.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, message),
+        })
+      )
+    );
     console.log("detail");
 this.LoadChatFirst();
     this.setState({
