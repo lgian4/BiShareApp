@@ -144,7 +144,7 @@ class ChatDetailScreen extends React.Component {
         message: "test pesan",
         messagedate: "2021-04-08 08:18:46",
         sentby: 1,
-        sentname:"admin"        
+        sentname: "admin"
       }],
       refresh: true,
       produkmedia: [],
@@ -166,11 +166,7 @@ class ChatDetailScreen extends React.Component {
     };
   }
 
-  onSend(messages = []) {
-    this.setState((previousState) => ({
-      messages: GiftedChat.append(previousState.messages, messages),
-    }));
-  }
+
 
   renderBubble = (props) => {
     console.log(props);
@@ -181,23 +177,36 @@ class ChatDetailScreen extends React.Component {
     );
   }
   refOn = callback => {
-    this.ref
-      .limitToLast(20)
+    var ref = firebase.database().ref("chatmessages/1");
+
+    ref.limitToLast(20)
       .on('child_added', snapshot => callback(this.parse(snapshot)));
   }
-  
+
   parse = snapshot => {
-    const { timestamp: numberStamp, text, user } = snapshot.val();
-    const { key: _id } = snapshot;
-    const timestamp = new Date(numberStamp);
-    const message = {_id, timestamp, text, user};
-    return message;
+    if( snapshot.key =="count"){
+
+    }
+    else {
+      console.log('snapshot :' +  JSON.stringify(snapshot));
+      const { message: texts, dlt, messagedate: numberStamp, sentby, sentname } = snapshot.val();
+      const { key: _id } = snapshot.key;
+      const times = new Date(numberStamp);
+      var users = {
+        _id: sentby,
+        name: sentname
+      };
+      const message = { id:1, _id :parseInt( snapshot.key), createdAt:times, text:texts, user : users};
+      console.log('snapshot :' +  JSON.stringify(message));
+      return message;
+    }
+  
   };
 
   send = messages => {
     for (let i = 0; i < messages.length; i++) {
       const { text, user } = messages[i];
-      const message = {text, user, createdAt: this.timestamp, };
+      const message = { text, user, createdAt: this.timestamp, };
       this.ref.push(message);
     }
   };
@@ -242,7 +251,7 @@ class ChatDetailScreen extends React.Component {
     if (tuser == null)
       tuser = await getData("user");
     // load message
-
+    this.setState({ userchats: selectedproduk, user: tuser });
     try {
       console.log("produklike/" + selectedproduk.produkid + "/" + tuser.userid);
       await firebase
@@ -332,31 +341,24 @@ class ChatDetailScreen extends React.Component {
     // var tsuer = await getData("user");
     // this.setState({ user: tsuer });
     // await this.getProduk();
+    const { navigation, route } = this.props;
+    const { params: selectedproduk } = route.params;
 
-    firebaseSvc.refOn(message => 
+    var tuser = this.state.user;
+    if (tuser == null)
+      tuser = await getData("user");
+    // load message
+    await this.setState({ userchats: selectedproduk, user: tuser });
+
+    this.refOn(message =>
       this.setState(previousState => ({
         messages: GiftedChat.append(previousState.messages, message),
-        })
-      )
+      }))
     );
-    console.log("detail");
-    this.LoadChatFirst();
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: 'Hello developer',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-         
-        },
-        
-      ]
-    });
+  }
+
+  componentWillUnmount() {
+    //firebase.ref().off();
   }
 
   render() {
@@ -395,6 +397,7 @@ class ChatDetailScreen extends React.Component {
           user={{
             _id: this.state.userchats.userid ?? this.state.tokoid,
             name: this.state.userchats.name,
+            id: this.state.userchats.userid ?? this.state.tokoid,
           }}
         />
 
