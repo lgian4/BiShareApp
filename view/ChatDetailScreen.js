@@ -377,9 +377,44 @@ class ChatDetailScreen extends React.Component {
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
-    // load message
+    // userchat
     await this.setState({ userchats: selectedproduk, user: tuser });
 
+    //chats
+    var tchats = null;
+    try {
+      console.log("chats/" + selectedproduk.key );
+      await firebase
+        .database()
+        .ref("produklike/" + selectedproduk.key )
+        .on("value", (snapshot) => {
+
+          console.log("console.log(snapshot); " + snapshot);
+          console.log("console.log(snapshot.key); " + snapshot.key);
+          console.log("console.log(snapshot.val); " + snapshot.val());
+          if (snapshot != null && snapshot.val() != null
+          ) {
+            tchats = {
+              key: snapshot.key,
+              iswithtoko: snapshot.val().iswithtoko ?? false,
+              tokoid: snapshot.val().tokoid ?? "",
+              tokoname: snapshot.val().tokoname ?? "",
+              userid1: snapshot.val().userid1 ?? "",
+              userid2: snapshot.val().userid2 ?? "",
+              username1: snapshot.val().username1 ?? "",
+              username2: snapshot.val().username2 ?? "",
+              
+            };
+
+           await this.setState({ chats: tchats });
+          }
+
+        });
+    } catch (error) {
+      //console.error(error);
+    }
+    
+    // load messege
     this.refOn(message =>
       this.setState(previousState => ({
         messages: GiftedChat.append(previousState.messages, message),

@@ -348,6 +348,12 @@ class ChatScreen extends React.Component {
     var tsuer = await getData("user");
     this.setState({ user: tsuer });
     await this.loadChat();
+
+    this.refOn(message =>
+      this.setState(previousState => ({
+        messages: FlatList.append(previousState.messages, message),
+      }))
+    );
   }
 
   render() {
