@@ -88,7 +88,7 @@ const currencyFormatter = (value, options) => {
     options.thousandsSeparator
   )}`;
 };
-
+var ref = null;
 
 class ChatDetailScreen extends React.Component {
   constructor() {
@@ -101,7 +101,7 @@ class ChatDetailScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
       user: null,
-      messages: null,
+      messages: [],
 
       kategori: [],
       produklike: {
@@ -176,19 +176,20 @@ class ChatDetailScreen extends React.Component {
       </View>
     );
   }
+
   refOn = callback => {
-    var ref = firebase.database().ref("chatmessages/1");
+     ref = firebase.database().ref("chatmessages/1");
 
     ref.limitToLast(20)
       .on('child_added', snapshot => callback(this.parse(snapshot)));
   }
 
   parse = snapshot => {
-    if( snapshot.key =="count"){
+    if (snapshot.key == "count") {
 
     }
     else {
-      console.log('snapshot :' +  JSON.stringify(snapshot));
+      console.log('snapshot :' + JSON.stringify(snapshot));
       const { message: texts, dlt, messagedate: numberStamp, sentby, sentname } = snapshot.val();
       const { key: _id } = snapshot.key;
       const times = new Date(numberStamp);
@@ -196,19 +197,48 @@ class ChatDetailScreen extends React.Component {
         _id: sentby,
         name: sentname
       };
-      const message = { id:1, _id :parseInt( snapshot.key), createdAt:times, text:texts, user : users};
-      console.log('snapshot :' +  JSON.stringify(message));
+      const message = { id: snapshot.key, _id: snapshot.key, createdAt: numberStamp, text: texts, user: users };
+      console.log('snapshot :' + JSON.stringify(message));
       return message;
     }
-  
+
   };
 
-  send = messages => {
+  onSend = messages => {
+    console.log(messages);
+    var userchatt = this.state.userchats;
+    var tchats = this.state.chats;
+    var tuser = this.state.user;
     for (let i = 0; i < messages.length; i++) {
-      const { text, user } = messages[i];
-      const message = { text, user, createdAt: this.timestamp, };
-      this.ref.push(message);
+      const { text, user, createdAt } = messages[i];
+      userchatt.lastmessage = text;
+
+      const messagesed = { dlt: false, message: text, sentby: user._id, sentname: user.name, messagedate: createdAt };
+      firebase
+        .database()
+        .ref("chatmessages/" + userchatt.key)
+        .push(messagesed);
+
     }
+    firebase
+      .database()
+      .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
+      .set(userchatt);
+
+    if (tchats.iswithtoko) {
+      firebase
+        .database()
+        .ref("tokochats/" + tchats.tokoid + "/" + userchatt.key)
+        .set(userchatt);
+
+    }
+    else {
+      firebase
+        .database()
+        .ref("tokochats/" + tchats.userid2 + "/" + userchatt.key)
+        .set(userchatt);
+    }
+
   };
 
   onSubmit = async () => {
@@ -358,7 +388,7 @@ class ChatDetailScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    //firebase.ref().off();
+    ref.off();
   }
 
   render() {
@@ -394,6 +424,7 @@ class ChatDetailScreen extends React.Component {
           onSend={(messages) => this.onSend(messages)}
           alwaysShowSend={true}
           showUserAvatar={true}
+
           user={{
             _id: this.state.userchats.userid ?? this.state.tokoid,
             name: this.state.userchats.name,
