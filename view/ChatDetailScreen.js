@@ -209,6 +209,39 @@ class ChatDetailScreen extends React.Component {
     var userchatt = this.state.userchats;
     var tchats = this.state.chats;
     var tuser = this.state.user;
+
+    if(tchats == null || tchats.userid1 == ""){
+      if(userchatt.tokoid != "" && userchatt.tokoid != null){
+        tchats = {
+          userid1: tuser.userid,
+          username1: tuser.name,
+          userid2: "",
+          iswithtoko : true,
+          tokoid : userchatt.tokoid,
+          tokoname: userchatt.name,
+          username2:"",
+
+        }
+      }
+      else {
+        tchats = {
+          userid1: tuser.userid,
+          username1: tuser.name,
+          tokoid: "",
+          iswithtoko : false,
+          userid2 : userchatt.userid,
+          username2: userchatt.name,
+          tokoname:"",
+
+        }
+      }
+      this.setState({chats:tchats});
+      firebase
+      .database()
+      .ref("chats/" )
+      .push(tchats);
+    }
+
     for (let i = 0; i < messages.length; i++) {
       const { text, user, createdAt } = messages[i];
       userchatt.lastmessage = text;
@@ -220,6 +253,7 @@ class ChatDetailScreen extends React.Component {
         .push(messagesed);
 
     }
+
     firebase
       .database()
       .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
