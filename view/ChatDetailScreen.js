@@ -178,7 +178,7 @@ class ChatDetailScreen extends React.Component {
   }
 
   refOn = callback => {
-     ref = firebase.database().ref("chatmessages/1");
+     ref = firebase.database().ref("chatmessages/"+this.state.userchats.key);
 
     ref.limitToLast(20)
       .on('child_added', snapshot => callback(this.parse(snapshot)));
@@ -197,12 +197,16 @@ class ChatDetailScreen extends React.Component {
         _id: sentby,
         name: sentname
       };
-      const message = { id: snapshot.key, _id: snapshot.key, createdAt: numberStamp, text: texts, user: users };
+    
+      const message = { id: snapshot.key, _id: snapshot.key, createdAt: times, text: texts, user: users };
       console.log('snapshot :' + JSON.stringify(message));
       return message;
     }
 
   };
+  get timestamp() {
+    return firebase.database.ServerValue.TIMESTAMP;
+  }
 
   onSend = messages => {
     console.log(messages);
@@ -223,7 +227,7 @@ class ChatDetailScreen extends React.Component {
 
         }
       }
-      else {
+      else if(tchats.userid2!= tchats.userid1) {
         tchats = {
           userid1: tuser.userid,
           username1: tuser.name,
@@ -241,12 +245,14 @@ class ChatDetailScreen extends React.Component {
       .ref("chats/" )
       .push(tchats);
     }
+    
 
     for (let i = 0; i < messages.length; i++) {
       const { text, user, createdAt } = messages[i];
       userchatt.lastmessage = text;
-
-      const messagesed = { dlt: false, message: text, sentby: user._id, sentname: user.name, messagedate: createdAt };
+      
+      const messagesed = { dlt: false, message: text, sentby: user._id, sentname: user.name, messagedate:this.timestamp };
+      console.log(JSON.stringify(messagesed));
       firebase
         .database()
         .ref("chatmessages/" + userchatt.key)
@@ -440,7 +446,7 @@ class ChatDetailScreen extends React.Component {
               
             };
 
-           await this.setState({ chats: tchats });
+            this.setState({ chats: tchats });
           }
 
         });
