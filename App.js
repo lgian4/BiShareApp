@@ -16,6 +16,8 @@ import EditProfilScreen from './view/EditProfilScreen';
 import TokoScreen from './view/TokoScreen';
 import ChatDetailScreen from './view/ChatDetailScreen';
 import ChatScreen from './view/ChatScreen';
+import ChatTokoScreen from './view/ChatTokoScreen';
+import ChatTokoDetailScreen from './view/ChatTokoDetailScreen';
 import ChangePasswordScreen from './view/ChangePasswordScreen';
 
 import AsyncStorage from "@react-native-community/async-storage";
@@ -62,7 +64,9 @@ const HomeTab = () => {
       <HomeStack.Screen name="EditProfil" component={EditProfilScreen} />
       <HomeStack.Screen name="Toko" component={TokoScreen} />
       <HomeStack.Screen name="ChatDetail" component={ChatDetailScreen} />
+      <HomeStack.Screen name="ChatTokoDetail" component={ChatTokoDetailScreen} />
       <HomeStack.Screen name="Chat" component={ChatScreen} />
+      <HomeStack.Screen name="ChatToko" component={ChatTokoScreen} />
       <HomeStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <HomeStack.Screen name="RegisterTab" component={RegisterTab} />
     </HomeStack.Navigator>

@@ -91,7 +91,7 @@ const currencyFormatter = (value, options) => {
 };
 var ref = null;
 
-class ChatDetailScreen extends React.Component {
+class ChatTokoDetailScreen extends React.Component {
   constructor() {
     super();
 
@@ -102,6 +102,7 @@ class ChatDetailScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
       user: null,
+      toko:null,
       messages: [],
 
       kategori: [],
@@ -216,30 +217,20 @@ class ChatDetailScreen extends React.Component {
     var tuser = this.state.user;
 
     if (tchats == null || tchats.userid1 == "") {
-      if (userchatt.tokoid != "" && userchatt.tokoid != null) {
+    
         tchats = {
-          userid1: tuser.userid,
+          userid1:  userchatt.userid,
           username1: tuser.name,
           userid2: "",
           iswithtoko: true,
-          tokoid: userchatt.tokoid,
-          tokoname: userchatt.name,
+          tokoid: tuser.tokoid,
+          tokoname: tuser.tokoname.name,
           username2: "",
 
-        }
+        
       }
-      else if (tchats.userid2 != tchats.userid1) {
-        tchats = {
-          userid1: tuser.userid,
-          username1: tuser.name,
-          tokoid: "",
-          iswithtoko: false,
-          userid2: userchatt.userid,
-          username2: userchatt.name,
-          tokoname: "",
-
-        }
-      }
+      
+      
       this.setState({ chats: tchats });
       tchats.key = firebase
         .database()
@@ -421,6 +412,9 @@ class ChatDetailScreen extends React.Component {
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
+    var ttoko = this.state.toko;
+    if (ttoko == null)
+    ttoko = await getData("toko");
     // userchat
     await this.setState({ userchats: selectedproduk, user: tuser });
 
@@ -524,7 +518,7 @@ class ChatDetailScreen extends React.Component {
   }
 }
 
-export default ChatDetailScreen;
+export default ChatTokoDetailScreen;
 
 const styles = StyleSheet.create({
   container: {

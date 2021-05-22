@@ -85,7 +85,7 @@ const currencyFormatter = (value, options) => {
   )}`;
 };
 
-class ChatScreen extends React.Component {
+class ChatTokoScreen extends React.Component {
   constructor() {
     super();
 
@@ -266,7 +266,7 @@ class ChatScreen extends React.Component {
     try {
       await firebase
         .database()
-        .ref("userchats/" + tuser.userid + "/")
+        .ref("tokochats/" + tuser.tokoid + "/")
         .on("value", (snapshot) => {
           console.log(snapshot);
           snapshot.forEach((child) => {
@@ -286,7 +286,8 @@ class ChatScreen extends React.Component {
           });
 
 
-          this.setState({ userchats: tuserchats, isFetching: false, user: tuser });         
+          this.setState({ userchats: tuserchats, isFetching: false, user: tuser });
+          storeData("userchats", tuserchats);
           //console.log(tkeranjanglist);
         });
     } catch (error) {
@@ -406,7 +407,7 @@ class ChatScreen extends React.Component {
   }
 }
 
-export default ChatScreen;
+export default ChatTokoScreen;
 
 const styles = StyleSheet.create({
   container: {
