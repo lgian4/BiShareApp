@@ -25,6 +25,7 @@ import moment from "moment";
 import * as firebase from "firebase";
 import AsyncStorage from "@react-native-community/async-storage";
 import { Rating, AirbnbRating } from 'react-native-ratings';
+import { createIconSetFromFontello } from "react-native-vector-icons";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
@@ -178,7 +179,7 @@ class ChatDetailScreen extends React.Component {
   }
 
   refOn = callback => {
-     ref = firebase.database().ref("chatmessages/"+this.state.userchats.key);
+    ref = firebase.database().ref("chatmessages/" + this.state.userchats.key);
 
     ref.limitToLast(20)
       .on('child_added', snapshot => callback(this.parse(snapshot)));
@@ -197,7 +198,7 @@ class ChatDetailScreen extends React.Component {
         _id: sentby,
         name: sentname
       };
-    
+
       const message = { id: snapshot.key, _id: snapshot.key, createdAt: times, text: texts, user: users };
       console.log('snapshot :' + JSON.stringify(message));
       return message;
@@ -214,44 +215,45 @@ class ChatDetailScreen extends React.Component {
     var tchats = this.state.chats;
     var tuser = this.state.user;
 
-    if(tchats == null || tchats.userid1 == ""){
-      if(userchatt.tokoid != "" && userchatt.tokoid != null){
+    if (tchats == null || tchats.userid1 == "") {
+      if (userchatt.tokoid != "" && userchatt.tokoid != null) {
         tchats = {
           userid1: tuser.userid,
           username1: tuser.name,
           userid2: "",
-          iswithtoko : true,
-          tokoid : userchatt.tokoid,
+          iswithtoko: true,
+          tokoid: userchatt.tokoid,
           tokoname: userchatt.name,
-          username2:"",
+          username2: "",
 
         }
       }
-      else if(tchats.userid2!= tchats.userid1) {
+      else if (tchats.userid2 != tchats.userid1) {
         tchats = {
           userid1: tuser.userid,
           username1: tuser.name,
           tokoid: "",
-          iswithtoko : false,
-          userid2 : userchatt.userid,
+          iswithtoko: false,
+          userid2: userchatt.userid,
           username2: userchatt.name,
-          tokoname:"",
+          tokoname: "",
 
         }
       }
-      this.setState({chats:tchats});
-      firebase
-      .database()
-      .ref("chats/" )
-      .push(tchats);
+      this.setState({ chats: tchats });
+      tchats.key = firebase
+        .database()
+        .ref("chats/")
+        .push(tchats).getKey();
+      console.log(JSON.stringify(tchats));
     }
-    
+
 
     for (let i = 0; i < messages.length; i++) {
       const { text, user, createdAt } = messages[i];
       userchatt.lastmessage = text;
-      
-      const messagesed = { dlt: false, message: text, sentby: user._id, sentname: user.name, messagedate:this.timestamp };
+
+      const messagesed = { dlt: false, message: text, sentby: user._id, sentname: user.name, messagedate: this.timestamp };
       console.log(JSON.stringify(messagesed));
       firebase
         .database()
@@ -278,6 +280,7 @@ class ChatDetailScreen extends React.Component {
         .ref("tokochats/" + tchats.userid2 + "/" + userchatt.key)
         .set(userchatt);
     }
+    this.setState({ chats: tchats, userchats: userchatt });
 
   };
 
@@ -423,10 +426,10 @@ class ChatDetailScreen extends React.Component {
     //chats
     var tchats = null;
     try {
-      console.log("chats/" + selectedproduk.key );
+      console.log("chats/" + selectedproduk.key);
       await firebase
         .database()
-        .ref("produklike/" + selectedproduk.key )
+        .ref("produklike/" + selectedproduk.key)
         .on("value", (snapshot) => {
 
           console.log("console.log(snapshot); " + snapshot);
@@ -443,7 +446,7 @@ class ChatDetailScreen extends React.Component {
               userid2: snapshot.val().userid2 ?? "",
               username1: snapshot.val().username1 ?? "",
               username2: snapshot.val().username2 ?? "",
-              
+
             };
 
             this.setState({ chats: tchats });
@@ -453,7 +456,7 @@ class ChatDetailScreen extends React.Component {
     } catch (error) {
       //console.error(error);
     }
-    
+
     // load messege
     this.refOn(message =>
       this.setState(previousState => ({

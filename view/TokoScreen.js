@@ -126,7 +126,8 @@ class TokoScreen extends React.Component {
       viewproduk: [],
       searchHistory: [],
       Search: "",
-      showProduk: false
+      showProduk: false,
+      user: null
     };
   }
   notify = (message) => {
@@ -144,6 +145,10 @@ class TokoScreen extends React.Component {
     const { params: tokoid } = route.params;
     // get toko
     var ttoko = null;
+    var tuser = this.state.user;
+    if (tuser == null)
+    tuser = await getData("user");
+
     if (tokoid == null && tokoid != "") {
       this.notify("Toko Kosong");
       navigation.goBack();
@@ -175,7 +180,7 @@ class TokoScreen extends React.Component {
 
     console.log("load produk");
     var tempproduk = [];
-    await this.setState({ refresh: !this.state.refresh });
+    await this.setState({ refresh: !this.state.refresh, user:tuser });
 
     await firebase
       .database()
@@ -465,6 +470,40 @@ class TokoScreen extends React.Component {
     );
   };
 
+  OnChatDetail = () => {
+    const { navigation } = this.props;
+
+    var tuser = this.state.user;
+    var ttoko = this.state.toko;
+    var tchats = {
+      userid1: tuser.userid,
+      username1: tuser.nama,
+      userid2: "",
+      iswithtoko: true,
+      tokoid: ttoko.tokoid,
+      tokoname: ttoko.tokoname,
+      username2: "",
+
+    }
+
+ 
+
+    tchats.key = firebase
+      .database()
+      .ref("chats/")
+      .push(tchats).getKey();
+
+      var tuserchats={
+        key: tchats.key,
+        lastmessage: "",
+        name: tchats.tokoname,
+        tokoid: ttoko.tokoid,
+        userid: "",
+  
+      };
+    navigation.push("ChatDetail", { params: tuserchats });
+  };
+
   async componentDidMount() {
     //this.setState({ refresh: true });
 
@@ -510,7 +549,7 @@ class TokoScreen extends React.Component {
                 <TouchableOpacity style={{ flex: 3, }} onPress={this.OnToko}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     {this.state.toko.tokocode}
-                </Text>
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View flexDirection="row" style={{ padding: 5 }}>
@@ -519,8 +558,8 @@ class TokoScreen extends React.Component {
   </Text>
                 <TouchableOpacity style={{ flex: 3, }}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                  {this.state.toko.tokoname}
-                </Text>
+                    {this.state.toko.tokoname}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View flexDirection="row" style={{ padding: 5 }}>
@@ -529,18 +568,28 @@ class TokoScreen extends React.Component {
   </Text>
                 <TouchableOpacity style={{ flex: 3, }}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                  {this.state.toko.tokodate}
-                </Text>
+                    {this.state.toko.tokodate}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View flexDirection="row" style={{ padding: 5 }}>
                 <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
-                  Dekripsi
+                  Deskripsi
   </Text>
                 <TouchableOpacity style={{ flex: 3, }}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
-                  {this.state.toko.tokodesc}
-                </Text>
+                    {this.state.toko.tokodesc}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                  Chat
+  </Text>
+                <TouchableOpacity style={{ flex: 3, }} onPress={this.OnChatDetail}>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                    Buka Chat
+                  </Text>
                 </TouchableOpacity>
               </View>
 
