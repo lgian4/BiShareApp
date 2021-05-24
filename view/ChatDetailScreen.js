@@ -473,6 +473,7 @@ class ChatDetailScreen extends React.Component {
   }
 
   componentWillUnmount() {
+    if(ref!= null)
     ref.off();
   }
 

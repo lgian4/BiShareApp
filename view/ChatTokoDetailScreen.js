@@ -103,6 +103,7 @@ class ChatTokoDetailScreen extends React.Component {
       displayFormat: "YYYY-MM-DD",
       user: null,
       toko:null,
+      toko:null,
       messages: [],
 
       kategori: [],
@@ -215,19 +216,17 @@ class ChatTokoDetailScreen extends React.Component {
     var userchatt = this.state.userchats;
     var tchats = this.state.chats;
     var tuser = this.state.user;
-
+    var ttoko = this.state.toko;
     if (tchats == null || tchats.userid1 == "") {
     
         tchats = {
           userid1:  userchatt.userid,
-          username1: tuser.name,
+          username1: userchatt.name,
           userid2: "",
           iswithtoko: true,
-          tokoid: tuser.tokoid,
-          tokoname: tuser.tokoname.name,
-          username2: "",
-
-        
+          tokoid: ttoko.tokoid,
+          tokoname: ttoko.tokoname,
+          username2: "",        
       }
       
       
@@ -416,7 +415,7 @@ class ChatTokoDetailScreen extends React.Component {
     if (ttoko == null)
     ttoko = await getData("toko");
     // userchat
-    await this.setState({ userchats: selectedproduk, user: tuser });
+    await this.setState({ userchats: selectedproduk, user: tuser, toko:ttoko });
 
     console.log("selected produk"+ JSON.stringify(selectedproduk));
     //chats
@@ -467,6 +466,7 @@ class ChatTokoDetailScreen extends React.Component {
   }
 
   componentWillUnmount() {
+    if(ref!= null)
     ref.off();
   }
 

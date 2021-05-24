@@ -119,7 +119,7 @@ class LoginScreen extends React.Component {
       name: this.state.name,
       email: this.state.email,
     });
-  };loginFailed = () => {
+  }; loginFailed = () => {
     alert('Login failure. Please tried again.');
   };
   onLogin = async () => {
@@ -128,7 +128,7 @@ class LoginScreen extends React.Component {
       return;
     }
     var user = null;
-     user = {
+    user = {
       email: this.state.username,
       password: this.state.password,
     };
@@ -159,6 +159,7 @@ class LoginScreen extends React.Component {
         }
       });
 
+  
 
   };
 
