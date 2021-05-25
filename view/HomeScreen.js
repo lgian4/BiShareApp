@@ -210,6 +210,8 @@ class HomeScreen extends React.Component {
     var found = false;
     if (tuser == null)
       tuser = await getData("user");
+
+
     await firebase
       .database()
       .ref("users")
@@ -220,42 +222,58 @@ class HomeScreen extends React.Component {
           if (child.key != "count" && child.val().dlt != true) {
             if (child.val().password == tuser.password) {
               tuser = child.val();
+              if (tuser.tokoid === undefined) {
+                tuser.tokoid = "";                
+              }
               storeData("user", tuser);
               this.setState({ user: tuser });
-              found = false;
+              found = true;
             }
           }
         });
-        if(!found){
-          this.notify("User tidak ditemukan");
-          const { navigation } = this.props;
-          navigation.navigate("RegisterTab");
-        }
-        
+
+
+
       });
-
-
-    var ttoko = this.state.toko;;
-    if ((ttoko == null || this.state.toko.tokoid != '') && tuser.tokoid != "") {
+    await new Promise(r => setTimeout(r, 3000));
+    if (!found) {
+      this.notify("User tidak ditemukan");
+      const { navigation } = this.props;
+      // navigation.navigate("RegisterTab");
+    }
+    
+    var ttoko = this.state.toko;
+    
+    if ((ttoko == null || ttoko.tokoid != '') && tuser.tokoid !== undefined && tuser.tokoid != "") {
 
       console.log("load toko");
 
-      firebase
+      await firebase
         .database()
         .ref("toko/" + tuser.tokoid)
-        .on("value", (snapshot) => {
+        .on("value", (snapshot2) => {
+          if (snapshot2 == null) {
+            console.log("kosong toko");
+            console.log(JSON.stringify(snapshot2));
+          }
+
+          console.log(JSON.stringify(snapshot2.val()));
+
+          ttoko = snapshot2.val();
+          ttoko.key = snapshot2.key;
+          console.log(JSON.stringify(ttoko));
           ttoko = {
-            key: snapshot.key,
-            dlt: snapshot.val().dlt ?? false,
-            foto: snapshot.val().foto,
-            kontak: snapshot.val().kontak,
-            status: snapshot.val().status,
-            tokocode: snapshot.val().tokocode,
-            tokodate: snapshot.val().tokodate,
-            tokoid: snapshot.val().tokoid,
-            tokoname: snapshot.val().tokoname,
-            userid: snapshot.val().userid,
-            usernama: snapshot.val().usernama,
+            key: snapshot2.key,
+            dlt: snapshot2.val().dlt ?? false,
+            foto: snapshot2.val().foto,
+            kontak: snapshot2.val().kontak,
+            status: snapshot2.val().status,
+            tokocode: snapshot2.val().tokocode,
+            tokodate: snapshot2.val().tokodate,
+            tokoid: snapshot2.val().tokoid,
+            tokoname: snapshot2.val().tokoname,
+            userid: snapshot2.val().userid,
+            usernama: snapshot2.val().usernama,
           };
           this.setState({ toko: ttoko });
           storeData("toko", ttoko);

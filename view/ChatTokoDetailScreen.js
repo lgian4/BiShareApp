@@ -505,9 +505,9 @@ class ChatTokoDetailScreen extends React.Component {
           showUserAvatar={true}
 
           user={{
-            _id: this.state.userchats.userid ?? this.state.tokoid,
-            name: this.state.userchats.name,
-            id: this.state.userchats.userid ?? this.state.tokoid,
+            _id: this.state.toko.tokoid,
+            name: this.state.toko.tokoname,
+            id: this.state.toko.tokoid,
           }}
         />
 

@@ -169,14 +169,7 @@ class ChatDetailScreen extends React.Component {
 
 
 
-  renderBubble = (props) => {
-    console.log(props);
-    return (
-      <View>
-        <Video style={styles.video} resizeMode="cover" source={{ uri: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4" }} />
-      </View>
-    );
-  }
+
 
   refOn = callback => {
     ref = firebase.database().ref("chatmessages/" + this.state.userchats.key);
@@ -209,12 +202,15 @@ class ChatDetailScreen extends React.Component {
     return firebase.database.ServerValue.TIMESTAMP;
   }
 
-  onSend = messages => {
-
+  onSend = async (messages) => {
+    console.log("send" + JSON.stringify(messages));
     var userchatt = this.state.userchats;
     var tchats = this.state.chats;
     var tuser = this.state.user;
+    if (tuser == null)
+      tuser = await getData("user");
 
+    console.log("user" + JSON.stringify(tuser));
     if (tchats == null || tchats.userid1 == "") {
       if (userchatt.tokoid != "" && userchatt.tokoid != null) {
         tchats = {
@@ -240,48 +236,70 @@ class ChatDetailScreen extends React.Component {
 
         }
       }
-      this.setState({ chats: tchats });
-      tchats.key = firebase
+      await this.setState({ chats: tchats });
+      tchats.key = await firebase
         .database()
         .ref("chats/")
         .push(tchats).getKey();
 
     }
+
     console.log("TOKO chats :" + JSON.stringify(tchats));
 
     for (let i = 0; i < messages.length; i++) {
       const { text, user, createdAt } = messages[i];
       userchatt.lastmessage = text;
 
-      const messagesed = { dlt: false, message: text, sentby: user._id, sentname: user.name, messagedate: this.timestamp };
-
-      firebase
+      const messagesed = { dlt: false, message: text, sentby: tuser.userid, sentname: tuser.nama, messagedate: this.timestamp };
+      console.log(" chats :" + JSON.stringify(messagesed));
+      await firebase
         .database()
         .ref("chatmessages/" + userchatt.key)
         .push(messagesed);
 
     }
 
-    firebase
-      .database()
-      .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
-      .set(userchatt);
-
+    console.log(" userchats :" + JSON.stringify(userchatt));
     if (tchats.iswithtoko) {
+      userchatt.tokoid = "";
+      userchatt.name = tchats.username1;
+      userchatt.userid = tchats.userid1;
 
-      firebase
+      await firebase
         .database()
         .ref("tokochats/" + tchats.tokoid + "/" + userchatt.key)
         .set(userchatt);
 
+      userchatt.tokoid = tchats.tokoid;
+      userchatt.name = tchats.tokoname;
+      userchatt.userid = "";
+      await firebase
+        .database()
+        .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
+        .set(userchatt);
+
     }
     else {
-      firebase
+
+      userchatt.tokoid = "";
+      userchatt.name = tchats.username1;
+      userchatt.userid = tchats.userid1;
+      await firebase
         .database()
         .ref("userchats/" + tchats.userid2 + "/" + userchatt.key)
         .set(userchatt);
+
+
+      userchatt.tokoid = "";
+      userchatt.name = tchats.username2;
+      userchatt.userid = tchats.userid2;
+      await firebase
+        .database()
+        .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
+        .set(userchatt);
+
     }
-    this.setState({ chats: tchats, userchats: userchatt });
+    await this.setState({ chats: tchats, userchats: userchatt });
 
   };
 
@@ -421,14 +439,19 @@ class ChatDetailScreen extends React.Component {
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
+    if (tuser == null)
+      await new Promise(r => setTimeout(r, 1000));
+    if (tuser == null)
+      await new Promise(r => setTimeout(r, 1000));
+
+    console.log("user :" + JSON.stringify(tuser));
     // userchat
     await this.setState({ userchats: selectedproduk, user: tuser });
 
-    console.log("selected produk"+ JSON.stringify(selectedproduk));
+    console.log("selected produk" + JSON.stringify(selectedproduk));
     //chats
     var tchats = null;
-    try {
-      console.log("chats/" + selectedproduk.key);
+    try {      
       await firebase
         .database()
         .ref("chats/" + selectedproduk.key)
@@ -473,8 +496,8 @@ class ChatDetailScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    if(ref!= null)
-    ref.off();
+    if (ref != null)
+      ref.off();
   }
 
   render() {
@@ -507,14 +530,14 @@ class ChatDetailScreen extends React.Component {
         <GiftedChat
 
           messages={this.state.messages}
-          onSend={(messages) => this.onSend(messages)}
+          onSend={async (messages) => await this.onSend(messages)}
           alwaysShowSend={true}
           showUserAvatar={true}
 
           user={{
-            _id: this.state.userchats.userid ?? this.state.tokoid,
-            name: this.state.userchats.name,
-            id: this.state.userchats.userid ?? this.state.tokoid,
+            _id: this.state.user == null ? "" : this.state.user.userid ,
+            name: this.state.user == null ? "" : this.state.user.nama ,
+            id: this.state.user == null ? "" : this.state.user.userid ,
           }}
         />
 

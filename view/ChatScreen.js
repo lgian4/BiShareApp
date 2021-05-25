@@ -269,14 +269,15 @@ class ChatScreen extends React.Component {
         .ref("userchats/" + tuser.userid + "/")
         .on("value", (snapshot) => {
           console.log(snapshot);
+          tuserchats = []
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
               child.key != "produkmediacount" 
             ) {
+
               tuserchats.push({
                 key: child.key,
-
                 lastmessage: child.val().lastmessage,
                 userid: child.val().userid,
                 tokoid: child.val().tokoid,
@@ -301,7 +302,7 @@ class ChatScreen extends React.Component {
     // return(
     //   <View></View>
     // )
-    console.log("render produk");
+    
    
 
 
