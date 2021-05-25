@@ -107,7 +107,7 @@ class HomeScreen extends React.Component {
       kategori: [],
       produk: [],
       viewproduk: [],
-      toko:null,
+      toko: null,
       refresh: true,
       refreshkategori: true,
       user: [],
@@ -140,7 +140,7 @@ class HomeScreen extends React.Component {
       navigation.push("RegisterTab");
       return;
     }
-    
+
     var tloadddate = await getData("loadddate");
     await this.setState({ user: tuser, nama: tuser.nama, loadddate: tloadddate });
     // await this.CekKoneksi();
@@ -205,17 +205,46 @@ class HomeScreen extends React.Component {
 
 
   loadToko = async () => {
+    console.log("toko")
     var tuser = this.state.user;
+    var found = false;
+    if (tuser == null)
+      tuser = await getData("user");
+    await firebase
+      .database()
+      .ref("users")
+      .orderByChild("username")
+      .equalTo(tuser.username)
+      .on("value", (snapshot) => {
+        snapshot.forEach((child) => {
+          if (child.key != "count" && child.val().dlt != true) {
+            if (child.val().password == tuser.password) {
+              tuser = child.val();
+              storeData("user", tuser);
+              this.setState({ user: tuser });
+              found = false;
+            }
+          }
+        });
+        if(!found){
+          this.notify("User tidak ditemukan");
+          const { navigation } = this.props;
+          navigation.navigate("RegisterTab");
+        }
+        
+      });
+
+
     var ttoko = this.state.toko;;
-    if (( ttoko== null || this.state.toko.tokoid != '' )&&  tuser.tokoid!= "") {
-     
+    if ((ttoko == null || this.state.toko.tokoid != '') && tuser.tokoid != "") {
+
       console.log("load toko");
-      
+
       firebase
         .database()
-        .ref("toko/"+tuser.tokoid)
+        .ref("toko/" + tuser.tokoid)
         .on("value", (snapshot) => {
-          ttoko ={
+          ttoko = {
             key: snapshot.key,
             dlt: snapshot.val().dlt ?? false,
             foto: snapshot.val().foto,
@@ -229,12 +258,12 @@ class HomeScreen extends React.Component {
             usernama: snapshot.val().usernama,
           };
           this.setState({ toko: ttoko });
-           storeData("toko", ttoko);
+          storeData("toko", ttoko);
           console.log(JSON.stringify(ttoko))
         });
-   
 
-   
+
+
     }
   };
 
