@@ -245,7 +245,7 @@ class ChatTokoScreen extends React.Component {
 
   OnChatDetail = (selectedproduk) => {
     const { navigation } = this.props;
-    navigation.push("ChatDetail", { params: selectedproduk });
+    navigation.push("ChatTokoDetail", { params: selectedproduk });
   };
 
   loadChat = async () => {
@@ -269,6 +269,7 @@ class ChatTokoScreen extends React.Component {
         .ref("tokochats/" + tuser.tokoid + "/")
         .on("value", (snapshot) => {
           console.log(snapshot);
+          tuserchats = [];
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
@@ -286,9 +287,7 @@ class ChatTokoScreen extends React.Component {
           });
 
 
-          this.setState({ userchats: tuserchats, isFetching: false, user: tuser });
-          storeData("userchats", tuserchats);
-          //console.log(tkeranjanglist);
+          this.setState({ userchats: tuserchats, isFetching: false, user: tuser });        
         });
     } catch (error) {
       //console.error(error);
@@ -302,10 +301,7 @@ class ChatTokoScreen extends React.Component {
     // return(
     //   <View></View>
     // )
-    console.log("render produk");
-   
-
-
+    
     return (
       <TouchableOpacity onPress={async () => { this.OnChatDetail(item) }}>
         <View

@@ -102,10 +102,9 @@ class ChatTokoDetailScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
       user: null,
-      toko:null,
-      toko:null,
+      toko:null,      
       messages: [],
-
+      isLoading: false,
       kategori: [],
       produklike: {
         key: 0,
@@ -170,16 +169,6 @@ class ChatTokoDetailScreen extends React.Component {
   }
 
 
-
-  renderBubble = (props) => {
-    console.log(props);
-    return (
-      <View>
-        <Video style={styles.video} resizeMode="cover" source={{ uri: "https://flyreel.blob.core.windows.net/underwriter-video-storage/e591ef04-8146-4586-b80e-e7c032578549.mp4" }} />
-      </View>
-    );
-  }
-
   refOn = callback => {
     ref = firebase.database().ref("chatmessages/" + this.state.userchats.key);
 
@@ -211,27 +200,29 @@ class ChatTokoDetailScreen extends React.Component {
     return firebase.database.ServerValue.TIMESTAMP;
   }
 
-  onSend = messages => {
-
+  onSend =  async (messages) => {
+    await this.setState({ isLoading: true });
     var userchatt = this.state.userchats;
     var tchats = this.state.chats;
     var tuser = this.state.user;
     var ttoko = this.state.toko;
-    if (tchats == null || tchats.userid1 == "") {
-    
+    if(ttoko == null)
+    ttoko = await getData("toko");
+    if (tchats == null || tchats.userid1 == "") {    
+      
         tchats = {
-          userid1:  userchatt.userid,
+          userid1: userchatt.userid,
           username1: userchatt.name,
           userid2: "",
           iswithtoko: true,
           tokoid: ttoko.tokoid,
           tokoname: ttoko.tokoname,
-          username2: "",        
-      }
-      
-      
-      this.setState({ chats: tchats });
-      tchats.key = firebase
+          username2: "",
+
+        }
+
+     await this.setState({ chats: tchats });
+      tchats.key =await firebase
         .database()
         .ref("chats/")
         .push(tchats).getKey();
@@ -243,35 +234,38 @@ class ChatTokoDetailScreen extends React.Component {
       const { text, user, createdAt } = messages[i];
       userchatt.lastmessage = text;
 
-      const messagesed = { dlt: false, message: text, sentby: user._id, sentname: user.name, messagedate: this.timestamp };
+      const messagesed = { dlt: false, message: text, sentby: ttoko.tokoid, sentname: ttoko.tokoname, messagedate: this.timestamp };
 
-      firebase
+        await firebase
         .database()
         .ref("chatmessages/" + userchatt.key)
         .push(messagesed);
 
     }
 
-    firebase
+      await firebase
       .database()
       .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
       .set(userchatt);
 
-    if (tchats.iswithtoko) {
+      userchatt.tokoid = "";
+      userchatt.name = tchats.username1;
+      userchatt.userid = tchats.userid1;
 
-      firebase
+      await firebase
         .database()
         .ref("tokochats/" + tchats.tokoid + "/" + userchatt.key)
         .set(userchatt);
 
-    }
-    else {
-      firebase
+      userchatt.tokoid = tchats.tokoid;
+      userchatt.name = tchats.tokoname;
+      userchatt.userid = "";
+      await firebase
         .database()
-        .ref("userchats/" + tchats.userid2 + "/" + userchatt.key)
+        .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
         .set(userchatt);
-    }
-    this.setState({ chats: tchats, userchats: userchatt });
+
+    this.setState({ chats: tchats, userchats: userchatt,isLoading:false });
 
   };
 
@@ -405,6 +399,7 @@ class ChatTokoDetailScreen extends React.Component {
     // var tsuer = await getData("user");
     // this.setState({ user: tsuer });
     // await this.getProduk();
+    await this.setState({ isLoading: true });
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
 
@@ -414,6 +409,13 @@ class ChatTokoDetailScreen extends React.Component {
     var ttoko = this.state.toko;
     if (ttoko == null)
     ttoko = await getData("toko");
+
+  if (ttoko == null)
+    await new Promise(r => setTimeout(r, 1000));
+  if (ttoko == null)
+    await new Promise(r => setTimeout(r, 1000));
+
+    console.log("toko :"+ JSON.stringify(ttoko));
     // userchat
     await this.setState({ userchats: selectedproduk, user: tuser, toko:ttoko });
 
@@ -463,6 +465,8 @@ class ChatTokoDetailScreen extends React.Component {
         messages: GiftedChat.append(previousState.messages, message),
       }))
     );
+    await new Promise(r => setTimeout(r, 1000));
+    await this.setState({ isLoading: false });
   }
 
   componentWillUnmount() {
@@ -490,12 +494,28 @@ class ChatTokoDetailScreen extends React.Component {
               <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
             </TouchableOpacity>
           </View>
-          <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>{this.state.userchats.name}</Text>
+          <TouchableOpacity style={{  padding:10,paddingTop:20,}} onPress={() => { 
+            console.log("name");
+            const { navigation } = this.props; 
+            if(this.state.tchats != null ){
+              if(this.state.tchats.iswithtoko == true && this.state.userchats.name == this.state.tchats.tokoname){
+                navigation.push("Toko", { params: this.state.produk.tokoid }); 
+              }
+              else {
+               
+              }
+              
+            }
+            
+
+            }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold',}}>{this.state.userchats.name}</Text>
+          </TouchableOpacity>
           <View style={{ marginTop: 20 }}>
             <Icon name={"cart"} size={25} color={"white"} />
           </View>
         </View>
-
+        <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
 
         <GiftedChat
 
@@ -505,9 +525,9 @@ class ChatTokoDetailScreen extends React.Component {
           showUserAvatar={true}
 
           user={{
-            _id: this.state.toko.tokoid,
-            name: this.state.toko.tokoname,
-            id: this.state.toko.tokoid,
+         _id: this.state.toko == null ? "" : this.state.toko.tokoid ,
+            name: this.state.toko == null ? "" : this.state.toko.tokoname ,
+            id: this.state.toko == null ? "" : this.state.toko.tokoid ,               
           }}
         />
 

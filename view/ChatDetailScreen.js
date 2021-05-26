@@ -15,6 +15,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import { Audio, Video } from 'expo-av';
 import ParsedText from 'react-native-parsed-text';
@@ -102,6 +103,7 @@ class ChatDetailScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
       user: null,
+      isLoading: false,
       messages: [],
 
       kategori: [],
@@ -203,6 +205,7 @@ class ChatDetailScreen extends React.Component {
   }
 
   onSend = async (messages) => {
+    await this.setState({ isLoading: true });
     console.log("send" + JSON.stringify(messages));
     var userchatt = this.state.userchats;
     var tchats = this.state.chats;
@@ -299,7 +302,7 @@ class ChatDetailScreen extends React.Component {
         .set(userchatt);
 
     }
-    await this.setState({ chats: tchats, userchats: userchatt });
+    await this.setState({ chats: tchats, userchats: userchatt, isLoading:false });
 
   };
 
@@ -433,6 +436,7 @@ class ChatDetailScreen extends React.Component {
     // var tsuer = await getData("user");
     // this.setState({ user: tsuer });
     // await this.getProduk();
+    await this.setState({ isLoading: true });
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
 
@@ -493,6 +497,8 @@ class ChatDetailScreen extends React.Component {
         messages: GiftedChat.append(previousState.messages, message),
       }))
     );
+    await new Promise(r => setTimeout(r, 1000));
+    await this.setState({ isLoading: false });
   }
 
   componentWillUnmount() {
@@ -520,13 +526,24 @@ class ChatDetailScreen extends React.Component {
               <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
             </TouchableOpacity>
           </View>
-          <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>{this.state.userchats.name}</Text>
+          <TouchableOpacity style={{  padding:10,paddingTop:20,}} onPress={() => { 
+           
+            const { navigation } = this.props;             
+            if(this.state.chats != null ){              
+              if(this.state.chats.iswithtoko == true ){
+                navigation.push("Toko", { params: this.state.chats.tokoid }); 
+              }
+              else {                            }
+              }
+            }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold',}}>{this.state.userchats.name}</Text>
+          </TouchableOpacity>
           <View style={{ marginTop: 20 }}>
             <Icon name={"cart"} size={25} color={"white"} />
           </View>
         </View>
 
-
+        <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
         <GiftedChat
 
           messages={this.state.messages}
