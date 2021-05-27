@@ -395,6 +395,7 @@ class HomeScreen extends React.Component {
       .database()
       .ref("produk/")
       .on("value", async (snapshot) => {
+        tempproduk = [];
         snapshot.forEach((child) => {
           if (
             child.key != "count" &&
@@ -647,7 +648,8 @@ class HomeScreen extends React.Component {
               backgroundColor: "#F6F6F6",
 
               marginTop: 10,
-              borderRadius: 20,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
               paddingVertical: 10,
               alignContent: "space-between",
             }}
@@ -667,7 +669,7 @@ class HomeScreen extends React.Component {
           extraData={this.state.refresh}
           style={{
             paddingHorizontal: 10,
-            marginTop: -20,
+            marginTop: 0,
             backgroundColor: "#F6F6F6",
             paddingBottom: 20
           }}

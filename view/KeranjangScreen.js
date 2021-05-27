@@ -167,13 +167,13 @@ class KeranjangScreen extends React.Component {
     });
     console.log(tkeranjanglist.length);
 
-    // this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk,  });
+    this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk,  });
     firebase
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-    await this.loadKeranjang();
+    
   }
   onMinusStok = async (item) => {
     this.setState({ isFetching: true })
@@ -197,13 +197,13 @@ class KeranjangScreen extends React.Component {
     });
     console.log(tkeranjanglist.length);
 
-    //this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk, refresh: !this.state.refresh, isFetching: false });
+    this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk, refresh: !this.state.refresh, isFetching: false });
     firebase
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-    await this.loadKeranjang();
+    
   }
 
   onDeleteStok = async (item) => {
@@ -227,12 +227,12 @@ class KeranjangScreen extends React.Component {
     });
     console.log(tkeranjanglist.length);
 
-    //this.setState({ totalharga: ttotalharga, totalproduk: ttotalproduk, refresh: !this.state.refresh, isFetching: false });
+    this.setState({ totalharga: ttotalharga, totalproduk: ttotalproduk, refresh: !this.state.refresh, isFetching: false });
     firebase
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
-    await this.loadKeranjang();
+    
   }
 
 
@@ -299,6 +299,7 @@ class KeranjangScreen extends React.Component {
         .ref("keranjang/" + tuser.userid + "/")
         .on("value", (snapshot) => {
           //console.log(snapshot);
+          tkeranjanglist = [];
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
