@@ -448,9 +448,7 @@ class ChatDetailScreen extends React.Component {
             case 0:
                 Clipboard.setString(message.text);
                 break;
-            case 1:    
-                this.onDelete(messageIdToDelete)
-                break;
+           
         }
     });
 }
