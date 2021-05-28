@@ -99,7 +99,7 @@ class ReviewScreen extends React.Component {
       user: null,
       kategori: [],
       produk: null,
-      candelete : false,
+      candelete: false,
       firstmedia: "",
       reviewlist: [],
       review: {
@@ -200,7 +200,7 @@ class ReviewScreen extends React.Component {
     }
   };
 
-  
+
 
   handleConfirm = (date) => {
     this.setState({ DateDisplay: date });
@@ -210,13 +210,25 @@ class ReviewScreen extends React.Component {
 
   onDeleteReview = async (item) => {
     this.setState({ isFetching: true })
-  
-    var tuser = this.state.user;
+
+    
+    var tproduk = this.state.produk;
+    if(tproduk == null)
+    return;
     item.dlt = true;
     firebase
       .database()
       .ref("review/" + item.produkid + "/" + item.userid)
       .set(item);
+
+    
+    tproduk.reviewtotal = tproduk.reviewtotal - item.reviewtotal;
+    tproduk.reviewcount = tproduk.reviewcount - 1;
+    tproduk.reviewavg = tproduk.reviewtotal / tproduk.reviewcount;
+    await firebase
+      .database()
+      .ref("produk/" + tproduk.produkid)
+      .set(tproduk);
     await this.LoadReview();
   }
 
@@ -230,8 +242,8 @@ class ReviewScreen extends React.Component {
     if (tuser == null) {
       tuser = await getData("user");
     }
-    if (tuser == null )
-    await new Promise(r => setTimeout(r, 1000));
+    if (tuser == null)
+      await new Promise(r => setTimeout(r, 1000));
 
     console.log(selectedproduk.produkid);
     // console.log(tuser);
@@ -264,7 +276,7 @@ class ReviewScreen extends React.Component {
         .ref("review/" + selectedproduk.produkid + "/")
         .on("value", (snapshot) => {
           console.log(snapshot);
-           treview = {
+          treview = {
             key: 0,
             dlt: false,
             produkid: "",
@@ -274,7 +286,7 @@ class ReviewScreen extends React.Component {
             reviewdesc: "",
             reviewdate: Date.now(),
           };
-           toldreview = {
+          toldreview = {
             key: 0,
             dlt: false,
             produkid: "",
@@ -284,6 +296,7 @@ class ReviewScreen extends React.Component {
             reviewdesc: "",
             reviewdate: Date.now(),
           };
+          treviewlist = []
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
@@ -330,21 +343,20 @@ class ReviewScreen extends React.Component {
           storeData("reviewlist", treviewlist);
           //console.log(tkeranjanglist);
         });
-        var tcandelete = false;
-        console.log("user :"+ JSON.stringify(tuser));
-        console.log("selectedproduk :"+ JSON.stringify(selectedproduk.tokoid));
-        
-        if(tuser.tokoid == selectedproduk.tokoid){
-          tcandelete = true;
-        }
-        if(tuser.status =="admin")
-        {tcandelete = true;}
-        
-        await  this.setState({ candelete:tcandelete, produk: selectedproduk, oldreview: toldreview, reviewlist: treviewlist, review: treview, isFetching: false, user: tuser });
+      var tcandelete = false;
+      console.log("user :" + JSON.stringify(tuser));
+      console.log("selectedproduk :" + JSON.stringify(selectedproduk.tokoid));
+
+      if (tuser.tokoid == selectedproduk.tokoid) {
+        tcandelete = true;
+      }
+      if (tuser.status == "admin") { tcandelete = true; }
+
+      await this.setState({ candelete: tcandelete, produk: selectedproduk, oldreview: toldreview, reviewlist: treviewlist, review: treview, isFetching: false, user: tuser });
     } catch (error) {
       console.error(error);
     }
-await this.setState({isFetching: false})
+    await this.setState({ isFetching: false })
 
   };
 
@@ -360,7 +372,7 @@ await this.setState({isFetching: false})
     if (item.mediaurl != null && item.mediaurl != "") {
       uriimage = item.mediaurl
     }
-var ismy = this.state.user.userid == item.userid;
+    var ismy = this.state.user.userid == item.userid;
 
     return (
       <View style={{ backgroundColor: "white", marginHorizontal: 20, marginTop: 10, padding: 15, borderRadius: 10 }}>
@@ -380,17 +392,17 @@ var ismy = this.state.user.userid == item.userid;
         />
         <Text>{item.reviewdesc}</Text>
 
- 
-      { this.state.candelete || ismy && (
-      
-      <TouchableOpacity  onPress={async () => { this.onDeleteReview(item) }}>
-      <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
-     </TouchableOpacity> 
-      )
-      }
 
- 
-       
+        { this.state.candelete || ismy && (
+
+          <TouchableOpacity onPress={async () => { this.onDeleteReview(item) }}>
+            <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
+          </TouchableOpacity>
+        )
+        }
+
+
+
       </View>
     );
   };
