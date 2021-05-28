@@ -13,6 +13,7 @@ import {
   Alert,
   FlatList,
   ImageBackground,
+  Clipboard,
   ScrollView,
   ToastAndroid,
   ActivityIndicator,
@@ -432,6 +433,28 @@ class ChatDetailScreen extends React.Component {
     );
   };
 
+  onLongPress(context, message) {
+    console.log(context, message);    
+    var options = [];
+    options = ['copy', 'Cancel'];
+    
+    
+    const cancelButtonIndex = options.length - 1;
+    context.actionSheet().showActionSheetWithOptions({
+        options,
+        cancelButtonIndex
+    }, (buttonIndex) => {
+        switch (buttonIndex) {
+            case 0:
+                Clipboard.setString(message.text);
+                break;
+            case 1:    
+                this.onDelete(messageIdToDelete)
+                break;
+        }
+    });
+}
+
   async componentDidMount() {
     // var tsuer = await getData("user");
     // this.setState({ user: tsuer });
@@ -439,7 +462,7 @@ class ChatDetailScreen extends React.Component {
     await this.setState({ isLoading: true });
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
-
+    
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
@@ -453,6 +476,7 @@ class ChatDetailScreen extends React.Component {
     await this.setState({ userchats: selectedproduk, user: tuser });
 
     console.log("selected produk" + JSON.stringify(selectedproduk));
+
     //chats
     var tchats = null;
     try {      
@@ -491,7 +515,7 @@ class ChatDetailScreen extends React.Component {
     if (this.state.tchats == null)
       await new Promise(r => setTimeout(r, 1000));
 
-    // load messege
+    // load messege    
     this.refOn(message =>
       this.setState(previousState => ({
         messages: GiftedChat.append(previousState.messages, message),
@@ -503,7 +527,7 @@ class ChatDetailScreen extends React.Component {
 
   componentWillUnmount() {
     if (ref != null)
-      ref.off();
+      ref.off();    
   }
 
   render() {
@@ -550,7 +574,7 @@ class ChatDetailScreen extends React.Component {
           onSend={async (messages) => await this.onSend(messages)}
           alwaysShowSend={true}
           showUserAvatar={true}
-
+          onLongPress={this.onLongPress}
           user={{
             _id: this.state.user == null ? "" : this.state.user.userid ,
             name: this.state.user == null ? "" : this.state.user.nama ,
