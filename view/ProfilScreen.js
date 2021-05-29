@@ -495,6 +495,7 @@ class ProfilScreen extends React.Component {
                 <Text style={{ color: "black", fontSize: 16, }}>Diskusi</Text>
               </View>
             </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
             <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("Chat"); }}>
               <View style={{ justifyContent: "center" }}>
 
