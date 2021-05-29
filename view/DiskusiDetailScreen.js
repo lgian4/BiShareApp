@@ -104,6 +104,7 @@ class DiskusiDetailScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
       user: null,
+      toko:null,
       isLoading: false,
       messages: [],
 
@@ -126,22 +127,13 @@ class DiskusiDetailScreen extends React.Component {
       },
       userchats: {
         key: 0,
-        lastmessage: "....",
-        name: "nama",
-        tokoid: "",
-        userid: "1",
+        diskusiid: "....",
+        diskusiname: "nama",
+        diskusidesc: "",
+        diskusitype: "1",
 
       },
-      chats: {
-        key: 1,
-        iswithtoko: false,
-        userid1: 1,
-        username1: "admin",
-        tokoid: "",
-        tokoname: "",
-        userid2: 1,
-        username2: "admin",
-      },
+     
       chatmessage: [{
         key: 1,
         dlt: false,
@@ -211,99 +203,26 @@ class DiskusiDetailScreen extends React.Component {
     var userchatt = this.state.userchats;
     var tchats = this.state.chats;
     var tuser = this.state.user;
+
     if (tuser == null)
       tuser = await getData("user");
-
-    console.log("user" + JSON.stringify(tuser));
-    if (tchats == null || tchats.userid1 == "") {
-      if (userchatt.tokoid != "" && userchatt.tokoid != null) {
-        tchats = {
-          userid1: tuser.userid,
-          username1: tuser.name,
-          userid2: "",
-          iswithtoko: true,
-          tokoid: userchatt.tokoid,
-          tokoname: userchatt.name,
-          username2: "",
-
-        }
-      }
-      else if (tchats.userid2 != tchats.userid1) {
-        tchats = {
-          userid1: tuser.userid,
-          username1: tuser.name,
-          tokoid: "",
-          iswithtoko: false,
-          userid2: userchatt.userid,
-          username2: userchatt.name,
-          tokoname: "",
-
-        }
-      }
-      await this.setState({ chats: tchats });
-      tchats.key = await firebase
-        .database()
-        .ref("chats/")
-        .push(tchats).getKey();
-
-    }
 
     console.log("TOKO chats :" + JSON.stringify(tchats));
 
     for (let i = 0; i < messages.length; i++) {
-      const { text, user, createdAt } = messages[i];
-      userchatt.lastmessage = text;
+      const { text, user, createdAt } = messages[i];      
 
       const messagesed = { dlt: false, message: text, sentby: tuser.userid, sentname: tuser.nama, messagedate: this.timestamp };
       console.log(" chats :" + JSON.stringify(messagesed));
       await firebase
         .database()
-        .ref("chatmessages/" + userchatt.key)
+        .ref("chatmessages/" + userchatt.diskusiid)
         .push(messagesed);
 
     }
 
-    console.log(" userchats :" + JSON.stringify(userchatt));
-    if (tchats.iswithtoko) {
-      userchatt.tokoid = "";
-      userchatt.name = tchats.username1;
-      userchatt.userid = tchats.userid1;
-
-      await firebase
-        .database()
-        .ref("tokochats/" + tchats.tokoid + "/" + userchatt.key)
-        .set(userchatt);
-
-      userchatt.tokoid = tchats.tokoid;
-      userchatt.name = tchats.tokoname;
-      userchatt.userid = "";
-      await firebase
-        .database()
-        .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
-        .set(userchatt);
-
-    }
-    else {
-
-      userchatt.tokoid = "";
-      userchatt.name = tchats.username1;
-      userchatt.userid = tchats.userid1;
-      await firebase
-        .database()
-        .ref("userchats/" + tchats.userid2 + "/" + userchatt.key)
-        .set(userchatt);
-
-
-      userchatt.tokoid = "";
-      userchatt.name = tchats.username2;
-      userchatt.userid = tchats.userid2;
-      await firebase
-        .database()
-        .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
-        .set(userchatt);
-
-    }
-    await this.setState({ chats: tchats, userchats: userchatt, isLoading:false });
+    
+    await this.setState({ userchats: userchatt, isLoading:false });
 
   };
 
@@ -339,73 +258,7 @@ class DiskusiDetailScreen extends React.Component {
   };
 
 
-  LoadChatFirst = async () => {
-    const { navigation, route } = this.props;
-    const { params: selectedproduk } = route.params;
-
-    var tuser = this.state.user;
-    if (tuser == null)
-      tuser = await getData("user");
-    // load message
-    this.setState({ userchats: selectedproduk, user: tuser });
-    try {
-      console.log("produklike/" + selectedproduk.produkid + "/" + tuser.userid);
-      await firebase
-        .database()
-        .ref("produklike/" + selectedproduk.produkid + "/" + tuser.userid)
-        .on("value", (snapshot) => {
-
-          console.log("console.log(snapshot); " + snapshot);
-          console.log("console.log(snapshot.key); " + snapshot.key);
-          console.log("console.log(snapshot.val); " + snapshot.val());
-          if (snapshot != null && snapshot.val() != null
-          ) {
-            tproduklike = {
-              key: snapshot.key,
-              islike: snapshot.val().islike ?? false,
-              userid: snapshot.val().userid ?? tuser.userid,
-              produkid: snapshot.val().produkid ?? selectedproduk.produkid,
-            };
-
-            this.setState({ produklike: tproduklike });
-          }
-
-        });
-    } catch (error) {
-      //console.error(error);
-    }
-
-    try {
-      await firebase
-        .database()
-        .ref("keranjang/" + tuser.userid + "/" + selectedproduk.produkid)
-        .on("value", (snapshot) => {
-          if (snapshot != null && snapshot.val() != null
-          ) {
-            tkeranjang = {
-              key: snapshot.key,
-              dlt: snapshot.val().dlt ?? false,
-              produkid: snapshot.val().produkid ?? selectedproduk.produkid,
-              userid: snapshot.val().userid ?? tuser.userid,
-              mediaurl: firstmedia,
-              produkname: selectedproduk.produkname,
-              stok: snapshot.val().stok ?? 0,
-              harga: selectedproduk.harga
-            };
-
-            this.setState({ keranjang: tkeranjang });
-          }
-
-        });
-    } catch (error) {
-      //console.error(error);
-    }
-
-
-    this.setState({ user: tuser, produklike: tproduklike });
-    //storeData("produk", tempproduk);
-
-  };
+ 
 
   OnToko = () => {
     const { navigation } = this.props;
@@ -464,6 +317,7 @@ class DiskusiDetailScreen extends React.Component {
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
+
     if (tuser == null)
       await new Promise(r => setTimeout(r, 1000));
     if (tuser == null)
@@ -475,35 +329,7 @@ class DiskusiDetailScreen extends React.Component {
 
     console.log("selected produk" + JSON.stringify(selectedproduk));
 
-    //chats
-    var tchats = null;
-    try {      
-      await firebase
-        .database()
-        .ref("chats/" + selectedproduk.key)
-        .on("value", (snapshot) => {
-          if (snapshot != null && snapshot.val() != null
-          ) {
-            tchats = {
-              key: snapshot.key,
-              iswithtoko: snapshot.val().iswithtoko ?? false,
-              tokoid: snapshot.val().tokoid ?? "",
-              tokoname: snapshot.val().tokoname ?? "",
-              userid1: snapshot.val().userid1 ?? "",
-              userid2: snapshot.val().userid2 ?? "",
-              username1: snapshot.val().username1 ?? "",
-              username2: snapshot.val().username2 ?? "",
-
-            };
-
-            this.setState({ chats: tchats });
-          }
-
-        });
-    } catch (error) {
-      //console.error(error);
-    }
-
+   
     if (this.state.tchats == null)
       await new Promise(r => setTimeout(r, 1000));
     if (this.state.tchats == null)
@@ -558,7 +384,7 @@ class DiskusiDetailScreen extends React.Component {
               else {                            }
               }
             }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold',}}>{this.state.userchats.name}</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold',}}>{this.state.userchats.diskusiname}</Text>
           </TouchableOpacity>
           <View style={{ marginTop: 20 }}>
             <Icon name={"cart"} size={25} color={"white"} />
