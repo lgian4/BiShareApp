@@ -42,6 +42,20 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
+function formatDate(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) 
+      month = '0' + month;
+  if (day.length < 2) 
+      day = '0' + day;
+
+  return [year, month, day].join('-');
+}
+
 const { width: WIDTH } = Dimensions.get("window");
 const HEIGHT = Dimensions.get("window").height;
 
@@ -139,9 +153,9 @@ class EditProfilScreen extends React.Component {
   handleConfirmTglLahir = (date) => {
    
       var tuser = this.state.user;
-      tuser.tanggallahir = JSON.stringify(date) ;
+      tuser.tanggallahir = formatDate(date) ;
        this.setState({ user: tuser })   
-   
+   console.log(tuser.tanggallahir);
     this.setState({ visibility: false })
     this.setState({ TextInputDisableStatus: true })
 
@@ -253,6 +267,7 @@ class EditProfilScreen extends React.Component {
 
 
   };
+  
   async componentDidMount() {
     var tsuer = await getData("user");
     if(tsuer == null)
@@ -403,11 +418,11 @@ class EditProfilScreen extends React.Component {
                     pointerEvents="none"
                     selectTextOnFocus={false}
                     onTouchStart={this.onPressButton}
-                    value={ moment(JSON.parse( this.state.user.tanggallahir)).format(this.state.displayFormat) }
+                    value={ moment( this.state.user.tanggallahir).format(this.state.displayFormat) }
                   />
                   <DateTimePickerModal
                     mode="date"
-                    
+                    value={Date.parse( this.state.user.tanggallahir)}
                   
                     isVisible={this.state.visibility}
                     onConfirm={this.handleConfirmTglLahir}
