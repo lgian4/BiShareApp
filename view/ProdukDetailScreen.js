@@ -16,8 +16,9 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
+  
 } from "react-native";
-
+import { WebView } from 'react-native-webview';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
@@ -279,13 +280,29 @@ class ProdukDetailScreen extends React.Component {
     if (tuser == null)
       tuser = await getData("user");
 
+     
+      
+
     var firstmedia = "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var tempproduk = [];
+    if(selectedproduk.youtubevideo != null && selectedproduk.youtubevideo != ""){
+        
+      var SplitedVideo = selectedproduk.youtubevideo.split("watch?v=")
+      
+      selectedproduk.youtubevideo = SplitedVideo.join("embed/") ;
+      tempproduk.push({
+        key: 0,
+        mediaid: 0,
+        mediaurl:  selectedproduk.youtubevideo,
+        isvideo : true,
+      });
+    }
     if (selectedproduk.produkmedia == null) {
       tempproduk.push({
         key: 0,
         mediaid: 0,
         mediaurl: "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e",
+        isvideo : false,
       });
     } else if (typeof selectedproduk.produkmedia === "object") {
       if (
@@ -308,6 +325,7 @@ class ProdukDetailScreen extends React.Component {
               key: i++,
               mediaid: produkmedia.mediaid,
               mediaurl: produkmedia.mediaurl,
+              isvideo : false,
             });
           }
         });
@@ -408,23 +426,37 @@ class ProdukDetailScreen extends React.Component {
 
 
   _renderItem = ({ item }) => {
-    return (
-      <TouchableOpacity onPress={async (xitem) => { }}>
-        <Image
-          source={{ uri: item.mediaurl }}
-          style={{
-
-            height: HEIGHT / 2 - 20,
-            width: WIDTH - 30,
-            marginHorizontal: 10,
-            borderWidth: 0,
-            borderRadius: 10,
-
-          }}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-    );
+    if(item.isvideo){
+      return (
+        <TouchableOpacity onPress={async (xitem) => { }}>
+          <WebView
+              style={{flex:1,height:100,width:WIDTH-20,marginHorizontal:10,borderRadius:50}}    
+                  javaScriptEnabled={true}
+                  source={{uri: item.mediaurl}}
+              />
+        </TouchableOpacity>
+      );
+    }
+    else {
+      return (
+        <TouchableOpacity onPress={async (xitem) => { }}>
+          <Image
+            source={{ uri: item.mediaurl }}
+            style={{
+  
+              height: HEIGHT / 2 - 20,
+              width: WIDTH - 30,
+              marginHorizontal: 10,
+              borderWidth: 0,
+              borderRadius: 20,
+  
+            }}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      );
+    }
+   
   };
 
   async componentDidMount() {
@@ -472,8 +504,12 @@ class ProdukDetailScreen extends React.Component {
               >
                 {currencyFormatter(this.state.produk.harga, defaultOptions)}
               </Text>
+             
             </View>
             <View style={{ alignItems: "center", marginTop: 20, }}>
+            
+            
+
               <FlatList
                 data={this.state.produkmedia}
                 extraData={this.state.refresh}

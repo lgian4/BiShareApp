@@ -198,6 +198,7 @@ class TokoScreen extends React.Component {
               produkcode: child.val().produkcode,
               deskripsi: child.val().deskripsi,
               fitur: child.val().fitur,
+              youtubevideo: child.val().youtubevideo ?? "",
               spesifikasi: child.val().spesifikasi,
               stok: child.val().stok,
               produkid: child.val().produkid,

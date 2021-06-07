@@ -255,6 +255,7 @@ class KeranjangScreen extends React.Component {
           produkcode: snapshot.val().produkcode,
           deskripsi: snapshot.val().deskripsi,
           fitur: snapshot.val().fitur,
+          youtubevideo: child.val().youtubevideo ?? "",
           spesifikasi: snapshot.val().spesifikasi,
           stok: snapshot.val().stok,
           produkid: snapshot.val().produkid,

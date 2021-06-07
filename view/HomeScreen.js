@@ -424,6 +424,7 @@ class HomeScreen extends React.Component {
               produkmediacount: child.val().produkmediacount ?? 0,
               status: child.val().status ?? "",
               likecount: child.val().likecount ?? 0,
+              youtubevideo: child.val().youtubevideo ?? "",
 
               reviewtotal: child.val().reviewtotal ?? 0,
               reviewcount: child.val().reviewcount ?? 0,
