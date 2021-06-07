@@ -147,7 +147,7 @@ class TokoScreen extends React.Component {
     var ttoko = null;
     var tuser = this.state.user;
     if (tuser == null)
-    tuser = await getData("user");
+      tuser = await getData("user");
 
     if (tokoid == null && tokoid != "") {
       this.notify("Toko Kosong");
@@ -180,12 +180,13 @@ class TokoScreen extends React.Component {
 
     console.log("load produk");
     var tempproduk = [];
-    await this.setState({ refresh: !this.state.refresh, user:tuser });
+    await this.setState({ refresh: !this.state.refresh, user: tuser });
 
     await firebase
       .database()
       .ref("produk/")
       .on("value", async (snapshot) => {
+        tempproduk= [];
         snapshot.forEach((child) => {
           if (
             child.key != "count" &&
@@ -486,21 +487,21 @@ class TokoScreen extends React.Component {
 
     }
 
- 
+
 
     tchats.key = firebase
       .database()
       .ref("chats/")
       .push(tchats).getKey();
 
-      var tuserchats={
-        key: tchats.key,
-        lastmessage: "",
-        name: tchats.tokoname,
-        tokoid: ttoko.tokoid,
-        userid: "",
-  
-      };
+    var tuserchats = {
+      key: tchats.key,
+      lastmessage: "",
+      name: tchats.tokoname,
+      tokoid: ttoko.tokoid,
+      userid: "",
+
+    };
     navigation.push("ChatDetail", { params: tuserchats });
   };
 
@@ -540,6 +541,17 @@ class TokoScreen extends React.Component {
             </View>
           </View>
           <ScrollView style={{ height: HEIGHT - 40 }}>
+            <View style={{ paddingHorizontal: 20,}}>
+
+              <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}              >
+                {this.state.toko.tokoname}
+              </Text>
+              <Text
+                style={{ fontSize: 14, color: "#F24E1E", fontWeight: "bold" }}
+              >
+                {this.state.toko.usernama}
+              </Text>
+            </View>
             <View style={{ paddingHorizontal: 20 }}>
 
               <View flexDirection="row" style={{ padding: 5 }}>
@@ -583,10 +595,10 @@ class TokoScreen extends React.Component {
                 </TouchableOpacity>
               </View>
               <View flexDirection="row" style={{ padding: 5 }}>
-                <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333", textAlignVertical:'center' }}>
                   Chat
   </Text>
-                <TouchableOpacity style={{ flex: 3, }} onPress={this.OnChatDetail}>
+                <TouchableOpacity style={{ flex: 3, borderColor:"#F24E1E",borderWidth:1, borderRadius:10,padding:5}} onPress={this.OnChatDetail}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     Buka Chat
                   </Text>
