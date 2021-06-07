@@ -42,6 +42,20 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
+function formatDate(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) 
+      month = '0' + month;
+  if (day.length < 2) 
+      day = '0' + day;
+
+  return [year, month, day].join('-');
+}
+
 const { width: WIDTH } = Dimensions.get("window");
 const HEIGHT = Dimensions.get("window").height;
 
@@ -114,7 +128,7 @@ class EditProfilScreen extends React.Component {
         userid: "",
         nama: "----",
         username: "",
-        tanggallahir: Date.now(),
+        tanggallahir: '',
         alamat: "",
         jeniskelamin: "m",
         nohp: "m",
@@ -137,7 +151,11 @@ class EditProfilScreen extends React.Component {
   };
 
   handleConfirmTglLahir = (date) => {
-    this.setState({ tanggallahir: date })
+   
+      var tuser = this.state.user;
+      tuser.tanggallahir = formatDate(date) ;
+       this.setState({ user: tuser })   
+   console.log(tuser.tanggallahir);
     this.setState({ visibility: false })
     this.setState({ TextInputDisableStatus: true })
 
@@ -187,14 +205,19 @@ class EditProfilScreen extends React.Component {
         },
         {
           text: "OK", onPress: async () => {
-
-            await firebase
+            try {
+              var res=   await firebase
               .database()
               .ref("users/" + tuser.userid )
               .set(tuser);
-            await storeData("user",tuser);
-           
+              console.log(JSON.stringify(res));
+            await storeData("user",tuser);           
             await new Promise(r => setTimeout(r, 1000));
+            } catch (error) {
+              console.error(error);
+            }
+            
+      
             ToastAndroid.show("Data Berhasil Disimpan", ToastAndroid.SHORT);
           }
         }
@@ -244,10 +267,31 @@ class EditProfilScreen extends React.Component {
 
 
   };
+  
   async componentDidMount() {
     var tsuer = await getData("user");
+    if(tsuer == null)
+    await new Promise(r => setTimeout(r, 1000));
+    if(tsuer == null)
+    await new Promise(r => setTimeout(r, 1000));
+    if(tsuer == null)
+    await new Promise(r => setTimeout(r, 1000));
     console.log(tsuer);
-    this.setState({ user: tsuer });
+    await firebase
+        .database()
+        .ref("users/" + tsuer.userid)
+        .on("value", (snapshot) => {
+          if (snapshot != null && snapshot.val() != null
+          ) {
+            tsuer = snapshot.val();
+            tsuer.key = snapshot.key;
+
+            this.setState({ user: tsuer });
+            storeData("user",tsuer);
+            console.log("new user +"+JSON.stringify(tsuer));
+          }
+        });
+    
     //  this.loadKeranjang();
   }
 
@@ -370,15 +414,16 @@ class EditProfilScreen extends React.Component {
                     underlineColorAndroid='transparent'
                     // pointerEvents="none"
                     editable={this.state.TextInputDisableStatus}
-
+                   
                     pointerEvents="none"
                     selectTextOnFocus={false}
                     onTouchStart={this.onPressButton}
-                    value={this.state.user != null ? moment(this.state.user.tanggallahir).format(this.state.displayFormat) : ''}
+                    value={ moment( this.state.user.tanggallahir).format(this.state.displayFormat) }
                   />
                   <DateTimePickerModal
                     mode="date"
-
+                    value={Date.parse( this.state.user.tanggallahir)}
+                  
                     isVisible={this.state.visibility}
                     onConfirm={this.handleConfirmTglLahir}
                     onCancel={this.onPressCancel} />

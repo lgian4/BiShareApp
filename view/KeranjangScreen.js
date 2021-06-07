@@ -300,6 +300,8 @@ class KeranjangScreen extends React.Component {
         .on("value", (snapshot) => {
           //console.log(snapshot);
           tkeranjanglist = [];
+          ttotalproduk = 0;
+          ttotalharga = 0;
           snapshot.forEach((child) => {
             if (
               child.key != "count" &&
