@@ -72,7 +72,7 @@ const defaultOptions = {
 }
 
 const currencyFormatter = (value, options) => {
-  console.log(typeof value);
+  
   if (typeof value != "number") {
     value = parseInt(value);
   }
@@ -105,11 +105,14 @@ class HomeScreen extends React.Component {
       konfirmasiPassword: "",
       nomorHP: "",
       kategori: [],
+      event: [],
       produk: [],
       viewproduk: [],
       toko: null,
       refresh: true,
       refreshkategori: true,
+      refreshevent: true,
+      eventshow :false,
       user: [],
       rekomendasi: [],
       rekomendasikey: [],
@@ -129,9 +132,7 @@ class HomeScreen extends React.Component {
     }
   };
   LoadData = async () => {
-    console.log("1. load data");
-
-    console.log("log");
+  
     await this.setState({ isFetching: true });
 
     var tuser = await getData("user");
@@ -148,6 +149,7 @@ class HomeScreen extends React.Component {
 
     console.log("load data");
     await this.loadToko();
+    await this.loadEvent();
     await this.loadKategori();
     await this.loadRekomendasi();
     var tp = await this.loadProduk();
@@ -205,7 +207,7 @@ class HomeScreen extends React.Component {
 
 
   loadToko = async () => {
-    console.log("toko")
+    
     var tuser = this.state.user;
     var found = false;
     if (tuser == null)
@@ -252,16 +254,11 @@ class HomeScreen extends React.Component {
         .database()
         .ref("toko/" + tuser.tokoid)
         .on("value", (snapshot2) => {
-          if (snapshot2 == null) {
-            console.log("kosong toko");
-            console.log(JSON.stringify(snapshot2));
-          }
-
-          console.log(JSON.stringify(snapshot2.val()));
+          
 
           ttoko = snapshot2.val();
           ttoko.key = snapshot2.key;
-          console.log(JSON.stringify(ttoko));
+          
           ttoko = {
             key: snapshot2.key,
             dlt: snapshot2.val().dlt ?? false,
@@ -277,7 +274,7 @@ class HomeScreen extends React.Component {
           };
           this.setState({ toko: ttoko });
           storeData("toko", ttoko);
-          console.log(JSON.stringify(ttoko))
+          
         });
 
 
@@ -327,6 +324,36 @@ class HomeScreen extends React.Component {
       this.setState({ refreshkategori: !this.state.refreshkategori });
     }
   };
+  loadEvent = async () => {
+   
+      var temptevent = [];
+      console.log("load event");
+      var teventshow = false;
+      firebase
+        .database()
+        .ref("event/")
+        .on("value", (snapshot) => {
+          
+          temptevent = [];
+
+          snapshot.forEach((child) => {
+            if (child.key != "count" && child.val().dlt != true) {
+              var t = child.val();
+              teventshow =true;
+              t.key = child.key;
+              temptevent.push(t);
+            }
+          });
+          console.log(temptevent);
+          this.setState({ event: temptevent,eventshow:teventshow });
+           storeData("event", temptevent);
+    
+          this.setState({ refreshevent: !this.state.refreshevent });
+
+        });
+    
+    
+  };
   loadRekomendasi = async () => {
     if (this.state.rekomendasi == null || this.state.rekomendasi.length == 0) {
 
@@ -349,7 +376,7 @@ class HomeScreen extends React.Component {
             }
           });
 
-          console.log(temprekomendasi);
+          
           await this.setState({ rekomendasi: temprekomendasi, rekomendasikey: temprekomendasikey });
           await storeData("rekomendasi", this.state.rekomendasi);
           await storeData("rekomendasikey", this.state.rekomendasikey);
@@ -367,13 +394,13 @@ class HomeScreen extends React.Component {
     }
 
     var tviewproduk = [];
-    console.log("load produk kategori");
+    
     await this.setState({ isFetching: true, });
 
     if (kategori == "All") {
       tviewproduk = tproduk;
     } else if (kategori == "Rekomendasi") {
-      console.log(this.state.rekomendasikey);
+      
       tviewproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
     } else {
       tviewproduk = tproduk.filter(obj => {
@@ -381,7 +408,7 @@ class HomeScreen extends React.Component {
       })
     }
 
-    console.log("console.log(this.state.viewproduk.length :" + this.state.viewproduk.length.toString());
+    
 
     await this.setState({ viewproduk: tviewproduk, selectedkategori: kategori, refresh: !this.state.refresh, isFetching: false });
 
@@ -433,7 +460,7 @@ class HomeScreen extends React.Component {
             });
           }
         });
-        console.log("produk " + tempproduk.length)
+        
         await this.setState({ produk: tempproduk });
         await storeData("produk", tempproduk);
         return tempproduk;
@@ -481,6 +508,10 @@ class HomeScreen extends React.Component {
     const { navigation } = this.props;
     navigation.push("ProdukDetail", { params: selectedproduk });
   };
+  OnEventDetail = (selectedproduk) => {
+    const { navigation } = this.props;
+    navigation.push("EventDetail", { params: selectedproduk });
+  };
 
   onLogout = async () => {
     const { navigation } = this.props;
@@ -527,6 +558,52 @@ class HomeScreen extends React.Component {
           <Text style={{ color: fontcolor }}>{item.kategoriname}</Text>
         </View>
       </TouchableOpacity>
+    );
+  };
+  _renderEvent = ({ item }) => {
+    
+   
+    return (
+      <TouchableOpacity style={{
+        
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: '#F24E1E',
+        borderBottomWidth: 0,
+
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 1,
+        backgroundColor:'white',
+        width: WIDTH -50,
+        padding: 10,
+        marginHorizontal: 10,
+        marginVertical: 5,
+        height:105,
+      }
+        
+      } onPress={() => this.OnEventDetail(item)}>
+      <View
+        style={{
+        
+          backgroundColor: "white",
+        
+
+
+        }}
+      >
+        
+        <Text
+          style={{ fontWeight: "bold",fontSize:19,color:'#F24E1E',paddingBottom:5 }}
+          numberOfLines={1}
+        >
+          {item.eventnama}
+        </Text>
+        <Text style={{fontSize:15 ,}} numberOfLines={3}  lineBreakMode="clip"> {item.eventdesc}</Text>
+      </View>
+    </TouchableOpacity>
     );
   };
   _renderProduk = ({ item }) => {
@@ -622,6 +699,20 @@ class HomeScreen extends React.Component {
           <View style={{ paddingHorizontal: 25, paddingTop: 10 }}>
             <Text style={{ fontSize: 16 }}>Hi, {this.state.nama ?? ""}</Text>
           </View>
+{
+  this.state.eventshow &&
+  <FlatList
+            
+  data={this.state.event}
+  extraData={this.state.refreshevent}
+  style={{ height: 120, flexGrow: 0, alignContent: 'center' }}
+  horizontal={true}
+  renderItem={this._renderEvent}
+  keyExtractor={(item) => item.eventid.toString()}
+/>
+}
+
+         
           <View style={styles.inputContainer}>
             <TouchableOpacity onPress={this.onSearch}>
 
