@@ -14,6 +14,7 @@ import SearchScreen from './view/SearchScreen';
 import ProfilScreen from './view/ProfilScreen';
 import EditProfilScreen from './view/EditProfilScreen';
 import TokoScreen from './view/TokoScreen';
+import EventDetailScreen from './view/EventDetailScreen';
 import ChatDetailScreen from './view/ChatDetailScreen';
 import ChatScreen from './view/ChatScreen';
 import DiskusiScreen from './view/DiskusiScreen';
@@ -70,6 +71,7 @@ const HomeTab = () => {
       <HomeStack.Screen name="Chat" component={ChatScreen} />
       <HomeStack.Screen name="Diskusi" component={DiskusiScreen} />
       <HomeStack.Screen name="DiskusiDetail" component={DiskusiDetailScreen} />
+      <HomeStack.Screen name="EventDetail" component={EventDetailScreen} />
       <HomeStack.Screen name="ChatToko" component={ChatTokoScreen} />
       <HomeStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <HomeStack.Screen name="RegisterTab" component={RegisterTab} />
