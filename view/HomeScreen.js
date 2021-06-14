@@ -699,18 +699,7 @@ class HomeScreen extends React.Component {
           <View style={{ paddingHorizontal: 25, paddingTop: 10 }}>
             <Text style={{ fontSize: 16 }}>Hi, {this.state.nama ?? ""}</Text>
           </View>
-{
-  this.state.eventshow &&
-  <FlatList
-            
-  data={this.state.event}
-  extraData={this.state.refreshevent}
-  style={{ height: 120, flexGrow: 0, alignContent: 'center' }}
-  horizontal={true}
-  renderItem={this._renderEvent}
-  keyExtractor={(item) => item.eventid.toString()}
-/>
-}
+
 
          
           <View style={styles.inputContainer}>
@@ -735,6 +724,22 @@ class HomeScreen extends React.Component {
               />
             </TouchableOpacity>
           </View>
+          {
+  this.state.eventshow &&
+   <View style={{  paddingTop: 10 }}>
+            <Text style={{paddingHorizontal: 25, fontSize: 16 }}>Event</Text>
+            <FlatList
+            
+            data={this.state.event}
+            extraData={this.state.refreshevent}
+            style={{ height: 120, flexGrow: 0, alignContent: 'center' }}
+            horizontal={true}
+            renderItem={this._renderEvent}
+            keyExtractor={(item) => item.eventid.toString()}
+          />
+          </View>
+
+}
           <View
             style={{
               backgroundColor: "#F6F6F6",

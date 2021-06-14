@@ -15,6 +15,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import { Audio, Video } from 'expo-av';
 import ParsedText from 'react-native-parsed-text';

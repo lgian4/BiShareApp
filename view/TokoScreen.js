@@ -15,6 +15,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -105,6 +106,7 @@ class TokoScreen extends React.Component {
 
     this.state = {
       press: false,
+      isLoading:true,
       visibility: false,
       DateDisplay: "",
       TextInputDisableStatus: true,
@@ -143,6 +145,7 @@ class TokoScreen extends React.Component {
   LoadData = async () => {
     const { navigation, route } = this.props;
     const { params: tokoid } = route.params;
+    await this.setState({ isLoading: true });
     // get toko
     var ttoko = null;
     var tuser = this.state.user;
@@ -173,7 +176,7 @@ class TokoScreen extends React.Component {
             usernama: snapshot.val().usernama,
           };
         }
-        await this.setState({ toko: ttoko });
+        await this.setState({ toko: ttoko,isLoading : false });
 
       });
     // get produk list
@@ -472,11 +475,16 @@ class TokoScreen extends React.Component {
     );
   };
 
-  OnChatDetail = () => {
+  OnChatDetail = async  () => {
     const { navigation } = this.props;
-
+    await this.setState({ isLoading: true });
     var tuser = this.state.user;
     var ttoko = this.state.toko;
+    // find tchats
+
+    // create tchats
+
+
     var tchats = {
       userid1: tuser.userid,
       username1: tuser.nama,
@@ -488,12 +496,30 @@ class TokoScreen extends React.Component {
 
     }
 
+    firebase
+    .database()
+    .ref("chats/")
+    .orderByChild("userid1")
+    .equalTo(tuser.userid)
+    .on("value", (snapshot) => {
 
+      snapshot.forEach((child) => {
+        if (child.val().tokoid == tchats.tokoid && child.val().dlt != true) {
+          tchats = child.val();          
+          tchats.key = child.key;
+        }
+      });
+    });
 
-    tchats.key = firebase
+    await new Promise(r => setTimeout(r, 1000));
+    if(tchats.key == null || tchats.key == "")    {
+      console.log('create new chats');
+      tchats.key = firebase
       .database()
       .ref("chats/")
       .push(tchats).getKey();
+    }
+    
 
     var tuserchats = {
       key: tchats.key,
@@ -503,7 +529,9 @@ class TokoScreen extends React.Component {
       userid: "",
 
     };
+    await this.setState({ isLoading: false });
     navigation.push("ChatDetail", { params: tuserchats });
+
   };
 
   async componentDidMount() {
@@ -541,6 +569,7 @@ class TokoScreen extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
+          <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
           <ScrollView style={{ height: HEIGHT - 40 }}>
             <View style={{ paddingHorizontal: 20,}}>
 
@@ -599,7 +628,7 @@ class TokoScreen extends React.Component {
                 <Text style={{ flex: 1, fontSize: 14, color: "#333333", textAlignVertical:'center' }}>
                   Chat
   </Text>
-                <TouchableOpacity style={{ flex: 3, borderColor:"#F24E1E",borderWidth:1, borderRadius:10,padding:5}} onPress={this.OnChatDetail}>
+                <TouchableOpacity style={{ flex: 3, borderColor:"#F24E1E",borderWidth:1, borderRadius:10,padding:5}} onPress={ async () =>{ this.OnChatDetail()} }>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     Buka Chat
                   </Text>

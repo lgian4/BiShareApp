@@ -16,7 +16,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
-  
+  ActivityIndicator,
 } from "react-native";
 import { WebView } from 'react-native-webview';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -96,6 +96,7 @@ class ProdukDetailScreen extends React.Component {
 
     this.state = {
       press: false,
+      isLoading: false,
       visibility: false,
       DateDisplay: "",
       TextInputDisableStatus: true,
@@ -423,6 +424,64 @@ class ProdukDetailScreen extends React.Component {
     const { navigation } = this.props;
     navigation.push("Toko", { params: this.state.produk.tokoid });
   };
+  OnChatDetail = async  () => {
+    const { navigation } = this.props;
+    await this.setState({ isLoading: true });
+    var tuser = this.state.user;
+    var tproduk = this.state.produk;
+    // find tchats
+
+    // create tchats
+
+
+    var tchats = {
+      userid1: tuser.userid,
+      username1: tuser.nama,
+      userid2: "",
+      iswithtoko: true,
+      tokoid: tproduk.tokoid,
+      tokoname: tproduk.tokoname,
+      username2: "",
+
+    }
+
+    firebase
+    .database()
+    .ref("chats/")
+    .orderByChild("userid1")
+    .equalTo(tuser.userid)
+    .on("value", (snapshot) => {
+
+      snapshot.forEach((child) => {
+        if (child.val().tokoid == tchats.tokoid && child.val().dlt != true) {
+          tchats = child.val();          
+          tchats.key = child.key;
+        }
+      });
+    });
+
+    await new Promise(r => setTimeout(r, 1000));
+    if(tchats.key == null || tchats.key == "")    {
+      console.log('create new chats');
+      tchats.key = firebase
+      .database()
+      .ref("chats/")
+      .push(tchats).getKey();
+    }
+    
+
+    var tuserchats = {
+      key: tchats.key,
+      lastmessage: "",
+      name: tchats.tokoname,
+      tokoid: tproduk.tokoid,
+      userid: "",
+
+    };
+    await this.setState({ isLoading: false });
+    navigation.push("ChatDetail", { params: tuserchats });
+
+  };
 
 
   _renderItem = ({ item }) => {
@@ -493,7 +552,7 @@ class ProdukDetailScreen extends React.Component {
 
               </View>
             </View>
-
+            <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
             <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
 
               <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}              >
@@ -598,6 +657,16 @@ class ProdukDetailScreen extends React.Component {
                       </Text>
                     </TouchableOpacity>
                   </View>
+                  <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333", textAlignVertical:'center' }}>
+                  Chat
+  </Text>
+                <TouchableOpacity style={{ flex: 3, borderColor:"#F24E1E",borderWidth:1, borderRadius:10,padding:5}} onPress={async () =>{ this.OnChatDetail()} }>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                    Buka Chat
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
                 </View>
                 <View style={{ alignItems: "flex-start", marginTop: 20 }}>

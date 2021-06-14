@@ -145,8 +145,11 @@ class TokoScreen extends React.Component {
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
+      await new Promise(r => setTimeout(r, 100));
+      if (tevent == null )
+      await new Promise(r => setTimeout(r, 1000));
 
-    if (tevent == null && tevent.eventid != "") {
+    if ( tevent.eventid == "") {
       this.notify("Event Kosong");
       navigation.goBack();
       return;
@@ -176,13 +179,15 @@ class TokoScreen extends React.Component {
         console.log("produk " + tempproduk.length)
         await this.setState({ event: tevent, viewproduk: tempproduk });
 
+        if (tempproduk.length == 0) {
+          this.notify("Produk Event Kosong");
+          navigation.goBack();
+          return;
+        }
+
       });
 
-      if (tempproduk.length == 0) {
-        this.notify("Event Kosong");
-        navigation.goBack();
-        return;
-      }
+      
     } catch (error) {
       console.log(error)
     }
@@ -408,6 +413,7 @@ class TokoScreen extends React.Component {
             {item.produkname}
           </Text>
           <Text> {currencyFormatter(item.harga)}</Text>
+          <Text> {item.deskripsi}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -504,7 +510,7 @@ class TokoScreen extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-          <ScrollView>
+          
             <View style={{ paddingHorizontal: 20,}}>
 
               <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}              >
@@ -529,7 +535,7 @@ class TokoScreen extends React.Component {
                 marginTop: 10,
                 backgroundColor: "#F6F6F6",
                 borderRadius: 30,
-
+                
               }}
               scrollEnabled={false}
               
@@ -540,7 +546,7 @@ class TokoScreen extends React.Component {
               refreshing={this.state.isFetching}
             />
 
-</ScrollView>
+
         </SafeAreaView>
       </View>
     );
