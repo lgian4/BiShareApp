@@ -469,13 +469,14 @@ class ProdukDetailScreen extends React.Component {
       .push(tchats).getKey();
     }
     
-
+    tproduk.firstmedia = this.state.firstmedia;
     var tuserchats = {
       key: tchats.key,
       lastmessage: "",
       name: tchats.tokoname,
       tokoid: tproduk.tokoid,
       userid: "",
+      produk: tproduk
 
     };
     await this.setState({ isLoading: false });

@@ -20,7 +20,7 @@ import {
 } from "react-native";
 import { Audio, Video } from 'expo-av';
 import ParsedText from 'react-native-parsed-text';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat,Bubble } from 'react-native-gifted-chat';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
@@ -187,7 +187,7 @@ class ChatDetailScreen extends React.Component {
     }
     else {
 
-      const { message: texts, dlt, messagedate: numberStamp, sentby, sentname } = snapshot.val();
+      const { message: texts, dlt, messagedate: numberStamp, sentby, sentname,isimage,produkid,imageurl } = snapshot.val();
       const { key: _id } = snapshot.key;
       const times = new Date(numberStamp);
       var users = {
@@ -195,8 +195,8 @@ class ChatDetailScreen extends React.Component {
         name: sentname
       };
 
-      const message = { id: snapshot.key, _id: snapshot.key, createdAt: times, text: texts, user: users };
-
+      const message = { id: snapshot.key, _id: snapshot.key, createdAt: times, text: texts, user: users, isimage:isimage,produkid:produkid,imageurl:imageurl };
+      
       return message;
     }
 
@@ -214,7 +214,7 @@ class ChatDetailScreen extends React.Component {
     if (tuser == null)
       tuser = await getData("user");
 
-    console.log("user" + JSON.stringify(tuser));
+    
     if (tchats == null || tchats.userid1 == "") {
       if (userchatt.tokoid != "" && userchatt.tokoid != null) {
         tchats = {
@@ -248,22 +248,29 @@ class ChatDetailScreen extends React.Component {
 
     }
 
-    console.log("TOKO chats :" + JSON.stringify(tchats));
+    
 
     for (let i = 0; i < messages.length; i++) {
       const { text, user, createdAt } = messages[i];
       userchatt.lastmessage = text;
 
-      const messagesed = { dlt: false, message: text, sentby: tuser.userid, sentname: tuser.nama, messagedate: this.timestamp };
-      console.log(" chats :" + JSON.stringify(messagesed));
+      const messagesed = { dlt: false, message: text, sentby: tuser.userid, sentname: tuser.nama, messagedate: this.timestamp,isimage : false,imageurl:"",produkid:"" };
+      if( messages[i].produkid !== undefined && messages[i].produkid != null && messages[i].produkid != ''){
+        messagesed = { dlt: false, message: text, sentby: tuser.userid, sentname: tuser.nama, messagedate: this.timestamp,produkid:  messages[i].produkid, imageurl: messages[i].imageurl, isimage:true  };
+      }
+    try {
       await firebase
         .database()
         .ref("chatmessages/" + userchatt.key)
         .push(messagesed);
+    } catch (error) {
+      console.log(error)
+    }
+      
 
     }
 
-    console.log(" userchats :" + JSON.stringify(userchatt));
+    
     if (tchats.iswithtoko) {
       userchatt.tokoid = "";
       userchatt.name = tchats.username1;
@@ -451,8 +458,94 @@ class ChatDetailScreen extends React.Component {
            
         }
     });
+
 }
 
+renderBubble = (props) => {
+  
+   let colors =  this.getColor(props.currentMessage.user.name)
+ 
+if(props.currentMessage.isimage ){
+  return (
+    <TouchableOpacity onPress={() => this.OnProdukDetail(props.currentMessage.produkid)} style={{width:WIDTH-20}}>
+     <Image
+            source={{ uri: props.currentMessage.imageurl }}
+            style={{
+  
+              height: HEIGHT / 3,
+              width: WIDTH /2,
+              marginHorizontal: 100,
+              borderWidth: 0,
+              borderRadius: 20,
+  
+            }}
+            resizeMode="contain"
+          />
+  <Bubble
+      {...props}
+      textStyle={{
+        right: {
+          color: 'yellow',
+        },
+      }}
+      wrapperStyle={{
+        left: {
+          backgroundColor: colors,
+        },
+      }}
+    />
+    </TouchableOpacity>
+  
+  );
+}
+else {
+  return (
+    <Bubble
+      {...props}
+      textStyle={{
+        right: {
+          color: 'yellow',
+        },
+      }}
+      wrapperStyle={{
+        left: {
+          backgroundColor: colors,
+        },
+      }}
+    />
+  );
+}
+ 
+}
+
+getColor(username){
+  let sumChars = 0;
+  for(let i = 0;i < username.length;i++){
+    sumChars += username.charCodeAt(i);
+  }
+
+  const colors = [
+    '#e67e22', // carrot
+    '#2ecc71', // emerald
+    '#3498db', // peter river
+    '#8e44ad', // wisteria
+    '#e74c3c', // alizarin
+    '#1abc9c', // turquoise
+    '#2c3e50', // midnight blue
+  ];
+  return colors[sumChars % colors.length];
+}
+OnProdukDetail = (produkid) => {
+  const { navigation } = this.props;
+  firebase
+  .database()
+  .ref("produk/"+produkid)
+  .on("value", (snapshot) => {
+    navigation.push("ProdukDetail", { params: snapshot.val() });
+  });
+
+  
+};
   async componentDidMount() {
     // var tsuer = await getData("user");
     // this.setState({ user: tsuer });
@@ -469,11 +562,9 @@ class ChatDetailScreen extends React.Component {
     if (tuser == null)
       await new Promise(r => setTimeout(r, 1000));
 
-    console.log("user :" + JSON.stringify(tuser));
+    
     // userchat
     await this.setState({ userchats: selectedproduk, user: tuser });
-
-    console.log("selected produk" + JSON.stringify(selectedproduk));
 
     //chats
     var tchats = null;
@@ -521,6 +612,17 @@ class ChatDetailScreen extends React.Component {
     );
     await new Promise(r => setTimeout(r, 1000));
     await this.setState({ isLoading: false });
+
+    // check produk
+    // send produk
+    if(selectedproduk.produk !== undefined && selectedproduk.produk != null){
+      // get first image
+      console.log("image found");
+      var message =[ { text: selectedproduk.produk.produkname, produkid:selectedproduk.produk.produkid,imageurl: selectedproduk.produk.firstmedia}];
+      selectedproduk.produk = null;
+      console.log(message);
+      await this.onSend( message);
+    }
   }
 
   componentWillUnmount() {
@@ -573,6 +675,7 @@ class ChatDetailScreen extends React.Component {
           alwaysShowSend={true}
           showUserAvatar={true}
           onLongPress={this.onLongPress}
+          renderBubble={this.renderBubble}
           user={{
             _id: this.state.user == null ? "" : this.state.user.userid ,
             name: this.state.user == null ? "" : this.state.user.nama ,

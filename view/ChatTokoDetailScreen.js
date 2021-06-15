@@ -19,7 +19,7 @@ import {
 } from "react-native";
 import { Audio, Video } from 'expo-av';
 import ParsedText from 'react-native-parsed-text';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat,Bubble } from 'react-native-gifted-chat';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
