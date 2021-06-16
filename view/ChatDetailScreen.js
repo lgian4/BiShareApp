@@ -525,13 +525,17 @@ getColor(username){
   }
 
   const colors = [
-    '#e67e22', // carrot
-    '#2ecc71', // emerald
-    '#3498db', // peter river
-    '#8e44ad', // wisteria
-    '#e74c3c', // alizarin
-    '#1abc9c', // turquoise
-    '#2c3e50', // midnight blue
+    "#FCECDD", // carrot
+    "#FFC288", // emerald
+    "#FDBAF8", // peter river
+    "#B0EFEB", // wisteria
+    "#EDFFA9", // alizarin
+    "#98DDCA", // turquoise
+    "#DEEDF0", // midnight blue
+    "#B6C9F0", // midnight blue
+    "#F6DFEB", // midnight blue
+    "#C7FFD8", // midnight blue
+    "#C7FFD8", // midnight blue
   ];
   return colors[sumChars % colors.length];
 }

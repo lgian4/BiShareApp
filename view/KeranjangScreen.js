@@ -250,30 +250,8 @@ class KeranjangScreen extends React.Component {
       .ref("produk/" + selectedproduk.produkid)
       .on("value", (snapshot) => {
 
-        tempproduk = {
-          key: snapshot.key,
-          produkcode: snapshot.val().produkcode,
-          deskripsi: snapshot.val().deskripsi,
-          fitur: snapshot.val().fitur,
-          youtubevideo: child.val().youtubevideo ?? "",
-          spesifikasi: snapshot.val().spesifikasi,
-          stok: snapshot.val().stok,
-          produkid: snapshot.val().produkid,
-          produkname: snapshot.val().produkname,
-          harga: snapshot.val().harga,
-          produkmedia: snapshot.val().produkmedia ?? null,
-          kategoriid: snapshot.val().kategoriid,
-          kategoriname: snapshot.val().kategoriname,
-          tokoid: snapshot.val().tokoid,
-          tokoname: snapshot.val().tokoname,
-          stok: snapshot.val().stok,
-          produkdate: snapshot.val().produkdate,
-          produkcode: snapshot.val().produkcode,
-          dlt: snapshot.val().dlt ?? false,
-          produkmediacount: snapshot.val().produkmediacount ?? 0,
-          status: snapshot.val().status ?? "",
-          likecount: snapshot.val().likecount ?? 0,
-        };
+        tempproduk = snapshot.val();
+        tempproduk.key = snapshot.key;
       });
 
     navigation.push("ProdukDetail", { params: tempproduk });
@@ -407,7 +385,41 @@ class KeranjangScreen extends React.Component {
     );
   };
 
+  renderEmptyContainer = () => {
+   
 
+    return (
+      
+        <View
+          style={{
+            width: WIDTH -30,
+            backgroundColor: "white",
+            marginTop: 10,
+            borderRadius: 10,
+            alignSelf: "center",
+            padding: 10,
+            marginHorizontal: 10,
+            alignItems:"center",
+            alignContent:"center"
+          }}
+        >
+            <Image
+                source={require("./../assets/logo.png")}
+                style={{ height: 100, width: 100 }}
+                resizeMode="contain"
+              />
+          
+          <Text
+            style={{ fontSize:17,  flexWrap: "wrap",textAlign:'center' }}
+            
+          >
+         Keranjang kosong
+          </Text>
+          
+        </View>
+      
+    );
+  };
   async componentDidMount() {
     var tsuer = await getData("user");
     this.setState({ user: tsuer });
@@ -452,7 +464,7 @@ class KeranjangScreen extends React.Component {
                 height: HEIGHT - 80
               }}
 
-
+              ListEmptyComponent={this.renderEmptyContainer()}
               contentContainerStyle={{ justifyContent: "space-between" }}
               renderItem={this._renderProduk}
               keyExtractor={(item) => item.produkid.toString()}

@@ -286,7 +286,7 @@ class ProdukDetailScreen extends React.Component {
 
     var firstmedia = "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var tempproduk = [];
-    if(selectedproduk.youtubevideo != null && selectedproduk.youtubevideo != ""){
+    if(selectedproduk.youtubevideo !== undefined && selectedproduk.youtubevideo != null && selectedproduk.youtubevideo != ""){
         
       var SplitedVideo = selectedproduk.youtubevideo.split("watch?v=")
       

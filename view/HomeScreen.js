@@ -15,7 +15,6 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
-
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -66,26 +65,25 @@ const getData = async (key) => {
 
 const defaultOptions = {
   significantDigits: 2,
-  thousandsSeparator: '.',
-  decimalSeparator: ',',
-  symbol: 'Rp'
-}
+  thousandsSeparator: ".",
+  decimalSeparator: ",",
+  symbol: "Rp",
+};
 
 const currencyFormatter = (value, options) => {
-  
   if (typeof value != "number") {
     value = parseInt(value);
   }
-  if (typeof value !== 'number') value = 0.0
-  options = { ...defaultOptions, ...options }
-  value = value.toFixed(options.significantDigits)
+  if (typeof value !== "number") value = 0.0;
+  options = { ...defaultOptions, ...options };
+  value = value.toFixed(options.significantDigits);
 
-  const [currency, decimal] = value.split('.')
+  const [currency, decimal] = value.split(".");
   return `${options.symbol} ${currency.replace(
     /\B(?=(\d{3})+(?!\d))/g,
     options.thousandsSeparator
-  )}`
-}
+  )}`;
+};
 
 class HomeScreen extends React.Component {
   constructor() {
@@ -112,7 +110,7 @@ class HomeScreen extends React.Component {
       refresh: true,
       refreshkategori: true,
       refreshevent: true,
-      eventshow :false,
+      eventshow: false,
       user: [],
       rekomendasi: [],
       rekomendasikey: [],
@@ -132,7 +130,6 @@ class HomeScreen extends React.Component {
     }
   };
   LoadData = async () => {
-  
     await this.setState({ isFetching: true });
 
     var tuser = await getData("user");
@@ -143,7 +140,11 @@ class HomeScreen extends React.Component {
     }
 
     var tloadddate = await getData("loadddate");
-    await this.setState({ user: tuser, nama: tuser.nama, loadddate: tloadddate });
+    await this.setState({
+      user: tuser,
+      nama: tuser.nama,
+      loadddate: tloadddate,
+    });
     // await this.CekKoneksi();
     // console.log(this.state.connected);
 
@@ -155,13 +156,13 @@ class HomeScreen extends React.Component {
     var tp = await this.loadProduk();
 
     if (this.state.produk == null || this.state.produk.length == 0)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.produk == null || this.state.produk.length == 0)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.produk == null || this.state.produk.length == 0)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.produk == null || this.state.produk.length == 0)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
 
     if (this.state.produk == null) {
@@ -169,12 +170,18 @@ class HomeScreen extends React.Component {
       var trekomendasi = await getData("rekomendasi");
       var trekomendasikey = await getData("rekomendasikey");
       var tproduk = await getData("produk");
-      await this.setState({ kategori: tkategori, rekomendasi: trekomendasi, rekomendasikey: trekomendasikey, produk: tproduk });
-      await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
+      await this.setState({
+        kategori: tkategori,
+        rekomendasi: trekomendasi,
+        rekomendasikey: trekomendasikey,
+        produk: tproduk,
+      });
+      await this.loadProdukKategori(
+        this.state.selectedkategori ?? "Rekomendasi"
+      );
     }
 
     await this.setState({ isFetching: false, refresh: !this.state.refresh });
-
   };
 
   onRefresh() {
@@ -191,7 +198,6 @@ class HomeScreen extends React.Component {
     }
   };
 
-
   CekKoneksi = async () => {
     firebase
       .database()
@@ -205,14 +211,10 @@ class HomeScreen extends React.Component {
       });
   };
 
-
   loadToko = async () => {
-    
     var tuser = this.state.user;
     var found = false;
-    if (tuser == null)
-      tuser = await getData("user");
-
+    if (tuser == null) tuser = await getData("user");
 
     await firebase
       .database()
@@ -225,7 +227,7 @@ class HomeScreen extends React.Component {
             if (child.val().password == tuser.password) {
               tuser = child.val();
               if (tuser.tokoid === undefined) {
-                tuser.tokoid = "";                
+                tuser.tokoid = "";
               }
               storeData("user", tuser);
               this.setState({ user: tuser });
@@ -233,32 +235,30 @@ class HomeScreen extends React.Component {
             }
           }
         });
-
-
-
       });
-    await new Promise(r => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, 3000));
     if (!found) {
       this.notify("User tidak ditemukan");
       const { navigation } = this.props;
       // navigation.navigate("RegisterTab");
     }
-    
-    var ttoko = this.state.toko;
-    
-    if ((ttoko == null || ttoko.tokoid != '') && tuser.tokoid !== undefined && tuser.tokoid != "") {
 
+    var ttoko = this.state.toko;
+
+    if (
+      (ttoko == null || ttoko.tokoid != "") &&
+      tuser.tokoid !== undefined &&
+      tuser.tokoid != ""
+    ) {
       console.log("load toko");
 
       await firebase
         .database()
         .ref("toko/" + tuser.tokoid)
         .on("value", (snapshot2) => {
-          
-
           ttoko = snapshot2.val();
           ttoko.key = snapshot2.key;
-          
+
           ttoko = {
             key: snapshot2.key,
             dlt: snapshot2.val().dlt ?? false,
@@ -274,11 +274,7 @@ class HomeScreen extends React.Component {
           };
           this.setState({ toko: ttoko });
           storeData("toko", ttoko);
-          
         });
-
-
-
     }
   };
 
@@ -325,38 +321,32 @@ class HomeScreen extends React.Component {
     }
   };
   loadEvent = async () => {
-   
-      var temptevent = [];
-      console.log("load event");
-      var teventshow = false;
-      firebase
-        .database()
-        .ref("event/")
-        .on("value", (snapshot) => {
-          
-          temptevent = [];
+    var temptevent = [];
+    console.log("load event");
+    var teventshow = false;
+    firebase
+      .database()
+      .ref("event/")
+      .on("value", (snapshot) => {
+        temptevent = [];
 
-          snapshot.forEach((child) => {
-            if (child.key != "count" && child.val().dlt != true) {
-              var t = child.val();
-              teventshow =true;
-              t.key = child.key;
-              temptevent.push(t);
-            }
-          });
-          console.log(temptevent);
-          this.setState({ event: temptevent,eventshow:teventshow });
-           storeData("event", temptevent);
-    
-          this.setState({ refreshevent: !this.state.refreshevent });
-
+        snapshot.forEach((child) => {
+          if (child.key != "count" && child.val().dlt != true) {
+            var t = child.val();
+            teventshow = true;
+            t.key = child.key;
+            temptevent.push(t);
+          }
         });
-    
-    
+        console.log(temptevent);
+        this.setState({ event: temptevent, eventshow: teventshow });
+        storeData("event", temptevent);
+
+        this.setState({ refreshevent: !this.state.refreshevent });
+      });
   };
   loadRekomendasi = async () => {
     if (this.state.rekomendasi == null || this.state.rekomendasi.length == 0) {
-
       console.log("load rekomendasi");
       var temprekomendasi = [];
       var temprekomendasikey = [];
@@ -376,13 +366,13 @@ class HomeScreen extends React.Component {
             }
           });
 
-          
-          await this.setState({ rekomendasi: temprekomendasi, rekomendasikey: temprekomendasikey });
+          await this.setState({
+            rekomendasi: temprekomendasi,
+            rekomendasikey: temprekomendasikey,
+          });
           await storeData("rekomendasi", this.state.rekomendasi);
           await storeData("rekomendasikey", this.state.rekomendasikey);
-
         });
-
     }
   };
 
@@ -394,24 +384,27 @@ class HomeScreen extends React.Component {
     }
 
     var tviewproduk = [];
-    
-    await this.setState({ isFetching: true, });
+
+    await this.setState({ isFetching: true });
 
     if (kategori == "All") {
       tviewproduk = tproduk;
     } else if (kategori == "Rekomendasi") {
-      
-      tviewproduk = tproduk.filter(item => this.state.rekomendasikey.includes(item.produkid.toString()));
+      tviewproduk = tproduk.filter((item) =>
+        this.state.rekomendasikey.includes(item.produkid.toString())
+      );
     } else {
-      tviewproduk = tproduk.filter(obj => {
-        return obj.kategoriid == kategori
-      })
+      tviewproduk = tproduk.filter((obj) => {
+        return obj.kategoriid == kategori;
+      });
     }
 
-    
-
-    await this.setState({ viewproduk: tviewproduk, selectedkategori: kategori, refresh: !this.state.refresh, isFetching: false });
-
+    await this.setState({
+      viewproduk: tviewproduk,
+      selectedkategori: kategori,
+      refresh: !this.state.refresh,
+      isFetching: false,
+    });
   };
   loadProduk = async () => {
     console.log("load produk");
@@ -460,13 +453,11 @@ class HomeScreen extends React.Component {
             });
           }
         });
-        
+
         await this.setState({ produk: tempproduk });
         await storeData("produk", tempproduk);
         return tempproduk;
-
       });
-
   };
   onSubmit = async () => {
     const { navigation } = this.props;
@@ -540,10 +531,8 @@ class HomeScreen extends React.Component {
           this.setState({
             selectedkategori: item.kategoriid,
             refresh: !this.state.refresh,
-            refreshkategori: !this.state.refreshkategori
+            refreshkategori: !this.state.refreshkategori,
           });
-
-
         }}
       >
         <View
@@ -561,49 +550,105 @@ class HomeScreen extends React.Component {
     );
   };
   _renderEvent = ({ item }) => {
-    
-   
     return (
-      <TouchableOpacity style={{
-        
-        borderWidth: 1,
-        borderRadius: 10,
-        borderColor: '#F24E1E',
-        borderBottomWidth: 0,
+      <TouchableOpacity
+        style={{
+          borderWidth: 1,
+          borderRadius: 10,
+          borderColor: "#F24E1E",
+          borderBottomWidth: 0,
 
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-        elevation: 1,
-        backgroundColor:'white',
-        width: WIDTH -50,
-        padding: 10,
-        marginHorizontal: 10,
-        marginVertical: 5,
-        height:105,
-      }
-        
-      } onPress={() => this.OnEventDetail(item)}>
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.8,
+          shadowRadius: 2,
+          elevation: 1,
+          backgroundColor: "white",
+          width: WIDTH - 50,
+          padding: 10,
+          marginHorizontal: 10,
+          marginVertical: 5,
+          height: 105,
+        }}
+        onPress={() => this.OnEventDetail(item)}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 19,
+              color: "#F24E1E",
+              paddingBottom: 5,
+            }}
+            numberOfLines={1}
+          >
+            {item.eventnama}
+          </Text>
+          <Text style={{ fontSize: 15 }} numberOfLines={3} lineBreakMode="clip">
+            {" "}
+            {item.eventdesc}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  renderEmptyContainer = () => {
+    return (
       <View
         style={{
-        
+          width: WIDTH - 30,
           backgroundColor: "white",
-        
-
-
+          marginTop: 10,
+          borderRadius: 10,
+          alignSelf: "center",
+          padding: 10,
+          marginHorizontal: 10,
+          alignItems: "center",
+          alignContent: "center",
         }}
       >
-        
+        <Image
+          source={require("./../assets/logo.png")}
+          style={{ height: 100, width: 100 }}
+          resizeMode="contain"
+        />
+
         <Text
-          style={{ fontWeight: "bold",fontSize:19,color:'#F24E1E',paddingBottom:5 }}
+          style={{ fontSize: 17, flexWrap: "wrap", textAlign: "center" }}
           numberOfLines={1}
         >
-          {item.eventnama}
+          Produk belum ada
         </Text>
-        <Text style={{fontSize:15 ,}} numberOfLines={3}  lineBreakMode="clip"> {item.eventdesc}</Text>
       </View>
-    </TouchableOpacity>
+    );
+  };
+  renderHeader = () => {
+    return (
+      <View
+      style={{
+        backgroundColor: "#F6F6F6",
+
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        borderBottomLeftRadius: 20,
+        borderBotoomRightRadius: 20,
+        paddingVertical: 4,
+        alignContent: "space-between",
+      }}
+    >
+      <FlatList
+        data={this.state.kategori}
+        extraData={this.state.refreshkategori}
+        style={{ height: 50, flexGrow: 0, alignContent: "center" }}
+        horizontal={true}
+        renderItem={this._renderItem}
+        keyExtractor={(item) => item.kategoriid.toString()}
+      />
+    </View>
     );
   };
   _renderProduk = ({ item }) => {
@@ -641,14 +686,12 @@ class HomeScreen extends React.Component {
             alignSelf: "flex-start",
             padding: 10,
             marginHorizontal: 10,
-
-
           }}
         >
           <Image
             source={{ uri: uriimage }}
             resizeMode="contain"
-            style={{ height: 100, borderRadius: 20, alignItems: "center", }}
+            style={{ height: 100, borderRadius: 20, alignItems: "center" }}
           />
           <Text
             style={{ fontWeight: "bold", flexWrap: "wrap" }}
@@ -668,53 +711,67 @@ class HomeScreen extends React.Component {
     await this.LoadData();
     await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
   }
-  componentWillUnmount() { }
+  componentWillUnmount() {}
   render() {
     const { navigation } = this.props;
     return (
       <View style={styles.container}>
-        <SafeAreaView>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: 20,
-              paddingTop: 20,
-            }}
-          >
-            <View style={{}}>
-              <Image
-                source={require("./../assets/logo.png")}
-                style={{ height: 50, alignContent: "flex-start", width: 50 }}
-                resizeMode="contain"
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            paddingTop: 20,
+          }}
+        >
+          <View style={{}}>
+            <Image
+              source={require("./../assets/logo.png")}
+              style={{ height: 50, alignContent: "flex-start", width: 50 }}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={{}}>
+            <TouchableOpacity
+              onPress={this.onProfil}
+              style={{ paddingHorizontal: 10, paddingTop: 20 }}
+            >
+              <Icon name={"ios-person"} size={25} color={"#666872"} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        {
+        // this.state.eventshow
+        false
+         && (
+            <View style={{ paddingTop: 10 }}>              
+              <Text style={{ paddingHorizontal: 25, fontSize: 16 }}>
+                Event Aktif
+              </Text>
+              <FlatList
+                data={this.state.event}
+                extraData={this.state.refreshevent}
+                style={{ height: 120, flexGrow: 0, alignContent: "center" }}
+                horizontal={true}
+                renderItem={this._renderEvent}
+                keyExtractor={(item) => item.eventid.toString()}
               />
             </View>
-
-            <View style={{}}>
-              <TouchableOpacity onPress={this.onProfil} style={{ paddingHorizontal: 10, paddingTop: 20 }}>
-                <Icon name={"ios-person"} size={25} color={"#666872"} />
-              </TouchableOpacity>
-            </View>
-          </View>
+          )}
           <View style={{ paddingHorizontal: 25, paddingTop: 10 }}>
             <Text style={{ fontSize: 16 }}>Hi, {this.state.nama ?? ""}</Text>
           </View>
 
-
-         
           <View style={styles.inputContainer}>
             <TouchableOpacity onPress={this.onSearch}>
-
-
               <TextInput
                 style={styles.input}
                 onChangeText={(val) => this.setState({ searchtext: val })}
                 placeholder={"Search "}
                 placeholderTextColor={"#666872"}
                 underlineColorAndroid="transparent"
-
                 editable={false}
-
               />
               <Icon
                 name={"search"}
@@ -724,60 +781,33 @@ class HomeScreen extends React.Component {
               />
             </TouchableOpacity>
           </View>
-          {
-  this.state.eventshow &&
-   <View style={{  paddingTop: 10 }}>
-            <Text style={{paddingHorizontal: 25, fontSize: 16 }}>Event</Text>
-            <FlatList
+          
+        
+
+          <FlatList
+            data={this.state.viewproduk}
+            extraData={this.state.refresh}
             
-            data={this.state.event}
-            extraData={this.state.refreshevent}
-            style={{ height: 120, flexGrow: 0, alignContent: 'center' }}
-            horizontal={true}
-            renderItem={this._renderEvent}
-            keyExtractor={(item) => item.eventid.toString()}
-          />
-          </View>
-
-}
-          <View
             style={{
+              paddingHorizontal: 10,
+              marginTop: 0,
               backgroundColor: "#F6F6F6",
-
-              marginTop: 10,
+              paddingBottom: 0,
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
-              paddingVertical: 10,
-              alignContent: "space-between",
             }}
-          >
-            <FlatList
-              data={this.state.kategori}
-              extraData={this.state.refreshkategori}
-              style={{ height: 50, flexGrow: 0, alignContent: 'center' }}
-              horizontal={true}
-              renderItem={this._renderItem}
-              keyExtractor={(item) => item.kategoriid.toString()}
-            />
-          </View>
-        </SafeAreaView>
-        <FlatList
-          data={this.state.viewproduk}
-          extraData={this.state.refresh}
-          style={{
-            paddingHorizontal: 10,
-            marginTop: 0,
-            backgroundColor: "#F6F6F6",
-            paddingBottom: 20
-          }}
-          scrollEnabled={true}
-          numColumns={2}
-          contentContainerStyle={{ justifyContent: "space-between" }}
-          renderItem={this._renderProduk}
-          keyExtractor={(item) => item.produkid}
-          onRefresh={() => this.onRefresh()}
-          refreshing={this.state.isFetching}
-        />
+            scrollEnabled={true}
+            numColumns={2}
+            contentContainerStyle={{ justifyContent: "space-between" }}
+            renderItem={this._renderProduk}
+            ListEmptyComponent={this.renderEmptyContainer}
+            ListHeaderComponent={this.renderHeader}            
+            stickyHeaderIndices={[0]}
+            keyExtractor={(item) => item.produkid}
+            onRefresh={() => this.onRefresh()}
+            refreshing={this.state.isFetching}
+          />
+        
       </View>
     );
   }

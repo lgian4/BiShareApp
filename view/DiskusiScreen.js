@@ -245,7 +245,7 @@ class DiskusiScreen extends React.Component {
 
   OnChatDetail = (selectedproduk) => {
     const { navigation } = this.props;
-    navigation.push("ChatDetail", { params: selectedproduk });
+    navigation.push("DiskusiDetail", { params: selectedproduk });
   };
 
   loadChat = async () => {

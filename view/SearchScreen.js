@@ -358,6 +358,41 @@ class SearchScreen extends React.Component {
       </TouchableOpacity>
     );
   };
+  renderEmptyContainer = () => {
+   
+
+    return (
+      
+        <View
+          style={{
+            width: WIDTH -30,
+            backgroundColor: "white",
+            marginTop: 10,
+            borderRadius: 10,
+            alignSelf: "center",
+            padding: 10,
+            marginHorizontal: 10,
+            alignItems:"center",
+            alignContent:"center"
+          }}
+        >
+            <Image
+                source={require("./../assets/logo.png")}
+                style={{ height: 100, width: 100 }}
+                resizeMode="contain"
+              />
+          
+          <Text
+            style={{ fontSize:17,  flexWrap: "wrap",textAlign:'center' }}
+            numberOfLines={1}
+          >
+          Produk tidak ditemukan
+          </Text>
+          
+        </View>
+      
+    );
+  };
 
   _renderHistory = ({ item }) => {
     console.log("render history");
@@ -484,6 +519,7 @@ class SearchScreen extends React.Component {
               }}
               scrollEnabled={true}
               numColumns={2}
+              ListEmptyComponent={this.renderEmptyContainer}
               contentContainerStyle={{ justifyContent: "space-between" }}
               renderItem={this._renderProduk}
               keyExtractor={(item) => item.produkid.toString()}

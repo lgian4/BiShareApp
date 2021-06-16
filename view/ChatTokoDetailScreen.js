@@ -17,15 +17,15 @@ import {
   ToastAndroid,
   ActivityIndicator,
 } from "react-native";
-import { Audio, Video } from 'expo-av';
-import ParsedText from 'react-native-parsed-text';
-import { GiftedChat,Bubble } from 'react-native-gifted-chat';
+import { Audio, Video } from "expo-av";
+import ParsedText from "react-native-parsed-text";
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
 import AsyncStorage from "@react-native-community/async-storage";
-import { Rating, AirbnbRating } from 'react-native-ratings';
+import { Rating, AirbnbRating } from "react-native-ratings";
 import { createIconSetFromFontello } from "react-native-vector-icons";
 
 const firebaseConfig = {
@@ -103,7 +103,7 @@ class ChatTokoDetailScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
       user: null,
-      toko:null,      
+      toko: null,
       messages: [],
       isLoading: false,
       kategori: [],
@@ -121,7 +121,7 @@ class ChatTokoDetailScreen extends React.Component {
         mediaurl: "",
         produkname: "",
         stok: 0,
-        harga: 0
+        harga: 0,
       },
       userchats: {
         key: 0,
@@ -129,7 +129,6 @@ class ChatTokoDetailScreen extends React.Component {
         name: "nama",
         tokoid: "",
         userid: "1",
-
       },
       chats: {
         key: 1,
@@ -141,14 +140,16 @@ class ChatTokoDetailScreen extends React.Component {
         userid2: 1,
         username2: "admin",
       },
-      chatmessage: [{
-        key: 1,
-        dlt: false,
-        message: "test pesan",
-        messagedate: "2021-04-08 08:18:46",
-        sentby: 1,
-        sentname: "admin"
-      }],
+      chatmessage: [
+        {
+          key: 1,
+          dlt: false,
+          message: "test pesan",
+          messagedate: "2021-04-08 08:18:46",
+          sentby: 1,
+          sentname: "admin",
+        },
+      ],
       refresh: true,
       produkmedia: [],
       produk: {
@@ -163,71 +164,82 @@ class ChatTokoDetailScreen extends React.Component {
         stok: 0,
         produkmedia: {},
         produkname: "...........",
-        tokoname: ""
+        tokoname: "",
       },
-      reviewavg: 0
+      reviewavg: 0,
     };
   }
 
-
-  refOn = callback => {
+  refOn = (callback) => {
     ref = firebase.database().ref("chatmessages/" + this.state.userchats.key);
 
-    ref.limitToLast(20)
-      .on('child_added', snapshot => callback(this.parse(snapshot)));
-  }
+    ref
+      .limitToLast(20)
+      .on("child_added", (snapshot) => callback(this.parse(snapshot)));
+  };
 
-  parse = snapshot => {
+  parse = (snapshot) => {
     if (snapshot.key == "count") {
-
-    }
-    else {
-
-      const { message: texts, dlt, messagedate: numberStamp, sentby, sentname } = snapshot.val();
+    } else {
+      const {
+        message: texts,
+        dlt,
+        messagedate: numberStamp,
+        sentby,
+        sentname,
+        isimage,
+        produkid,
+        imageurl,
+      } = snapshot.val();
       const { key: _id } = snapshot.key;
       const times = new Date(numberStamp);
       var users = {
         _id: sentby,
-        name: sentname
+        name: sentname,
       };
 
-      const message = { id: snapshot.key, _id: snapshot.key, createdAt: times, text: texts, user: users };
+      const message = {
+        id: snapshot.key,
+        _id: snapshot.key,
+        createdAt: times,
+        text: texts,
+        user: users,
+        isimage: isimage,
+        produkid: produkid,
+        imageurl: imageurl,
+      };
 
       return message;
     }
-
   };
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;
   }
 
-  onSend =  async (messages) => {
+  onSend = async (messages) => {
     await this.setState({ isLoading: true });
     var userchatt = this.state.userchats;
     var tchats = this.state.chats;
     var tuser = this.state.user;
     var ttoko = this.state.toko;
-    if(ttoko == null)
-    ttoko = await getData("toko");
-    if (tchats == null || tchats.userid1 == "") {    
-      
-        tchats = {
-          userid1: userchatt.userid,
-          username1: userchatt.name,
-          userid2: "",
-          iswithtoko: true,
-          tokoid: ttoko.tokoid,
-          tokoname: ttoko.tokoname,
-          username2: "",
+    if (ttoko == null) ttoko = await getData("toko");
+    if (tchats == null || tchats.userid1 == "") {
+      tchats = {
+        userid1: userchatt.userid,
+        username1: userchatt.name,
+        userid2: "",
+        iswithtoko: true,
+        tokoid: ttoko.tokoid,
+        tokoname: ttoko.tokoname,
+        username2: "",
+      };
 
-        }
-
-     await this.setState({ chats: tchats });
-      tchats.key =await firebase
+      await this.setState({ chats: tchats });
+      tchats.key = await firebase
         .database()
         .ref("chats/")
-        .push(tchats).getKey();
-
+        .push(tchats)
+        .getKey();
     }
     console.log("TOKO chats :" + JSON.stringify(tchats));
 
@@ -235,39 +247,61 @@ class ChatTokoDetailScreen extends React.Component {
       const { text, user, createdAt } = messages[i];
       userchatt.lastmessage = text;
 
-      const messagesed = { dlt: false, message: text, sentby: ttoko.tokoid, sentname: ttoko.tokoname, messagedate: this.timestamp };
-
-        await firebase
+      const messagesed = {
+        dlt: false,
+        message: text,
+        sentby: tuser.userid,
+        sentname: tuser.nama,
+        messagedate: this.timestamp,
+        isimage: false,
+        imageurl: "",
+        produkid: "",
+      };
+      if (
+        messages[i].produkid !== undefined &&
+        messages[i].produkid != null &&
+        messages[i].produkid != ""
+      ) {
+        messagesed = {
+          dlt: false,
+          message: text,
+          sentby: tuser.userid,
+          sentname: tuser.nama,
+          messagedate: this.timestamp,
+          produkid: messages[i].produkid,
+          imageurl: messages[i].imageurl,
+          isimage: true,
+        };
+      }
+      await firebase
         .database()
         .ref("chatmessages/" + userchatt.key)
         .push(messagesed);
-
     }
 
-      await firebase
+    await firebase
       .database()
       .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
       .set(userchatt);
 
-      userchatt.tokoid = "";
-      userchatt.name = tchats.username1;
-      userchatt.userid = tchats.userid1;
+    userchatt.tokoid = "";
+    userchatt.name = tchats.username1;
+    userchatt.userid = tchats.userid1;
 
-      await firebase
-        .database()
-        .ref("tokochats/" + tchats.tokoid + "/" + userchatt.key)
-        .set(userchatt);
+    await firebase
+      .database()
+      .ref("tokochats/" + tchats.tokoid + "/" + userchatt.key)
+      .set(userchatt);
 
-      userchatt.tokoid = tchats.tokoid;
-      userchatt.name = tchats.tokoname;
-      userchatt.userid = "";
-      await firebase
-        .database()
-        .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
-        .set(userchatt);
+    userchatt.tokoid = tchats.tokoid;
+    userchatt.name = tchats.tokoname;
+    userchatt.userid = "";
+    await firebase
+      .database()
+      .ref("userchats/" + tchats.userid1 + "/" + userchatt.key)
+      .set(userchatt);
 
-    this.setState({ chats: tchats, userchats: userchatt,isLoading:false });
-
+    this.setState({ chats: tchats, userchats: userchatt, isLoading: false });
   };
 
   onSubmit = async () => {
@@ -294,21 +328,18 @@ class ChatTokoDetailScreen extends React.Component {
     }
   };
 
-
   handleConfirm = (date) => {
     this.setState({ DateDisplay: date });
     this.setState({ visibility: false });
     this.setState({ TextInputDisableStatus: true });
   };
 
-
   LoadChatFirst = async () => {
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
 
     var tuser = this.state.user;
-    if (tuser == null)
-      tuser = await getData("user");
+    if (tuser == null) tuser = await getData("user");
     // load message
     this.setState({ userchats: selectedproduk, user: tuser });
     try {
@@ -317,12 +348,10 @@ class ChatTokoDetailScreen extends React.Component {
         .database()
         .ref("produklike/" + selectedproduk.produkid + "/" + tuser.userid)
         .on("value", (snapshot) => {
-
           console.log("console.log(snapshot); " + snapshot);
           console.log("console.log(snapshot.key); " + snapshot.key);
           console.log("console.log(snapshot.val); " + snapshot.val());
-          if (snapshot != null && snapshot.val() != null
-          ) {
+          if (snapshot != null && snapshot.val() != null) {
             tproduklike = {
               key: snapshot.key,
               islike: snapshot.val().islike ?? false,
@@ -332,7 +361,6 @@ class ChatTokoDetailScreen extends React.Component {
 
             this.setState({ produklike: tproduklike });
           }
-
         });
     } catch (error) {
       //console.error(error);
@@ -343,8 +371,7 @@ class ChatTokoDetailScreen extends React.Component {
         .database()
         .ref("keranjang/" + tuser.userid + "/" + selectedproduk.produkid)
         .on("value", (snapshot) => {
-          if (snapshot != null && snapshot.val() != null
-          ) {
+          if (snapshot != null && snapshot.val() != null) {
             tkeranjang = {
               key: snapshot.key,
               dlt: snapshot.val().dlt ?? false,
@@ -353,21 +380,18 @@ class ChatTokoDetailScreen extends React.Component {
               mediaurl: firstmedia,
               produkname: selectedproduk.produkname,
               stok: snapshot.val().stok ?? 0,
-              harga: selectedproduk.harga
+              harga: selectedproduk.harga,
             };
 
             this.setState({ keranjang: tkeranjang });
           }
-
         });
     } catch (error) {
       //console.error(error);
     }
 
-
     this.setState({ user: tuser, produklike: tproduklike });
     //storeData("produk", tempproduk);
-
   };
 
   OnToko = () => {
@@ -375,25 +399,107 @@ class ChatTokoDetailScreen extends React.Component {
     navigation.push("Toko", { params: this.state.produk.tokoid });
   };
 
-
   _renderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={async (xitem) => { }}>
+      <TouchableOpacity onPress={async (xitem) => {}}>
         <Image
           source={{ uri: item.mediaurl }}
           style={{
-
             height: HEIGHT / 2 - 20,
             width: WIDTH - 30,
             marginHorizontal: 10,
             borderWidth: 0,
             borderRadius: 10,
-
           }}
           resizeMode="contain"
         />
       </TouchableOpacity>
     );
+  };
+  renderBubble = (props) => {
+    let colors = this.getColor(props.currentMessage.user.name);
+    
+    if (props.currentMessage.isimage) {
+      
+      return (
+        <TouchableOpacity
+          onPress={() => this.OnProdukDetail(props.currentMessage.produkid)}
+          style={{ width: WIDTH - 20 }}
+        >
+          <Image
+            source={{ uri: props.currentMessage.imageurl }}
+            style={{
+              height: HEIGHT / 3,
+              width: WIDTH / 2,
+              marginHorizontal: 100,
+              borderWidth: 0,
+              borderRadius: 20,
+            }}
+            resizeMode="contain"
+          />
+          <Bubble
+            {...props}
+            textStyle={{
+              right: {
+                color: "white",
+              },
+            }}
+            wrapperStyle={{
+              left: {
+                backgroundColor: colors,
+              },
+            }}
+          />
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <Bubble
+          {...props}
+          textStyle={{
+            right: {
+              color: "white",
+            },
+          }}
+          wrapperStyle={{
+            left: {
+              backgroundColor: colors,
+            },
+          }}
+        />
+      );
+    }
+  };
+
+  getColor(username) {
+    let sumChars = 0;
+    for (let i = 0; i < username.length; i++) {
+      sumChars += username.charCodeAt(i);
+    }
+
+    const colors = [
+      "#FCECDD", // carrot
+      "#FFC288", // emerald
+      "#FDBAF8", // peter river
+      "#B0EFEB", // wisteria
+      "#EDFFA9", // alizarin
+      "#98DDCA", // turquoise
+      "#DEEDF0", // midnight blue
+      "#B6C9F0", // midnight blue
+      "#F6DFEB", // midnight blue
+      "#C7FFD8", // midnight blue
+      "#C7FFD8", // midnight blue
+    ];
+    return colors[sumChars % colors.length];
+  }
+  OnProdukDetail = (produkid) => {
+    const { navigation } = this.props;
+    firebase
+      .database()
+      .ref("produk/" + produkid)
+      .on("value", (snapshot) => {
+        navigation.push("ProdukDetail", { params: snapshot.val() });
+      });
   };
 
   async componentDidMount() {
@@ -405,22 +511,22 @@ class ChatTokoDetailScreen extends React.Component {
     const { params: selectedproduk } = route.params;
 
     var tuser = this.state.user;
-    if (tuser == null)
-      tuser = await getData("user");
+    if (tuser == null) tuser = await getData("user");
     var ttoko = this.state.toko;
-    if (ttoko == null)
-    ttoko = await getData("toko");
+    if (ttoko == null) ttoko = await getData("toko");
 
-  if (ttoko == null)
-    await new Promise(r => setTimeout(r, 1000));
-  if (ttoko == null)
-    await new Promise(r => setTimeout(r, 1000));
+    if (ttoko == null) await new Promise((r) => setTimeout(r, 1000));
+    if (ttoko == null) await new Promise((r) => setTimeout(r, 1000));
 
-    console.log("toko :"+ JSON.stringify(ttoko));
+    console.log("toko :" + JSON.stringify(ttoko));
     // userchat
-    await this.setState({ userchats: selectedproduk, user: tuser, toko:ttoko });
+    await this.setState({
+      userchats: selectedproduk,
+      user: tuser,
+      toko: ttoko,
+    });
 
-    console.log("selected produk"+ JSON.stringify(selectedproduk));
+    console.log("selected produk" + JSON.stringify(selectedproduk));
     //chats
     var tchats = null;
     try {
@@ -429,8 +535,7 @@ class ChatTokoDetailScreen extends React.Component {
         .database()
         .ref("chats/" + selectedproduk.key)
         .on("value", (snapshot) => {
-          if (snapshot != null && snapshot.val() != null
-          ) {
+          if (snapshot != null && snapshot.val() != null) {
             tchats = {
               key: snapshot.key,
               iswithtoko: snapshot.val().iswithtoko ?? false,
@@ -440,46 +545,55 @@ class ChatTokoDetailScreen extends React.Component {
               userid2: snapshot.val().userid2 ?? "",
               username1: snapshot.val().username1 ?? "",
               username2: snapshot.val().username2 ?? "",
-
             };
 
             this.setState({ chats: tchats });
           }
-
         });
     } catch (error) {
       //console.error(error);
     }
 
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
 
     // load messege
-    this.refOn(message =>
-      this.setState(previousState => ({
+    this.refOn((message) =>
+      this.setState((previousState) => ({
         messages: GiftedChat.append(previousState.messages, message),
       }))
     );
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 1000));
     await this.setState({ isLoading: false });
+    if (selectedproduk.produk !== undefined && selectedproduk.produk != null) {
+      // get first image
+      console.log("image found");
+      var message = [
+        {
+          text: selectedproduk.produk.produkname,
+          produkid: selectedproduk.produk.produkid,
+          imageurl: selectedproduk.produk.firstmedia,
+        },
+      ];
+      selectedproduk.produk = null;
+      console.log(message);
+      await this.onSend(message);
+    }
   }
 
   componentWillUnmount() {
-    if(ref!= null)
-    ref.off();
+    if (ref != null) ref.off();
   }
 
   render() {
     return (
       <View style={styles.container}>
-
-
         <View
           style={{
             flexDirection: "row",
@@ -487,54 +601,67 @@ class ChatTokoDetailScreen extends React.Component {
             paddingHorizontal: 20,
             paddingTop: 15,
             paddingBottom: 10,
-            backgroundColor: "white"
+            backgroundColor: "white",
           }}
         >
           <View style={{ marginTop: 20 }}>
-            <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
+            <TouchableOpacity
+              onPress={() => {
+                const { navigation } = this.props;
+                navigation.goBack();
+              }}
+            >
               <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={{  padding:10,paddingTop:20,}} onPress={() => { 
-            console.log("name");
-            const { navigation } = this.props; 
-            if(this.state.tchats != null ){
-              if(this.state.tchats.iswithtoko == true && this.state.userchats.name == this.state.tchats.tokoname){
-                navigation.push("Toko", { params: this.state.produk.tokoid }); 
+          <TouchableOpacity
+            style={{ padding: 10, paddingTop: 20 }}
+            onPress={() => {
+              console.log("name");
+              const { navigation } = this.props;
+              if (this.state.tchats != null) {
+                if (
+                  this.state.tchats.iswithtoko == true &&
+                  this.state.userchats.name == this.state.tchats.tokoname
+                ) {
+                  navigation.push("Toko", { params: this.state.produk.tokoid });
+                } else {
+                }
               }
-              else {
-               
-              }
-              
-            }
-            
-
-            }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold',}}>{this.state.userchats.name}</Text>
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {this.state.userchats.name}
+            </Text>
           </TouchableOpacity>
           <View style={{ marginTop: 20 }}>
             <Icon name={"cart"} size={25} color={"white"} />
           </View>
         </View>
-        <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
+        <ActivityIndicator
+          size="large"
+          color="#F24E1E"
+          animating={this.state.isLoading}
+          style={{
+            position: "absolute",
+            top: HEIGHT / 2,
+            left: WIDTH / 2 - 20,
+          }}
+        />
 
         <GiftedChat
-
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
           alwaysShowSend={true}
           showUserAvatar={true}
-
+          renderBubble={this.renderBubble}
           user={{
-         _id: this.state.toko == null ? "" : this.state.toko.tokoid ,
-            name: this.state.toko == null ? "" : this.state.toko.tokoname ,
-            id: this.state.toko == null ? "" : this.state.toko.tokoid ,               
+            _id: this.state.toko == null ? "" : this.state.toko.tokoid,
+            name: this.state.toko == null ? "" : this.state.toko.tokoname,
+            id: this.state.toko == null ? "" : this.state.toko.tokoid,
           }}
         />
-
       </View>
-
-
     );
   }
 }
@@ -616,6 +743,6 @@ const styles = StyleSheet.create({
   },
   video: {
     width: 200,
-    height: 200
-  }
+    height: 200,
+  },
 });

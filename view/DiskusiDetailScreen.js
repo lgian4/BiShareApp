@@ -18,15 +18,15 @@ import {
   ToastAndroid,
   ActivityIndicator,
 } from "react-native";
-import { Audio, Video } from 'expo-av';
-import ParsedText from 'react-native-parsed-text';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { Audio, Video } from "expo-av";
+import ParsedText from "react-native-parsed-text";
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
 import AsyncStorage from "@react-native-community/async-storage";
-import { Rating, AirbnbRating } from 'react-native-ratings';
+import { Rating, AirbnbRating } from "react-native-ratings";
 import { createIconSetFromFontello } from "react-native-vector-icons";
 
 const firebaseConfig = {
@@ -104,7 +104,7 @@ class DiskusiDetailScreen extends React.Component {
       TextInputDisableStatus: true,
       displayFormat: "YYYY-MM-DD",
       user: null,
-      toko:null,
+      toko: null,
       isLoading: false,
       messages: [],
 
@@ -123,7 +123,7 @@ class DiskusiDetailScreen extends React.Component {
         mediaurl: "",
         produkname: "",
         stok: 0,
-        harga: 0
+        harga: 0,
       },
       userchats: {
         key: 0,
@@ -131,17 +131,18 @@ class DiskusiDetailScreen extends React.Component {
         diskusiname: "nama",
         diskusidesc: "",
         diskusitype: "1",
-
       },
-     
-      chatmessage: [{
-        key: 1,
-        dlt: false,
-        message: "test pesan",
-        messagedate: "2021-04-08 08:18:46",
-        sentby: 1,
-        sentname: "admin"
-      }],
+
+      chatmessage: [
+        {
+          key: 1,
+          dlt: false,
+          message: "test pesan",
+          messagedate: "2021-04-08 08:18:46",
+          sentby: 1,
+          sentname: "admin",
+        },
+      ],
       refresh: true,
       produkmedia: [],
       produk: {
@@ -156,42 +157,47 @@ class DiskusiDetailScreen extends React.Component {
         stok: 0,
         produkmedia: {},
         produkname: "...........",
-        tokoname: ""
+        tokoname: "",
       },
-      reviewavg: 0
+      reviewavg: 0,
     };
   }
 
-
-
-
-
-  refOn = callback => {
+  refOn = (callback) => {
     ref = firebase.database().ref("chatmessages/" + this.state.userchats.key);
 
-    ref.limitToLast(20)
-      .on('child_added', snapshot => callback(this.parse(snapshot)));
-  }
+    ref
+      .limitToLast(20)
+      .on("child_added", (snapshot) => callback(this.parse(snapshot)));
+  };
 
-  parse = snapshot => {
+  parse = (snapshot) => {
     if (snapshot.key == "count") {
-
-    }
-    else {
-
-      const { message: texts, dlt, messagedate: numberStamp, sentby, sentname } = snapshot.val();
+    } else {
+      const {
+        message: texts,
+        dlt,
+        messagedate: numberStamp,
+        sentby,
+        sentname,
+      } = snapshot.val();
       const { key: _id } = snapshot.key;
       const times = new Date(numberStamp);
       var users = {
         _id: sentby,
-        name: sentname
+        name: sentname,
       };
 
-      const message = { id: snapshot.key, _id: snapshot.key, createdAt: times, text: texts, user: users };
+      const message = {
+        id: snapshot.key,
+        _id: snapshot.key,
+        createdAt: times,
+        text: texts,
+        user: users,
+      };
 
       return message;
     }
-
   };
   get timestamp() {
     return firebase.database.ServerValue.TIMESTAMP;
@@ -204,26 +210,28 @@ class DiskusiDetailScreen extends React.Component {
     var tchats = this.state.chats;
     var tuser = this.state.user;
 
-    if (tuser == null)
-      tuser = await getData("user");
+    if (tuser == null) tuser = await getData("user");
 
     console.log("TOKO chats :" + JSON.stringify(tchats));
 
     for (let i = 0; i < messages.length; i++) {
-      const { text, user, createdAt } = messages[i];      
+      const { text, user, createdAt } = messages[i];
 
-      const messagesed = { dlt: false, message: text, sentby: tuser.userid, sentname: tuser.nama, messagedate: this.timestamp };
+      const messagesed = {
+        dlt: false,
+        message: text,
+        sentby: tuser.userid,
+        sentname: tuser.nama,
+        messagedate: this.timestamp,
+      };
       console.log(" chats :" + JSON.stringify(messagesed));
       await firebase
         .database()
         .ref("chatmessages/" + userchatt.diskusiid)
         .push(messagesed);
-
     }
 
-    
-    await this.setState({ userchats: userchatt, isLoading:false });
-
+    await this.setState({ userchats: userchatt, isLoading: false });
   };
 
   onSubmit = async () => {
@@ -250,35 +258,28 @@ class DiskusiDetailScreen extends React.Component {
     }
   };
 
-
   handleConfirm = (date) => {
     this.setState({ DateDisplay: date });
     this.setState({ visibility: false });
     this.setState({ TextInputDisableStatus: true });
   };
 
-
- 
-
   OnToko = () => {
     const { navigation } = this.props;
     navigation.push("Toko", { params: this.state.produk.tokoid });
   };
 
-
   _renderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={async (xitem) => { }}>
+      <TouchableOpacity onPress={async (xitem) => {}}>
         <Image
           source={{ uri: item.mediaurl }}
           style={{
-
             height: HEIGHT / 2 - 20,
             width: WIDTH - 30,
             marginHorizontal: 10,
             borderWidth: 0,
             borderRadius: 10,
-
           }}
           resizeMode="contain"
         />
@@ -287,24 +288,66 @@ class DiskusiDetailScreen extends React.Component {
   };
 
   onLongPress(context, message) {
-    console.log(context, message);    
+    console.log(context, message);
     var options = [];
-    options = ['copy', 'Cancel'];
-    
-    
+    options = ["copy", "Cancel"];
+
     const cancelButtonIndex = options.length - 1;
-    context.actionSheet().showActionSheetWithOptions({
+    context.actionSheet().showActionSheetWithOptions(
+      {
         options,
-        cancelButtonIndex
-    }, (buttonIndex) => {
+        cancelButtonIndex,
+      },
+      (buttonIndex) => {
         switch (buttonIndex) {
-            case 0:
-                Clipboard.setString(message.text);
-                break;
-           
+          case 0:
+            Clipboard.setString(message.text);
+            break;
         }
-    });
-}
+      }
+    );
+  }
+  renderBubble = (props) => {
+    let colors = this.getColor(props.currentMessage.user.name);
+
+    return (
+      <Bubble
+        {...props}
+        textStyle={{
+          right: {
+            color: "white",
+          },
+        }}
+        wrapperStyle={{
+          left: {
+            backgroundColor: colors,
+          },
+        }}
+      />
+    );
+  };
+
+  getColor(username) {
+    let sumChars = 0;
+    for (let i = 0; i < username.length; i++) {
+      sumChars += username.charCodeAt(i);
+    }
+
+    const colors = [
+      "#FCECDD", // carrot
+      "#FFC288", // emerald
+      "#FDBAF8", // peter river
+      "#B0EFEB", // wisteria
+      "#EDFFA9", // alizarin
+      "#98DDCA", // turquoise
+      "#DEEDF0", // midnight blue
+      "#B6C9F0", // midnight blue
+      "#F6DFEB", // midnight blue
+      "#C7FFD8", // midnight blue
+      "#C7FFD8", // midnight blue
+    ];
+    return colors[sumChars % colors.length];
+  }
 
   async componentDidMount() {
     // var tsuer = await getData("user");
@@ -313,15 +356,12 @@ class DiskusiDetailScreen extends React.Component {
     await this.setState({ isLoading: true });
     const { navigation, route } = this.props;
     const { params: selectedproduk } = route.params;
-    
-    var tuser = this.state.user;
-    if (tuser == null)
-      tuser = await getData("user");
 
-    if (tuser == null)
-      await new Promise(r => setTimeout(r, 1000));
-    if (tuser == null)
-      await new Promise(r => setTimeout(r, 1000));
+    var tuser = this.state.user;
+    if (tuser == null) tuser = await getData("user");
+
+    if (tuser == null) await new Promise((r) => setTimeout(r, 1000));
+    if (tuser == null) await new Promise((r) => setTimeout(r, 1000));
 
     console.log("user :" + JSON.stringify(tuser));
     // userchat
@@ -329,36 +369,32 @@ class DiskusiDetailScreen extends React.Component {
 
     console.log("selected produk" + JSON.stringify(selectedproduk));
 
-   
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     if (this.state.tchats == null)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
 
-    // load messege    
-    this.refOn(message =>
-      this.setState(previousState => ({
+    // load messege
+    this.refOn((message) =>
+      this.setState((previousState) => ({
         messages: GiftedChat.append(previousState.messages, message),
       }))
     );
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 1000));
     await this.setState({ isLoading: false });
   }
 
   componentWillUnmount() {
-    if (ref != null)
-      ref.off();    
+    if (ref != null) ref.off();
   }
 
   render() {
     return (
       <View style={styles.container}>
-
-
         <View
           style={{
             flexDirection: "row",
@@ -366,49 +402,64 @@ class DiskusiDetailScreen extends React.Component {
             paddingHorizontal: 20,
             paddingTop: 15,
             paddingBottom: 10,
-            backgroundColor: "white"
+            backgroundColor: "white",
           }}
         >
           <View style={{ marginTop: 20 }}>
-            <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
+            <TouchableOpacity
+              onPress={() => {
+                const { navigation } = this.props;
+                navigation.goBack();
+              }}
+            >
               <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={{  padding:10,paddingTop:20,}} onPress={() => { 
-           
-            const { navigation } = this.props;             
-            if(this.state.chats != null ){              
-              if(this.state.chats.iswithtoko == true ){
-                navigation.push("Toko", { params: this.state.chats.tokoid }); 
+          <TouchableOpacity
+            style={{ padding: 10, paddingTop: 20 }}
+            onPress={() => {
+              const { navigation } = this.props;
+              if (this.state.chats != null) {
+                if (this.state.chats.iswithtoko == true) {
+                  navigation.push("Toko", { params: this.state.chats.tokoid });
+                } else {
+                }
               }
-              else {                            }
-              }
-            }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold',}}>{this.state.userchats.diskusiname}</Text>
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {this.state.userchats.diskusiname}
+            </Text>
           </TouchableOpacity>
           <View style={{ marginTop: 20 }}>
             <Icon name={"cart"} size={25} color={"white"} />
           </View>
         </View>
 
-        <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
+        <ActivityIndicator
+          size="large"
+          color="#F24E1E"
+          animating={this.state.isLoading}
+          style={{
+            position: "absolute",
+            top: HEIGHT / 2,
+            left: WIDTH / 2 - 20,
+          }}
+        />
         <GiftedChat
-
           messages={this.state.messages}
           onSend={async (messages) => await this.onSend(messages)}
           alwaysShowSend={true}
           showUserAvatar={true}
           onLongPress={this.onLongPress}
+          renderBubble={this.renderBubble}
           user={{
-            _id: this.state.user == null ? "" : this.state.user.userid ,
-            name: this.state.user == null ? "" : this.state.user.nama ,
-            id: this.state.user == null ? "" : this.state.user.userid ,
+            _id: this.state.user == null ? "" : this.state.user.userid,
+            name: this.state.user == null ? "" : this.state.user.nama,
+            id: this.state.user == null ? "" : this.state.user.userid,
           }}
         />
-
       </View>
-
-
     );
   }
 }
@@ -490,6 +541,6 @@ const styles = StyleSheet.create({
   },
   video: {
     width: 200,
-    height: 200
-  }
+    height: 200,
+  },
 });
