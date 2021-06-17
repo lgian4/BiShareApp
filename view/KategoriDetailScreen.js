@@ -99,7 +99,7 @@ const currencyFormatter = (value, options) => {
 const { width: WIDTH } = Dimensions.get("window");
 const HEIGHT = Dimensions.get("window").height;
 
-class EventDetailScreen extends React.Component {
+class KategoriDetailcreen extends React.Component {
   constructor() {
     super();
 
@@ -140,20 +140,16 @@ class EventDetailScreen extends React.Component {
       
     
     const { navigation, route } = this.props;
-    const { params: tevent } = route.params;
+    const { params: tkategori } = route.params;
     // get toko
     var tuser = this.state.user;
     if (tuser == null)
       tuser = await getData("user");
       await new Promise(r => setTimeout(r, 100));
-      if (tevent == null )
+      if (tkategori == null )
       await new Promise(r => setTimeout(r, 1000));
 
-    if ( tevent.eventid == "") {
-      this.notify("Event Kosong");
-      navigation.goBack();
-      return;
-    }
+    
    
 
     console.log("load event");
@@ -162,26 +158,26 @@ class EventDetailScreen extends React.Component {
 
     await firebase
       .database()
-      .ref("eventdetail/"+tevent.eventid)
+      .ref("produk/")
       .on("value", async (snapshot) => {
-        tempproduk= [];
-        console.log(snapshot);
-        
+        tempproduk= [];               
         snapshot.forEach((child) => {
           if (
             child.key != "count" &&
             child.key != "produkmediacount" &&
-            child.val().dlt != true 
+            child.val().dlt != true &&
+            child.val().status =='approve' &&
+            tkategori.kategoriid == child.val().kategoriid
           ) {
             tempproduk.push(child.val());
           }
         });
         console.log("produk " + tempproduk.length)
-        await this.setState({ event: tevent, viewproduk: tempproduk });
+        await this.setState({ kategori: tkategori, viewproduk: tempproduk });
 
         if (tempproduk.length == 0) {
           this.notify("Produk Event Kosong");
-          navigation.goBack();
+          
           return;
         }
 
@@ -390,12 +386,12 @@ class EventDetailScreen extends React.Component {
       <TouchableOpacity onPress={() => this.OnProdukDetail(item)}>
         <View
           style={{
-            width: WIDTH -30,
+            
             backgroundColor: "white",
             marginTop: 10,
-            borderRadius: 10,
+            borderRadius: 20,
             alignSelf: "flex-start",
-            padding: 10,
+            padding: 15,
             marginHorizontal: 10,
 
 
@@ -503,7 +499,7 @@ class EventDetailScreen extends React.Component {
               </TouchableOpacity>
 
             </View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Toko</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Kategori</Text>
             <View style={{ marginTop: 20 }}>
               <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.push("Keranjang"); }}>
                 <Icon name={"cart"} size={25} color={"#666872"} />
@@ -514,12 +510,12 @@ class EventDetailScreen extends React.Component {
             <View style={{ paddingHorizontal: 20,}}>
 
               <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}              >
-                { this.state.event.eventnama}
+                { this.state.kategori.kategoriname}
               </Text>
               <Text
                 style={{ fontSize: 14, color: "#F24E1E", fontWeight: "bold" }}
               >
-                 { this.state.event.eventdesc}
+                 { this.state.kategori.kategoridesc}
               </Text>
             </View>
             
@@ -536,6 +532,7 @@ class EventDetailScreen extends React.Component {
                 backgroundColor: "#F6F6F6",
                 borderRadius: 30,
                 height:HEIGHT-110
+                
               }}
               
               contentContainerStyle={{ justifyContent: "space-between" }}
@@ -552,7 +549,7 @@ class EventDetailScreen extends React.Component {
   }
 }
 
-export default EventDetailScreen;
+export default KategoriDetailcreen;
 
 const styles = StyleSheet.create({
   container: {
