@@ -104,7 +104,7 @@ class ProfilScreen extends React.Component {
       },
       firstmedia: "",
       keranjanglist: [],
-      
+
       keranjang: {
         key: 0,
         dlt: true,
@@ -256,7 +256,6 @@ class ProfilScreen extends React.Component {
           produkcode: snapshot.val().produkcode,
           deskripsi: snapshot.val().deskripsi,
           fitur: snapshot.val().fitur,
-          youtubevideo: child.val().youtubevideo ?? "",
           spesifikasi: snapshot.val().spesifikasi,
           stok: snapshot.val().stok,
           produkid: snapshot.val().produkid,
@@ -407,30 +406,30 @@ class ProfilScreen extends React.Component {
 
   onLogout = async () => {
     const { navigation } = this.props;
-    
-      Alert.alert(
-        "Log Out",
-        "Apakah anda yakin untuk keluar ?",
-       
-        [
-          {
-            text: "Cancel",
-            style: "cancel"
-          },
-          {
-            text: "OK", onPress: async () => {
-              try {
 
-                await storeData("user", null);
-                navigation.navigate("RegisterTab");
-              } catch (error) {
-                console.error(error);
-              }
+    Alert.alert(
+      "Log Out",
+      "Apakah anda yakin untuk keluar ?",
 
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "OK", onPress: async () => {
+            try {
+
+              await storeData("user", null);
+              navigation.navigate("RegisterTab");
+            } catch (error) {
+              console.error(error);
             }
+
           }
-        ]
-      );
+        }
+      ]
+    );
 
 
   };
@@ -468,71 +467,71 @@ class ProfilScreen extends React.Component {
             </View>
           </View>
 
-          <TouchableOpacity style={{  }}  onPress={() => { const { navigation } = this.props; navigation.push("EditProfil"); }}>
-          <View style={{ flexDirection: "row", marginTop: 20, marginHorizontal: 20, width: WIDTH - 40, justifyContent: "space-between", borderRadius: 10, backgroundColor: "white" }}>
-            <View style={{ margin: 10, width: 60, height: 60, overflow: 'hidden', borderRadius: 30 }}>
-              <Image
-                style={{ width: '100%', height: '120%' }}
-                source={require("./../assets/Person.jpg")}
-              />
-            </View>
+          <TouchableOpacity style={{}} onPress={() => { const { navigation } = this.props; navigation.push("EditProfil"); }}>
+            <View style={{ flexDirection: "row", marginTop: 20, marginHorizontal: 20, width: WIDTH - 40, justifyContent: "space-between", borderRadius: 10, backgroundColor: "white" }}>
+              <View style={{ margin: 10, width: 60, height: 60, overflow: 'hidden', borderRadius: 30 }}>
+                <Image
+                  style={{ width: '100%', height: '120%' }}
+                  source={require("./../assets/Person.jpg")}
+                />
+              </View>
 
-            <View style={{ flex: 2, justifyContent: "center" }}>
-              <Text style={{ fontWeight: "bold", fontSize: 16 }}>{this.state.user == null ? "" : this.state.user.nama ?? ""}</Text>
-              <Text style={{ color: "#666872" }}>{this.state.user == null ? "" : this.state.user.email ?? ""}</Text>
+              <View style={{ flex: 2, justifyContent: "center" }}>
+                <Text style={{ fontWeight: "bold", fontSize: 16 }}>{this.state.user == null ? "" : this.state.user.nama ?? ""}</Text>
+                <Text style={{ color: "#666872" }}>{this.state.user == null ? "" : this.state.user.email ?? ""}</Text>
+              </View>
             </View>
-          </View>
           </TouchableOpacity>
-          <View style={{ marginTop: 10, marginHorizontal: 0, width: WIDTH, paddingBottom: 20, borderRadius: 10, backgroundColor: "white", }}>
+          <ScrollView style={{ marginTop: 10, marginHorizontal: 0, width: WIDTH, paddingBottom: 20, borderRadius: 10, backgroundColor: "white", }}>
 
 
             <View style={{ justifyContent: "center", paddingHorizontal: 20, paddingVertical: 10 }}>
 
               <Text style={{ color: "#666872", fontSize: 16, }}>Menu</Text>
             </View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("Diskusi"); }}>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("Diskusi"); }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Diskusi</Text>
               </View>
             </TouchableOpacity >
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("Chat"); }}>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("Chat"); }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Pesan</Text>
               </View>
             </TouchableOpacity >
-         
-            
+
+
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            { (this.state.user != null && this.state.user.tokoid!= "") &&
-  <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("ChatToko"); }}>
-  <View style={{ justifyContent: "center" }}>
+            {(this.state.user != null && this.state.user.tokoid != "") &&
+              <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("ChatToko"); }}>
+                <View style={{ justifyContent: "center" }}>
 
-    <Text style={{ color: "black", fontSize: 16, }}>Pesan Sebagai Toko</Text>
-  </View>
-</TouchableOpacity >
-
-
-
-            }
-              { (this.state.user != null && this.state.user.tokoid!= "") &&
-
-<View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+                  <Text style={{ color: "black", fontSize: 16, }}>Pesan Sebagai Toko</Text>
+                </View>
+              </TouchableOpacity >
 
 
 
             }
-          
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("EditProfil"); }}>
+            {(this.state.user != null && this.state.user.tokoid != "") &&
+
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+
+
+
+            }
+
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("EditProfil"); }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Edit Profil</Text>
               </View>
             </TouchableOpacity >
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            
+
             <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("Keranjang"); }}>
               <View style={{ justifyContent: "center" }}>
 
@@ -540,23 +539,44 @@ class ProfilScreen extends React.Component {
               </View>
             </TouchableOpacity >
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-           
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("Event"); }}>
+              <View style={{ justifyContent: "center" }}>
+
+                <Text style={{ color: "black", fontSize: 16, }}>Event</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("Kategori"); }}>
+              <View style={{ justifyContent: "center" }}>
+
+                <Text style={{ color: "black", fontSize: 16, }}>Kategori</Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+
+            {/* <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Pusat Bantuan</Text>
               </View>
             </TouchableOpacity >
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-          
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
+              <View style={{ justifyContent: "center" }}>
+
+                <Text style={{ color: "black", fontSize: 16, }}>Pesan </Text>
+              </View>
+            </TouchableOpacity >
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
             <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Laporan</Text>
               </View>
             </TouchableOpacity >
-            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }}  onPress={() => { const { navigation } = this.props; navigation.push("ChangePassword"); }}>
+            <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View> */}
+            <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("ChangePassword"); }}>
               <View style={{ justifyContent: "center" }}>
 
                 <Text style={{ color: "black", fontSize: 16, }}>Ganti Password</Text>
@@ -577,7 +597,7 @@ class ProfilScreen extends React.Component {
               </View>
             </TouchableOpacity >
             <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
-          </View>
+          </ScrollView>
 
           <View style={{}}>
 

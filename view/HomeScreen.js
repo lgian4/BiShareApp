@@ -331,7 +331,7 @@ class HomeScreen extends React.Component {
         temptevent = [];
 
         snapshot.forEach((child) => {
-          if (child.key != "count" && child.val().dlt != true) {
+          if (child.key != "count" && child.val().dlt != true && child.val().status == "aktif") {
             var t = child.val();
             teventshow = true;
             t.key = child.key;
@@ -621,7 +621,7 @@ class HomeScreen extends React.Component {
           style={{ fontSize: 17, flexWrap: "wrap", textAlign: "center" }}
           numberOfLines={1}
         >
-          Produk belum ada
+          Produk kosong
         </Text>
       </View>
     );
@@ -629,26 +629,26 @@ class HomeScreen extends React.Component {
   renderHeader = () => {
     return (
       <View
-      style={{
-        backgroundColor: "#F6F6F6",
+        style={{
+          backgroundColor: "#F6F6F6",
 
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        borderBottomLeftRadius: 20,
-        borderBotoomRightRadius: 20,
-        paddingVertical: 4,
-        alignContent: "space-between",
-      }}
-    >
-      <FlatList
-        data={this.state.kategori}
-        extraData={this.state.refreshkategori}
-        style={{ height: 50, flexGrow: 0, alignContent: "center" }}
-        horizontal={true}
-        renderItem={this._renderItem}
-        keyExtractor={(item) => item.kategoriid.toString()}
-      />
-    </View>
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          borderBottomLeftRadius: 20,
+          borderBotoomRightRadius: 20,
+          paddingVertical: 4,
+          alignContent: "space-between",
+        }}
+      >
+        <FlatList
+          data={this.state.kategori}
+          extraData={this.state.refreshkategori}
+          style={{ height: 50, flexGrow: 0, alignContent: "center" }}
+          horizontal={true}
+          renderItem={this._renderItem}
+          keyExtractor={(item) => item.kategoriid.toString()}
+        />
+      </View>
     );
   };
   _renderProduk = ({ item }) => {
@@ -711,7 +711,7 @@ class HomeScreen extends React.Component {
     await this.LoadData();
     await this.loadProdukKategori(this.state.selectedkategori ?? "Rekomendasi");
   }
-  componentWillUnmount() {}
+  componentWillUnmount() { }
   render() {
     const { navigation } = this.props;
     return (
@@ -742,13 +742,20 @@ class HomeScreen extends React.Component {
           </View>
         </View>
         {
-        // this.state.eventshow
-        false
-         && (
-            <View style={{ paddingTop: 10 }}>              
-              <Text style={{ paddingHorizontal: 25, fontSize: 16 }}>
-                Event Aktif
-              </Text>
+          this.state.eventshow
+
+          && (
+            <View style={{ paddingTop: 10 }}>
+              <View style={{ flexDirection: "row", alignItems: "space-around", }}>
+                <Text style={{ paddingHorizontal: 25, fontSize: 16,flex: 2, }}>
+                  Event Aktif
+                </Text>
+                <TouchableOpacity style={{alignItems:"flex-end",paddingRight:10 }} onPress={() => { this.setState({ eventshow: false }) }}>
+                  <Icon name={'ios-close-outline'} size={25} color={'red'} />
+                </TouchableOpacity>
+
+              </View>
+
               <FlatList
                 data={this.state.event}
                 extraData={this.state.refreshevent}
@@ -759,55 +766,55 @@ class HomeScreen extends React.Component {
               />
             </View>
           )}
-          <View style={{ paddingHorizontal: 25, paddingTop: 10 }}>
-            <Text style={{ fontSize: 16 }}>Hi, {this.state.nama ?? ""}</Text>
-          </View>
+        <View style={{ paddingHorizontal: 25, paddingTop: 10 }}>
+          <Text style={{ fontSize: 16 }}>Hi, {this.state.nama ?? ""}</Text>
+        </View>
 
-          <View style={styles.inputContainer}>
-            <TouchableOpacity onPress={this.onSearch}>
-              <TextInput
-                style={styles.input}
-                onChangeText={(val) => this.setState({ searchtext: val })}
-                placeholder={"Search "}
-                placeholderTextColor={"#666872"}
-                underlineColorAndroid="transparent"
-                editable={false}
-              />
-              <Icon
-                name={"search"}
-                size={25}
-                color={"#666872"}
-                style={styles.inputIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          
-        
+        <View style={styles.inputContainer}>
+          <TouchableOpacity onPress={this.onSearch}>
+            <TextInput
+              style={styles.input}
+              onChangeText={(val) => this.setState({ searchtext: val })}
+              placeholder={"Search "}
+              placeholderTextColor={"#666872"}
+              underlineColorAndroid="transparent"
+              editable={false}
+            />
+            <Icon
+              name={"search"}
+              size={25}
+              color={"#666872"}
+              style={styles.inputIcon}
+            />
+          </TouchableOpacity>
+        </View>
 
-          <FlatList
-            data={this.state.viewproduk}
-            extraData={this.state.refresh}
-            
-            style={{
-              paddingHorizontal: 10,
-              marginTop: 0,
-              backgroundColor: "#F6F6F6",
-              paddingBottom: 0,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-            }}
-            scrollEnabled={true}
-            numColumns={2}
-            contentContainerStyle={{ justifyContent: "space-between" }}
-            renderItem={this._renderProduk}
-            ListEmptyComponent={this.renderEmptyContainer}
-            ListHeaderComponent={this.renderHeader}            
-            stickyHeaderIndices={[0]}
-            keyExtractor={(item) => item.produkid}
-            onRefresh={() => this.onRefresh()}
-            refreshing={this.state.isFetching}
-          />
-        
+
+
+        <FlatList
+          data={this.state.viewproduk}
+          extraData={this.state.refresh}
+
+          style={{
+            paddingHorizontal: 10,
+            marginTop: 0,
+            backgroundColor: "#F6F6F6",
+            paddingBottom: 0,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          }}
+          scrollEnabled={true}
+          numColumns={2}
+          contentContainerStyle={{ justifyContent: "space-between" }}
+          renderItem={this._renderProduk}
+          ListEmptyComponent={this.renderEmptyContainer}
+          ListHeaderComponent={this.renderHeader}
+          stickyHeaderIndices={[0]}
+          keyExtractor={(item) => item.produkid}
+          onRefresh={() => this.onRefresh()}
+          refreshing={this.state.isFetching}
+        />
+
       </View>
     );
   }
