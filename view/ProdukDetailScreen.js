@@ -519,6 +519,24 @@ class ProdukDetailScreen extends React.Component {
    
   };
 
+  OnKategoriDetail = () => {
+    console.log("kategori detail");
+    var tkategori = [];
+
+    firebase
+    .database()
+    .ref("kategori/"+this.state.produk.kategoriid)    
+    .on("value", (snapshot) => {
+      tkategori = snapshot.val();
+      if(tkategori.key != "Rekomendasi" && tkategori.key != "All"){
+        const { navigation } = this.props;
+        navigation.push("KategoriDetail", { params: tkategori });
+      }  
+    });
+
+     
+  };
+
   async componentDidMount() {
     var tsuer = await getData("user");
     this.setState({ user: tsuer });
@@ -610,7 +628,7 @@ class ProdukDetailScreen extends React.Component {
                     <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
                       Kategori
                     </Text>
-                    <TouchableOpacity style={{ flex: 3, }}>
+                    <TouchableOpacity style={{ flex: 3, }} onPress={this.OnKategoriDetail}>
                       <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                         {this.state.produk.kategoriname}
                       </Text>

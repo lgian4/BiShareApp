@@ -406,6 +406,12 @@ class HomeScreen extends React.Component {
       isFetching: false,
     });
   };
+  OnKategoriDetail = (selectedproduk) => {
+    if(selectedproduk.key != "Rekomendasi" && selectedproduk.key != "All"){
+      const { navigation } = this.props;
+      navigation.push("KategoriDetail", { params: selectedproduk });
+    }    
+  };
   loadProduk = async () => {
     console.log("load produk");
     var tempproduk = [];
@@ -534,6 +540,7 @@ class HomeScreen extends React.Component {
             refreshkategori: !this.state.refreshkategori,
           });
         }}
+        onLongPress={() => this.OnKategoriDetail(item)}
       >
         <View
           style={{
