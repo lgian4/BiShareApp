@@ -84,6 +84,7 @@ const currencyFormatter = (value, options) => {
     options.thousandsSeparator
   )}`;
 };
+var group = "";
 
 class KeranjangScreen extends React.Component {
   constructor() {
@@ -167,13 +168,13 @@ class KeranjangScreen extends React.Component {
     });
     console.log(tkeranjanglist.length);
 
-    this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk,  });
+    this.setState({ keranjanglist: tkeranjanglist, totalharga: ttotalharga, totalproduk: ttotalproduk, });
     firebase
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-    
+
   }
   onMinusStok = async (item) => {
     this.setState({ isFetching: true })
@@ -203,7 +204,7 @@ class KeranjangScreen extends React.Component {
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
 
-    
+
   }
 
   onDeleteStok = async (item) => {
@@ -232,7 +233,7 @@ class KeranjangScreen extends React.Component {
       .database()
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
-    
+
   }
 
 
@@ -256,6 +257,8 @@ class KeranjangScreen extends React.Component {
 
     navigation.push("ProdukDetail", { params: tempproduk });
   };
+
+
 
   loadKeranjang = async () => {
 
@@ -290,19 +293,12 @@ class KeranjangScreen extends React.Component {
             ) {
               ttotalproduk = ttotalproduk + 1;
               ttotalharga = ttotalharga + (child.val().stok * child.val().harga);
-              tkeranjanglist.push({
-                key: child.key,
-                dlt: child.val().dlt,
-                produkid: child.val().produkid,
-                userid: child.val().userid,
-                mediaurl: child.val().mediaurl,
-                produkname: child.val().produkname,
-                stok: child.val().stok,
-                harga: child.val().harga,
-              });
+              var temp = child.val();
+              temp.key = child.key;
+              tkeranjanglist.push(temp);
             }
           });
-
+          tkeranjanglist = tkeranjanglist.sort((a, b) => a.tokoname.localeCompare(b.tokoname));
           console.log(tkeranjanglist.length)
           this.setState({ keranjanglist: tkeranjanglist, totalproduk: ttotalproduk, totalharga: ttotalharga, isFetching: false, user: tuser });
           storeData("keranjanglist", tkeranjanglist);
@@ -320,104 +316,170 @@ class KeranjangScreen extends React.Component {
     // return(
     //   <View></View>
     // )
-    console.log("render produk");
+  
     var uriimage =
       "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var fill = false;
     if (item.mediaurl != null && item.mediaurl != "") {
       uriimage = item.mediaurl
     }
+console.log("group" + group);
+    var isnewgroup = false;
+    if (group != item.tokoname) {
+      group = item.tokoname;
+      return (
+        <View>
+           <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
+                {item.tokoname}
+              </Text>
+        <TouchableOpacity onPress={async () => { this.OnProdukDetail(item) }}>
+          <View
+            style={{
+              backgroundColor: "white",
+              marginTop: 10,
+              borderRadius: 10,
+              padding: 10,
 
+              marginHorizontal: 10,
+              flexDirection: "row",
 
-    return (
-      <TouchableOpacity onPress={async () => { this.OnProdukDetail(item) }}>
-        <View
-          style={{
-            backgroundColor: "white",
-            marginTop: 10,
-            borderRadius: 10,
-            padding: 10,
+            }}
+          >
 
-            marginHorizontal: 10,
-            flexDirection: "row",
+            <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 10 }}>
+              <Image
+                style={{ width: '100%', height: '100%' }}
+                resizeMode={"contain"}
+                source={{ uri: uriimage }}
+              />
+            </View>
 
-          }}
-        >
+            <View style={{ flex: 2, }}>
+              <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
+                {item.produkname}
+              </Text>
+              <Text style={{ marginBottom: 5 }}> {currencyFormatter(item.harga)} </Text>
 
-          <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 10 }}>
-            <Image
-              style={{ width: '100%', height: '100%' }}
-              resizeMode={"contain"}
-              source={{ uri: uriimage }}
-            />
-          </View>
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
+                  <TouchableOpacity onPress={async () => { this.onMinusStok(item) }}>
+                    <Icon name={"remove-outline"} size={25} color={"black"} />
+                  </TouchableOpacity>
+                </View>
 
-          <View style={{ flex: 2, }}>
-            <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
-              {item.produkname}
-            </Text>
-            <Text style={{ marginBottom: 5 }}> {currencyFormatter(item.harga)} </Text>
+                <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>{item.stok}</Text>
+                <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
+                  <TouchableOpacity onPress={async () => { this.onAddStok(item) }}>
+                    <Icon name={"add-outline"} size={25} color={"black"} />
+                  </TouchableOpacity>
 
-            <View style={{ flexDirection: "row" }}>
-              <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
-                <TouchableOpacity onPress={async () => { this.onMinusStok(item) }}>
-                  <Icon name={"remove-outline"} size={25} color={"black"} />
-                </TouchableOpacity>
+                </View>
+
               </View>
-
-              <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>{item.stok}</Text>
-              <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
-                <TouchableOpacity onPress={async () => { this.onAddStok(item) }}>
-                  <Icon name={"add-outline"} size={25} color={"black"} />
-                </TouchableOpacity>
-
-              </View>
-
+            </View>
+            <View style={{ flex: 0.5, justifyContent: "center" }}>
+              <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
+                <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={{ flex: 0.5, justifyContent: "center" }}>
-            <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
-              <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
-            </TouchableOpacity>
-          </View>
+        </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-    );
+      );
+    }
+    else {
+      return (
+        <TouchableOpacity onPress={async () => { this.OnProdukDetail(item) }}>
+          <View
+            style={{
+              backgroundColor: "white",
+              marginTop: 10,
+              borderRadius: 10,
+              padding: 10,
+
+              marginHorizontal: 10,
+              flexDirection: "row",
+
+            }}
+          >
+
+            <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 10 }}>
+              <Image
+                style={{ width: '100%', height: '100%' }}
+                resizeMode={"contain"}
+                source={{ uri: uriimage }}
+              />
+            </View>
+
+            <View style={{ flex: 2, }}>
+              <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
+                {item.produkname}
+              </Text>
+              <Text style={{ marginBottom: 5 }}> {currencyFormatter(item.harga)} </Text>
+
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
+                  <TouchableOpacity onPress={async () => { this.onMinusStok(item) }}>
+                    <Icon name={"remove-outline"} size={25} color={"black"} />
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>{item.stok}</Text>
+                <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
+                  <TouchableOpacity onPress={async () => { this.onAddStok(item) }}>
+                    <Icon name={"add-outline"} size={25} color={"black"} />
+                  </TouchableOpacity>
+
+                </View>
+
+              </View>
+            </View>
+            <View style={{ flex: 0.5, justifyContent: "center" }}>
+              <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
+                <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+
+
   };
 
   renderEmptyContainer = () => {
-   
+
 
     return (
-      
-        <View
-          style={{
-            width: WIDTH -30,
-            backgroundColor: "white",
-            marginTop: 10,
-            borderRadius: 10,
-            alignSelf: "center",
-            padding: 10,
-            marginHorizontal: 10,
-            alignItems:"center",
-            alignContent:"center"
-          }}
+
+      <View
+        style={{
+          width: WIDTH - 30,
+          backgroundColor: "white",
+          marginTop: 10,
+          borderRadius: 10,
+          alignSelf: "center",
+          padding: 10,
+          marginHorizontal: 10,
+          alignItems: "center",
+          alignContent: "center"
+        }}
+      >
+        <Image
+          source={require("./../assets/logo.png")}
+          style={{ height: 100, width: 100 }}
+          resizeMode="contain"
+        />
+
+        <Text
+          style={{ fontSize: 17, flexWrap: "wrap", textAlign: 'center' }}
+
         >
-            <Image
-                source={require("./../assets/logo.png")}
-                style={{ height: 100, width: 100 }}
-                resizeMode="contain"
-              />
-          
-          <Text
-            style={{ fontSize:17,  flexWrap: "wrap",textAlign:'center' }}
-            
-          >
-         Keranjang kosong
-          </Text>
-          
-        </View>
-      
+          Keranjang kosong
+        </Text>
+
+      </View>
+
     );
   };
   async componentDidMount() {

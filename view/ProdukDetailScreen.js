@@ -237,11 +237,17 @@ class ProdukDetailScreen extends React.Component {
         mediaurl: this.state.firstmedia,
         produkname: tproduk.produkname,
         stok: 0,
+        tokoid : tproduk.tokoid,
+        tokoname: tproduk.tokoname,
         harga: tproduk.harga
       }
     }
+
     if (tkeranjang.dlt || tkeranjang.stok <= 0) {
+      console.log(tkeranjang)
       tkeranjang.dlt = false;
+      tkeranjang. tokoid =tproduk.tokoid;
+      tkeranjang.tokoname= tproduk.tokoname;
       tkeranjang.stok = 1;
       this.notify("Produk berhasil dimasukkan kedalam keranjang");
 
