@@ -350,15 +350,12 @@ class ProdukDetailScreen extends React.Component {
     var tkeranjang = null;
 
     try {
-      console.log("produklike/" + selectedproduk.produkid + "/" + tuser.userid);
+
       await firebase
         .database()
         .ref("produklike/" + selectedproduk.produkid + "/" + tuser.userid)
         .on("value", (snapshot) => {
 
-          console.log("console.log(snapshot); " + snapshot);
-          console.log("console.log(snapshot.key); " + snapshot.key);
-          console.log("console.log(snapshot.val); " + snapshot.val());
           if (snapshot != null && snapshot.val() != null
           ) {
             tproduklike = {
@@ -526,7 +523,7 @@ class ProdukDetailScreen extends React.Component {
   };
 
   OnKategoriDetail = () => {
-    console.log("kategori detail");
+    
     var tkategori = [];
 
     firebase

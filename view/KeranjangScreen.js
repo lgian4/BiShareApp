@@ -316,74 +316,103 @@ class KeranjangScreen extends React.Component {
     // return(
     //   <View></View>
     // )
-  
+
     var uriimage =
       "https://firebasestorage.googleapis.com/v0/b/bishare-48db5.appspot.com/o/adaptive-icon.png?alt=media&token=177dbbe3-a1bd-467e-bbee-2f04ca322b5e";
     var fill = false;
     if (item.mediaurl != null && item.mediaurl != "") {
       uriimage = item.mediaurl
     }
-console.log("group" + group);
+    console.log("group" + group);
     var isnewgroup = false;
     if (group != item.tokoname) {
       group = item.tokoname;
       return (
         <View>
-           <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
-                {item.tokoname}
-              </Text>
-        <TouchableOpacity onPress={async () => { this.OnProdukDetail(item) }}>
-          <View
-            style={{
-              backgroundColor: "white",
-              marginTop: 10,
-              borderRadius: 10,
-              padding: 10,
+          <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
+            <View
+              style={{
+                backgroundColor: "white",
+                marginTop: 10,
+                borderTopLeftRadius:10,
+                borderTopRightRadius:10,
+                padding: 10,
 
-              marginHorizontal: 10,
-              flexDirection: "row",
+                marginHorizontal: 10,
+                flexDirection: "row",
 
-            }}
-          >
+              }}
+            >
 
-            <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 10 }}>
-              <Image
-                style={{ width: '100%', height: '100%' }}
-                resizeMode={"contain"}
-                source={{ uri: uriimage }}
-              />
-            </View>
 
-            <View style={{ flex: 2, }}>
-              <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
-                {item.produkname}
-              </Text>
-              <Text style={{ marginBottom: 5 }}> {currencyFormatter(item.harga)} </Text>
-
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
-                  <TouchableOpacity onPress={async () => { this.onMinusStok(item) }}>
-                    <Icon name={"remove-outline"} size={25} color={"black"} />
-                  </TouchableOpacity>
-                </View>
-
-                <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>{item.stok}</Text>
-                <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
-                  <TouchableOpacity onPress={async () => { this.onAddStok(item) }}>
-                    <Icon name={"add-outline"} size={25} color={"black"} />
-                  </TouchableOpacity>
-
-                </View>
+              <View style={{ flex: 2, }}>
+                <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
+                  {item.tokoname}
+                </Text>
+              </View>
+              <View style={{ flex: 0.5, alignSelf:"flex-end",flexDirection: "row", }}>
+                <Text style={{ flexWrap: "wrap", marginTop: 3, color:"red"}} numberOfLines={1}>
+                  Beli 
+                </Text>
+                <Icon name={"arrow-forward"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
 
               </View>
             </View>
-            <View style={{ flex: 0.5, justifyContent: "center" }}>
-              <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
-                <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
-              </TouchableOpacity>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={async () => { this.OnProdukDetail(item) }}>
+            <View
+              style={{
+                backgroundColor: "white",
+                marginTop: 0,
+                borderBottomLeftRadius:10,
+                borderBottomRightRadius:10,
+                padding: 10,
+
+                marginHorizontal: 10,
+                flexDirection: "row",
+
+              }}
+            >
+
+              <View style={{ marginRight: 10, width: 80, backgroundColor: "#F6F6F6", height: 80, overflow: 'hidden', borderRadius: 10 }}>
+                <Image
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode={"contain"}
+                  source={{ uri: uriimage }}
+                />
+              </View>
+
+              <View style={{ flex: 2, }}>
+                <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }} numberOfLines={1}>
+                  {item.produkname}
+                </Text>
+                <Text style={{ marginBottom: 5 }}> {currencyFormatter(item.harga)} </Text>
+
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
+                    <TouchableOpacity onPress={async () => { this.onMinusStok(item) }}>
+                      <Icon name={"remove-outline"} size={25} color={"black"} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>{item.stok}</Text>
+                  <View style={{ borderWidth: 2, borderColor: "#F6F6F6", borderRadius: 10 }}>
+                    <TouchableOpacity onPress={async () => { this.onAddStok(item) }}>
+                      <Icon name={"add-outline"} size={25} color={"black"} />
+                    </TouchableOpacity>
+
+                  </View>
+
+                </View>
+              </View>
+              <View style={{ flex: 0.5, justifyContent: "center" }}>
+                <TouchableOpacity onPress={async () => { this.onDeleteStok(item) }}>
+                  <Icon name={"trash-outline"} style={{ alignSelf: "flex-end" }} size={25} color={"red"} />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </View>
       );
     }
