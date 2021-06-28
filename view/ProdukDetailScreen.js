@@ -264,7 +264,7 @@ class ProdukDetailScreen extends React.Component {
           .set(tkeranjang);
 
       } catch (error) {
-        console.error(error);
+     //   console.error(error);
       }
     }
     else {
