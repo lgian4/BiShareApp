@@ -15,6 +15,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
+  Clipboard,
   ActivityIndicator,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -106,7 +107,7 @@ class TokoScreen extends React.Component {
 
     this.state = {
       press: false,
-      isLoading:true,
+      isLoading: true,
       visibility: false,
       DateDisplay: "",
       TextInputDisableStatus: true,
@@ -166,17 +167,10 @@ class TokoScreen extends React.Component {
           snapshot.key != "produkmediacount" &&
           snapshot.val().dlt != true && snapshot.val().tokoid == tokoid
         ) {
-          ttoko = {
-            key: snapshot.key,
-            tokocode: snapshot.val().tokocode,
-            tokoname: snapshot.val().tokoname,
-            tokoid: snapshot.val().tokoid,
-            tokodate: snapshot.val().tokodate,
-            tokodesc: snapshot.val().tokodesc,
-            usernama: snapshot.val().usernama,
-          };
+          ttoko = snapshot.val();
+          ttoko.key = snapshot.key;
         }
-        await this.setState({ toko: ttoko,isLoading : false });
+        await this.setState({ toko: ttoko, isLoading: false });
 
       });
     // get produk list
@@ -189,42 +183,16 @@ class TokoScreen extends React.Component {
       .database()
       .ref("produk/")
       .on("value", async (snapshot) => {
-        tempproduk= [];
+        tempproduk = [];
         snapshot.forEach((child) => {
           if (
             child.key != "count" &&
             child.key != "produkmediacount" &&
             child.val().dlt != true && child.val().tokoid == tokoid
           ) {
-            tempproduk.push({
-              key: child.key,
-              produkcode: child.val().produkcode,
-              deskripsi: child.val().deskripsi,
-              fitur: child.val().fitur,
-              youtubevideo: child.val().youtubevideo ?? "",
-              spesifikasi: child.val().spesifikasi,
-              stok: child.val().stok,
-              produkid: child.val().produkid,
-              produkname: child.val().produkname,
-              harga: child.val().harga,
-              produkmedia: child.val().produkmedia ?? null,
-              kategoriid: child.val().kategoriid,
-              kategoriname: child.val().kategoriname,
-              tokoid: child.val().tokoid,
-              tokoname: child.val().tokoname,
-              stok: child.val().stok,
-              produkdate: child.val().produkdate,
-              produkcode: child.val().produkcode,
-              dlt: child.val().dlt ?? false,
-              produkmediacount: child.val().produkmediacount ?? 0,
-              status: child.val().status ?? "",
-              likecount: child.val().likecount ?? 0,
-
-              reviewtotal: child.val().reviewtotal ?? 0,
-              reviewcount: child.val().reviewcount ?? 0,
-              reviewavg: child.val().reviewavg ?? 0,
-              review: child.val().review ?? [],
-            });
+            var tempdproduk = child.val();
+            tempdproduk.key = child.key;
+            tempproduk.push(tempdproduk);
           }
         });
         console.log("produk " + tempproduk.length)
@@ -475,7 +443,7 @@ class TokoScreen extends React.Component {
     );
   };
 
-  OnChatDetail = async  () => {
+  OnChatDetail = async () => {
     const { navigation } = this.props;
     await this.setState({ isLoading: true });
     var tuser = this.state.user;
@@ -497,29 +465,29 @@ class TokoScreen extends React.Component {
     }
 
     firebase
-    .database()
-    .ref("chats/")
-    .orderByChild("userid1")
-    .equalTo(tuser.userid)
-    .on("value", (snapshot) => {
-
-      snapshot.forEach((child) => {
-        if (child.val().tokoid == tchats.tokoid && child.val().dlt != true) {
-          tchats = child.val();          
-          tchats.key = child.key;
-        }
-      });
-    });
-
-    await new Promise(r => setTimeout(r, 1000));
-    if(tchats.key == null || tchats.key == "")    {
-      console.log('create new chats');
-      tchats.key = firebase
       .database()
       .ref("chats/")
-      .push(tchats).getKey();
+      .orderByChild("userid1")
+      .equalTo(tuser.userid)
+      .on("value", (snapshot) => {
+
+        snapshot.forEach((child) => {
+          if (child.val().tokoid == tchats.tokoid && child.val().dlt != true) {
+            tchats = child.val();
+            tchats.key = child.key;
+          }
+        });
+      });
+
+    await new Promise(r => setTimeout(r, 1000));
+    if (tchats.key == null || tchats.key == "") {
+      console.log('create new chats');
+      tchats.key = firebase
+        .database()
+        .ref("chats/")
+        .push(tchats).getKey();
     }
-    
+
 
     var tuserchats = {
       key: tchats.key,
@@ -569,9 +537,9 @@ class TokoScreen extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-          <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
+          <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{ position: "absolute", top: HEIGHT / 2, left: (WIDTH / 2) - 20 }} />
           <ScrollView style={{ height: HEIGHT - 40 }}>
-            <View style={{ paddingHorizontal: 20,}}>
+            <View style={{ paddingHorizontal: 20, }}>
 
               <Text style={{ fontSize: 28, color: "black", fontWeight: "bold" }}              >
                 {this.state.toko.tokoname}
@@ -587,7 +555,7 @@ class TokoScreen extends React.Component {
               <View flexDirection="row" style={{ padding: 5 }}>
                 <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
                   Code
-  </Text>
+                </Text>
                 <TouchableOpacity style={{ flex: 3, }} onPress={this.OnToko}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     {this.state.toko.tokocode}
@@ -597,7 +565,7 @@ class TokoScreen extends React.Component {
               <View flexDirection="row" style={{ padding: 5 }}>
                 <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
                   Nama
-  </Text>
+                </Text>
                 <TouchableOpacity style={{ flex: 3, }}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     {this.state.toko.tokoname}
@@ -607,7 +575,7 @@ class TokoScreen extends React.Component {
               <View flexDirection="row" style={{ padding: 5 }}>
                 <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
                   Date
-  </Text>
+                </Text>
                 <TouchableOpacity style={{ flex: 3, }}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     {this.state.toko.tokodate}
@@ -617,7 +585,7 @@ class TokoScreen extends React.Component {
               <View flexDirection="row" style={{ padding: 5 }}>
                 <Text style={{ flex: 1, fontSize: 14, color: "#333333" }}>
                   Deskripsi
-  </Text>
+                </Text>
                 <TouchableOpacity style={{ flex: 3, }}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     {this.state.toko.tokodesc}
@@ -625,16 +593,40 @@ class TokoScreen extends React.Component {
                 </TouchableOpacity>
               </View>
               <View flexDirection="row" style={{ padding: 5 }}>
-                <Text style={{ flex: 1, fontSize: 14, color: "#333333", textAlignVertical:'center' }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333", textAlignVertical: 'center' }}>
                   Chat
-  </Text>
-                <TouchableOpacity style={{ flex: 3, borderColor:"#F24E1E",borderWidth:1, borderRadius:10,padding:5}} onPress={ async () =>{ this.OnChatDetail()} }>
+                </Text>
+                <TouchableOpacity style={{ flex: 3, borderColor: "#F24E1E", borderWidth: 1, borderRadius: 10, padding: 5 }} onPress={async () => { this.OnChatDetail() }}>
                   <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
                     Buka Chat
                   </Text>
                 </TouchableOpacity>
               </View>
-
+              <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333", textAlignVertical: 'center' }} >
+                  Kontak
+                </Text>
+                <TouchableOpacity style={{ flex: 3, }} onPress={()=> {  Clipboard.setString(this.state.toko.kontak); this.notify(this.state.toko.kontak +" copy"); }}>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                    {this.state.toko.kontak}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {(this.state.toko.alamat === undefined) ? <View></View> :
+                    
+                   
+              <View flexDirection="row" style={{ padding: 5 }}>
+                <Text style={{ flex: 1, fontSize: 14, color: "#333333", textAlignVertical: 'center' }} >
+                  Alamat
+                </Text>
+                <TouchableOpacity style={{ flex: 3, }} onPress={()=> {  Clipboard.setString(this.state.toko.alamat); this.notify(this.state.toko.alamat +" copy"); }}>
+                  <Text style={{ fontSize: 16, color: "#F24E1E", fontWeight: 'bold' }}>
+                  {this.state.toko.alamat}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+ }
+                    
 
             </View>
 
