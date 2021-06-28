@@ -159,7 +159,7 @@ class LoginScreen extends React.Component {
         }
       });
 
-  
+
 
   };
 
@@ -176,6 +176,11 @@ class LoginScreen extends React.Component {
         >
           <SafeAreaView>
             <View style={styles.logoContainer}>
+              <Image
+                source={require("./../assets/logo.png")}
+                style={{ height: 100, width: 100, justifyContent: 'center', alignItems: 'center', }}
+                resizeMode="contain"
+              />
               <Text style={styles.logoText}>BiShare</Text>
               <Text style={styles.text}>Marketplace Polibatam</Text>
             </View>
@@ -273,8 +278,9 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginTop: HEIGHT / 25,
-
+    alignItems:"center",
     justifyContent: "center",
+
   },
   bottomContainer: {
     marginTop: 100,
