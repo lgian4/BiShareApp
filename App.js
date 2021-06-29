@@ -25,7 +25,7 @@ import KategoriScreen from './view/KategoriScreen';
 import KategoriDetailScreen from './view/KategoriDetailScreen';
 import ChatTokoDetailScreen from './view/ChatTokoDetailScreen';
 import ChangePasswordScreen from './view/ChangePasswordScreen';
-
+import BeliDraftScreen from './view/BeliDraftScreen';
 import AsyncStorage from "@react-native-community/async-storage";
 
 const RegisterStack = createStackNavigator();
@@ -79,6 +79,7 @@ const HomeTab = () => {
       <HomeStack.Screen name="Event" component={EventScreen} />
       <HomeStack.Screen name="Kategori" component={KategoriScreen} />
       <HomeStack.Screen name="KategoriDetail" component={KategoriDetailScreen} />
+      <HomeStack.Screen name="BeliDraft" component={BeliDraftScreen} />
       <HomeStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <HomeStack.Screen name="RegisterTab" component={RegisterTab} />
     </HomeStack.Navigator>
