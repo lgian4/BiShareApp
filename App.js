@@ -27,6 +27,8 @@ import ChatTokoDetailScreen from './view/ChatTokoDetailScreen';
 import ChangePasswordScreen from './view/ChangePasswordScreen';
 import BeliDraftScreen from './view/BeliDraftScreen';
 import AsyncStorage from "@react-native-community/async-storage";
+import BeliListScreen from './view/BeliListScreen';
+
 
 const RegisterStack = createStackNavigator();
 const HomeStack = createStackNavigator();
@@ -77,6 +79,7 @@ const HomeTab = () => {
       <HomeStack.Screen name="EventDetail" component={EventDetailScreen} />
       <HomeStack.Screen name="ChatToko" component={ChatTokoScreen} />
       <HomeStack.Screen name="Event" component={EventScreen} />
+      <HomeStack.Screen name="BeliList" component={BeliListScreen} />
       <HomeStack.Screen name="Kategori" component={KategoriScreen} />
       <HomeStack.Screen name="KategoriDetail" component={KategoriDetailScreen} />
       <HomeStack.Screen name="BeliDraft" component={BeliDraftScreen} />

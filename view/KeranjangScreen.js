@@ -15,7 +15,7 @@ import {
   ImageBackground,
   ScrollView,
   ToastAndroid,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -245,43 +245,42 @@ class KeranjangScreen extends React.Component {
     var tkeranjanglist = this.state.keranjanglist;
     var tproduklist = [];
     var ttotalharga = 0;
-    tkeranjanglist.forEach(element => {
-      if(element.tokoid == ttokoid){
+    tkeranjanglist.forEach((element) => {
+      if (element.tokoid == ttokoid) {
         // get new produk data
-        tproduklist.push(element);    
-        ttotalharga += item.harga* item.stok;    
+        tproduklist.push(element);
+        ttotalharga += item.harga * item.stok;
       }
-      
     });
-    if(tproduklist.length <= 0){
+    if (tproduklist.length <= 0) {
       this.setState({ isFetching: false });
       this.notify("Produk tidak ditemukan");
       return;
     }
-   
-    
+
     // buat model beli
-    var tbeli ={
-      key : "",
+    var tbeli = {
+      key: "",
       userid: tuser.userid,
       username: tuser.nama,
       tokoid: ttokoid,
       tokoname: ttokoname,
       produklist: tproduklist,
-      totalharga: ttotalharga,
+      totalharga: ttotalharga + 5000,
+      hargaproduk: ttotalharga,
+      hargaongkir: 0,
+      hargaadmin: 5000,
       catatan: "",
-      namalengkap : tuser.nama,
+      namalengkap: tuser.nama,
       metodepengiriman: "Ambil Sendiri",
       metodepembayaran: "Bayar Tunai",
-      status :"Draft",
-      komenpenjual:"",
-      dlt : false
-    };    
+      status: "Draft",
+      komenpenjual: "",
+      dlt: false,
+      belidate: Date.now(),
+    };
     // save pembayaran
-    tbeli.key = await firebase
-    .database()
-    .ref("beli/")
-    .push(tbeli).getKey();
+    tbeli.key = await firebase.database().ref("beli/").push(tbeli).getKey();
 
     // buka beli draft
     this.setState({ isFetching: false });
@@ -346,7 +345,7 @@ class KeranjangScreen extends React.Component {
           });
           tkeranjanglist = tkeranjanglist.sort((a, b) =>
             a.tokoname.localeCompare(b.tokoname)
-          );          
+          );
           this.setState({
             keranjanglist: tkeranjanglist,
             totalproduk: ttotalproduk,
@@ -373,7 +372,7 @@ class KeranjangScreen extends React.Component {
     var fill = false;
     if (item.mediaurl != null && item.mediaurl != "") {
       uriimage = item.mediaurl;
-    }    
+    }
     var isnewgroup = false;
     if (group != item.tokoname) {
       group = item.tokoname;
@@ -710,10 +709,21 @@ class KeranjangScreen extends React.Component {
               Keranjang Belanjaan
             </Text>
             <View style={{ marginTop: 20 }}>
-              <Icon name={"cart"} size={25} color={"white"} />
+              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.push("BeliList"); }}>
+                <Icon name={"basket-outline"} size={25} color={"#666872"} />
+              </TouchableOpacity>
             </View>
           </View>
-          <ActivityIndicator size="large" color="#F24E1E" animating={this.state.isLoading} style={{position:"absolute", top:HEIGHT/2,left:(WIDTH/2) -20}} />
+          <ActivityIndicator
+            size="large"
+            color="#F24E1E"
+            animating={this.state.isLoading}
+            style={{
+              position: "absolute",
+              top: HEIGHT / 2,
+              left: WIDTH / 2 - 20,
+            }}
+          />
           <View style={{}}>
             <FlatList
               data={this.state.keranjanglist}
