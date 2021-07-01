@@ -22,7 +22,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
 import AsyncStorage from "@react-native-community/async-storage";
-import { Picker as Select } from '@react-native-community/picker';
+import { Picker as Select } from "@react-native-community/picker";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
@@ -87,6 +87,7 @@ const currencyFormatter = (value, options) => {
   )}`;
 };
 var group = "";
+const BiayaAdmin = 5000;
 
 class BeliDraftScreen extends React.Component {
   constructor() {
@@ -118,10 +119,13 @@ class BeliDraftScreen extends React.Component {
         stok: 0,
         harga: 0,
       },
-      refresh: true,
+      refresh: true,      
       totalproduk: 0,
       totalharga: 0,
       isFetching: true,
+      optionkirim:[{label:"Ambil Sendiri",biaya:0},{label:"Kirim",biaya:10000}],
+      optionbayarambil:[{label:"Bayar Tunai",biaya:5000},{label:"Transfer Bank",biaya:5000}],
+      optionbayarkirim:[{label:"Transfer Bank",biaya:5000}],
     };
   }
 
@@ -150,95 +154,99 @@ class BeliDraftScreen extends React.Component {
   };
 
   onAddStok = async (item) => {
-    this.setState({ isFetching: true });
-    var tkeranjanglist = this.state.keranjanglist;
-    var tuser = this.state.user;
-    if (tuser == null) tuser = await getData("user");
-    var ttotalharga = 0;
-    var ttotalproduk = 0;
-    var selected = null;
-    tkeranjanglist.forEach(function (obj) {
-      if (obj.produkid === item.produkid) {
-        selected = obj;
-        obj.stok = obj.stok + 1;
-        if (obj.stok == 0) obj.dlt = true;
-      }
-      ttotalproduk = ttotalproduk + 1;
-      ttotalharga = ttotalharga + obj.stok * obj.harga;
-    });
-    console.log(tkeranjanglist.length);
-
-    this.setState({
-      keranjanglist: tkeranjanglist,
-      totalharga: ttotalharga,
-      totalproduk: ttotalproduk,
-    });
-    firebase
-      .database()
-      .ref("keranjang/" + tuser.userid + "/" + item.produkid)
-      .set(selected);
+    try {
+      this.setState({ isFetching: true });
+      var tproduklist = this.state.beli.produklist;
+      var tbeli = this.state.beli;
+      var tuser = this.state.user;
+      if (tuser == null) tuser = await getData("user");
+      var ttotalharga = 0;
+      var tbiayaproduk = 0;
+      var selected = null;
+      tproduklist.forEach(function (obj) {
+        if (obj.produkid === item.produkid) {
+          selected = obj;
+          obj.stok = obj.stok + 1;
+          if (obj.stok == 0) obj.dlt = true;
+        }
+        if(obj.dlt == false)
+        tbiayaproduk = tbiayaproduk + (obj.stok * obj.harga);
+      });
+      
+      tbeli.produklist = tproduklist;
+      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
+      tbeli.hargaproduk = tbiayaproduk;
+      console.log(tbiayaproduk);
+      this.setState({
+        beli: tbeli,
+        isFetching: false,
+      });
+    } catch (error) { console.error(error)}
+    // firebase
+    //   .database()
+    //   .ref("keranjang/" + tuser.userid + "/" + item.produkid)
+    //   .set(selected);
   };
   onMinusStok = async (item) => {
-    this.setState({ isFetching: true });
-    var tkeranjanglist = this.state.keranjanglist;
-    var tuser = this.state.user;
-    if (tuser == null) tuser = await getData("user");
-    var ttotalharga = 0;
-    var ttotalproduk = 0;
-    var selected = null;
-    tkeranjanglist.forEach(function (obj) {
-      if (obj.produkid === item.produkid) {
-        selected = obj;
-        obj.stok = obj.stok - 1;
-        if (obj.stok == 0) obj.dlt = true;
-      }
-      ttotalproduk = ttotalproduk + 1;
-      ttotalharga = ttotalharga + obj.stok * obj.harga;
-    });
-    console.log(tkeranjanglist.length);
-
-    this.setState({
-      keranjanglist: tkeranjanglist,
-      totalharga: ttotalharga,
-      totalproduk: ttotalproduk,
-      refresh: !this.state.refresh,
-      isFetching: false,
-    });
-    firebase
-      .database()
-      .ref("keranjang/" + tuser.userid + "/" + item.produkid)
-      .set(selected);
+    try {
+      this.setState({ isFetching: true });
+      var tproduklist = this.state.beli.produklist;
+      var tbeli = this.state.beli;
+      var tuser = this.state.user;
+      if (tuser == null) tuser = await getData("user");
+      var ttotalharga = 0;
+      var tbiayaproduk = 0;
+      var selected = null;
+      tproduklist.forEach(function (obj) {
+        if (obj.produkid === item.produkid) {
+          selected = obj;
+          obj.stok = obj.stok - 1;
+          if (obj.stok == 0) obj.dlt = true;
+        }
+        if(obj.dlt == false)
+        tbiayaproduk = tbiayaproduk + (obj.stok * obj.harga);
+      });
+      
+      tbeli.produklist = tproduklist;
+      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
+      tbeli.hargaproduk = tbiayaproduk;
+      console.log(tbiayaproduk);
+      this.setState({
+        beli: tbeli,
+        isFetching: false,
+      });
+    } catch (error) { console.error(error)}
   };
 
   onDeleteStok = async (item) => {
-    this.setState({ isFetching: true });
-    var tkeranjanglist = this.state.keranjanglist;
-    var tuser = this.state.user;
-    if (tuser == null) tuser = await getData("user");
-    var ttotalharga = 0;
-    var ttotalproduk = 0;
-    var selected = null;
-    tkeranjanglist.forEach(function (obj) {
-      if (obj.produkid === item.produkid) {
-        selected = obj;
-        obj.stok = 0;
-        obj.dlt = true;
-      }
-      ttotalproduk = ttotalproduk + 1;
-      ttotalharga = ttotalharga + obj.stok * obj.harga;
-    });
-    console.log(tkeranjanglist.length);
-
-    this.setState({
-      totalharga: ttotalharga,
-      totalproduk: ttotalproduk,
-      refresh: !this.state.refresh,
-      isFetching: false,
-    });
-    firebase
-      .database()
-      .ref("keranjang/" + tuser.userid + "/" + item.produkid)
-      .set(selected);
+    try {
+      this.setState({ isFetching: true });
+      var tproduklist = this.state.beli.produklist;
+      var tbeli = this.state.beli;
+      var tuser = this.state.user;
+      if (tuser == null) tuser = await getData("user");
+      var ttotalharga = 0;
+      var tbiayaproduk = 0;
+      var selected = null;
+      tproduklist.forEach(function (obj) {
+        if (obj.produkid === item.produkid) {
+          selected = obj;
+          obj.stok = 0;
+          if (obj.stok == 0) obj.dlt = true;          
+        }
+        if(obj.dlt == false)
+        tbiayaproduk = tbiayaproduk + (obj.stok * obj.harga);
+      });
+      
+      tbeli.produklist = tproduklist;
+      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
+      tbeli.hargaproduk = tbiayaproduk;
+      console.log(tbiayaproduk);
+      this.setState({
+        beli: tbeli,
+        isFetching: false,
+      });
+    } catch (error) { console.error(error)}
   };
 
   handleConfirm = (date) => {
@@ -279,12 +287,16 @@ class BeliDraftScreen extends React.Component {
       const { navigation } = this.props;
       navigation.goBack();
     }
-    this.setState({ isFetching: false });
+
     // get database produk
     tbeli.produklist.forEach((element) => {});
     // check produk
 
+    tbeli.hargaadmin = BiayaAdmin;
+    tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+
     // update dtabase
+    this.setState({ isFetching: false, beli: tbeli });
   };
 
   _renderProduk = ({ item }) => {
@@ -298,6 +310,9 @@ class BeliDraftScreen extends React.Component {
     var fill = false;
     if (item.mediaurl != null && item.mediaurl != "") {
       uriimage = item.mediaurl;
+    }
+    if (item.dlt == true) {
+      return;
     }
 
     return (
@@ -343,7 +358,7 @@ class BeliDraftScreen extends React.Component {
             </Text>
             <Text style={{ marginBottom: 5 }}>
               {" "}
-              {currencyFormatter(item.harga)}{" "}
+              {currencyFormatter(item.harga )} 
             </Text>
 
             <View style={{ flexDirection: "row" }}>
@@ -465,7 +480,7 @@ class BeliDraftScreen extends React.Component {
               </TouchableOpacity>
             </View>
             <Text style={{ fontSize: 16, fontWeight: "bold", marginTop: 20 }}>
-              {this.state.beli.status ?? "Beli"}
+              {this.state.beli.status ?? "Beli"} - {this.state.beli.username}
             </Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"white"} />
@@ -494,16 +509,23 @@ class BeliDraftScreen extends React.Component {
             }}
           >
             <View style={{ flex: 2 }}>
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  flexWrap: "wrap",
-                  marginBottom: 5,
+              <TouchableOpacity
+                onPress={() => {
+                  const { navigation } = this.props;
+                  navigation.push("Toko", { params: this.state.beli.tokoid });
                 }}
-                numberOfLines={1}
               >
-                {this.state.beli.tokoname}
-              </Text>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    flexWrap: "wrap",
+                    marginBottom: 5,
+                  }}
+                  numberOfLines={1}
+                >
+                  {this.state.beli.tokoname}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={{}}>
@@ -520,9 +542,10 @@ class BeliDraftScreen extends React.Component {
               keyExtractor={(item) => item.produkid.toString()}
               onRefresh={() => this.LoadBeli()}
               refreshing={this.state.isFetching}
+              scrollEnabled={false}
             />
           </View>
-          
+
           <View
             style={{
               backgroundColor: "white",
@@ -572,8 +595,23 @@ class BeliDraftScreen extends React.Component {
               keyboardType={"default"}
               textAlignVertical={"top"}
             />
-           
+            <Text style={{ fontSize: 14 }}>Alamat (Optional)</Text>
+            <TextInput
+              style={{ fontSize: 12, height: 40 }}
+              placeholder={"Masukkan Alamat"}
+              onChangeText={async (val) => {
+                var tbeli = this.state.beli;
+                tbeli.alamat = val;
+                await this.setState({ beli: tbeli });
+              }}
+              defaultValue={this.state.beli.alamat}
+              placeholderTextColor={"#666872"}
+              underlineColorAndroid="transparent"
+              keyboardType={"default"}
+              textAlignVertical={"top"}
+            />
           </View>
+
           <View
             style={{
               backgroundColor: "white",
@@ -584,10 +622,31 @@ class BeliDraftScreen extends React.Component {
             }}
           >
             <Text style={{ fontSize: 14 }}>Metode Pengiriman</Text>
-            
-            <Select style={{ width: WIDTH-50 }}>
-              <Select.Item label="Ambil Sendiri" value="Ambil Sendiri" />
-              <Select.Item label="Kirim" value="Kirim" />
+
+            <Select style={{ width: WIDTH - 50 }}  
+            selectedValue={this.state.beli.metodepengiriman}
+            onValueChange={(itemValue, itemIndex) => {
+              var tbeli = this.state.beli;
+              tbeli.metodepengiriman = itemValue;
+              if(itemValue == "Kirim"){
+                tbeli.hargaongkir = this.state.optionkirim[1].biaya;
+                tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+              }
+              else {
+                tbeli.metodepembayaran = this.state.optionbayarambil[1].label;
+                tbeli.hargaadmin = this.state.optionbayarambil[1].biaya;
+                tbeli.hargaongkir = this.state.optionkirim[0].biaya;
+                tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+              }
+              this.setState({beli:tbeli});
+            }}
+            >
+
+            {  this.state.optionkirim.map( (v)=>{
+   return <Select.Item label={v.label} value={v.label} />
+  }) }
+
+  
             </Select>
           </View>
           <View
@@ -600,10 +659,30 @@ class BeliDraftScreen extends React.Component {
             }}
           >
             <Text style={{ fontSize: 14 }}>Metode Pembayaran</Text>
-            
-            <Select style={{  width: WIDTH-50 }}>
-              <Select.Item label="Langsung" value="Langsung" />
-              <Select.Item label="Transfer" value="Transfer" />
+
+            <Select style={{ width: WIDTH - 50 }}
+             selectedValue={this.state.beli.metodepembayaran}
+             onValueChange={(itemValue, itemIndex) => {
+               var tbeli = this.state.beli;
+               tbeli.metodepembayaran = itemValue;
+               if(itemValue == "Bayar Tunai"){
+                 tbeli.hargaadmin = this.state.optionbayarambil[0].biaya;
+                 tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+               }else {
+                tbeli.hargaadmin = this.state.optionbayarambil[1].biaya;
+                tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+               }
+               this.setState({beli:tbeli});
+             }}
+            >
+            { this.state.beli.metodepengiriman == "Ambil Sendiri" ? 
+             this.state.optionbayarambil.map( (v)=>{
+              return <Select.Item label={v.label} value={v.label} />
+             }) :  this.state.optionbayarkirim.map( (v)=>{
+              return <Select.Item label={v.label} value={v.label} />
+             })
+              
+            }
             </Select>
           </View>
           <View
@@ -614,92 +693,122 @@ class BeliDraftScreen extends React.Component {
               padding: 10,
               marginHorizontal: 15,
               flexDirection: "column",
-              flex: 2,
             }}
           >
-            <Text style={{ flex: 1, textAlign: "left" }}>
-              
-              {this.state.beli != null && this.state.beli.produklist != null
-                ? this.state.beli.produklist.length
-                : 0}{" "}
-              Barang
-            </Text>
-            <Text
+            <View style={{ flex: 2, flexDirection: "row" }}>
+              <Text style={{ flex: 1, textAlign: "left" }}>Total Produk</Text>
+              <Text
+                style={{
+                  fontSize: 12,
+
+                  flex: 1,
+                  textAlign: "right",
+                }}
+              >
+                {this.state.beli != null && this.state.beli.produklist != null
+                  ? this.state.beli.produklist.length
+                  : 0}{" "}
+                Produk
+              </Text>
+            </View>
+            <View style={{ flex: 2, flexDirection: "row" }}>
+              <Text style={{ flex: 1, textAlign: "left" }}>Biaya Produk</Text>
+              <Text
+                style={{
+                  fontSize: 12,
+
+                  flex: 1,
+                  textAlign: "right",
+                }}
+              >
+                {currencyFormatter(this.state.beli.hargaproduk ?? 0)}
+              </Text>
+            </View>
+            <View style={{ flex: 2, flexDirection: "row" }}>
+              <Text style={{ flex: 1, textAlign: "left" }}>Biaya Admin</Text>
+              <Text
+                style={{
+                  fontSize: 12,
+
+                  flex: 1,
+                  textAlign: "right",
+                }}
+              >
+                {currencyFormatter(this.state.beli.hargaadmin ?? 0)}
+              </Text>
+            </View>
+            <View style={{ flex: 2, flexDirection: "row" }}>
+              <Text style={{ flex: 1, textAlign: "left" }}>Biaya Kirim</Text>
+              <Text
+                style={{
+                  fontSize: 12,
+
+                  flex: 1,
+                  textAlign: "right",
+                }}
+              >
+                {currencyFormatter(this.state.beli.hargaongkir ?? 0)}
+              </Text>
+            </View>
+            <View
               style={{
-                fontSize: 14,
-                fontWeight: "bold",
-                flex: 1,
-                textAlign: "right",
+                borderColor: "black",
+                borderWidth: 0.5,
+                width: WIDTH - 50,
+                alignContent: "center",
               }}
-            >
-              {currencyFormatter(this.state.beli.totalharga ?? 0)}
-            </Text>
-            <Text style={{ flex: 1, textAlign: "left" }}>
-             
-              {this.state.beli != null && this.state.beli.produklist != null
-                ? this.state.beli.produklist.length
-                : 0}{" "}
-              Ongkos Kirim
-            </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "bold",
-                flex: 1,
-                textAlign: "right",
-              }}
-            >
-              {currencyFormatter(this.state.beli.totalharga ?? 0)}
-            </Text>
-            <Text style={{ flex: 1, textAlign: "left" }}>
-             
-              {this.state.beli != null && this.state.beli.produklist != null
-                ? this.state.beli.produklist.length
-                : 0}{" "}
-              Biaya Admin
-            </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "bold",
-                flex: 1,
-                textAlign: "right",
-              }}
-            >
-              {currencyFormatter(this.state.beli.totalharga ?? 0)}
-            </Text>
-            <Text style={{ flex: 1, textAlign: "left" }}>
-              Total Harga
-            </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "bold",
-                flex: 1,
-                textAlign: "right",
-              }}
-            >
-              {currencyFormatter(this.state.beli.totalharga ?? 0)}
-            </Text>
+            ></View>
+            <View style={{ flex: 2, flexDirection: "row" }}>
+              <Text style={{ flex: 1, textAlign: "left", fontSize: 14 }}>
+                Total Harga
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "bold",
+                  flex: 1,
+                  textAlign: "right",
+                }}
+              >
+                {currencyFormatter(this.state.beli.totalharga ?? 0)}
+              </Text>
+            </View>
           </View>
-          <View  style={{
-              
+          <View
+            style={{
               marginTop: 10,
               borderRadius: 10,
               padding: 10,
               marginHorizontal: 5,
-              flexDirection:"row"
-
-            }}>
-              
-          <TouchableOpacity style={{padding:10,backgroundColor:"white", borderRadius:10, width:WIDTH/2-40, alignContent:"center",marginRight:10}}>
-          <Text style={{color:"red",textAlign:"center"}}>Batal</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{padding:10,backgroundColor:"#F24E1E", borderRadius:10, width:WIDTH/2, alignContent:"center"}}>
-            <Text style={{color:"white",textAlign:"center"}}>Konfirmasi</Text>
-          </TouchableOpacity>
+              flexDirection: "row",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                padding: 10,
+                backgroundColor: "white",
+                borderRadius: 10,
+                width: WIDTH / 2 - 40,
+                alignContent: "center",
+                marginRight: 10,
+              }}
+            >
+              <Text style={{ color: "red", textAlign: "center" }}>Batal</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                padding: 10,
+                backgroundColor: "#F24E1E",
+                borderRadius: 10,
+                width: WIDTH / 2,
+                alignContent: "center",
+              }}
+            >
+              <Text style={{ color: "white", textAlign: "center" }}>
+                Konfirmasi
+              </Text>
+            </TouchableOpacity>
           </View>
-          
         </ScrollView>
       </View>
     );
