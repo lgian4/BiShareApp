@@ -176,7 +176,7 @@ class BeliDraftScreen extends React.Component {
       tbeli.produklist = tproduklist;
       tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
       tbeli.hargaproduk = tbiayaproduk;
-      console.log(tbiayaproduk);
+      
       this.setState({
         beli: tbeli,
         isFetching: false,
@@ -210,7 +210,7 @@ class BeliDraftScreen extends React.Component {
       tbeli.produklist = tproduklist;
       tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
       tbeli.hargaproduk = tbiayaproduk;
-      console.log(tbiayaproduk);
+      
       this.setState({
         beli: tbeli,
         isFetching: false,
@@ -241,7 +241,7 @@ class BeliDraftScreen extends React.Component {
       tbeli.produklist = tproduklist;
       tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
       tbeli.hargaproduk = tbiayaproduk;
-      console.log(tbiayaproduk);
+      
       this.setState({
         beli: tbeli,
         isFetching: false,
@@ -289,14 +289,89 @@ class BeliDraftScreen extends React.Component {
     }
 
     // get database produk
-    tbeli.produklist.forEach((element) => {});
-    // check produk
+    var tproduklist = [];
+    await firebase
+    .database()
+    .ref("produk/")
+    .on("value", async (snapshot) => {
+      tproduklist = [];
+      snapshot.forEach((child) => {
+        if (
+          child.key != "count" &&
+          child.key != "produkmediacount" &&
+          child.val().dlt != true
+        ) {
+          var tproduk = child.val();
+          tproduk.key = child.key;
+          tproduklist.push(tproduk);
+        }
+      });
 
-    tbeli.hargaadmin = BiayaAdmin;
-    tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+      tbeli.produklist.forEach((element) => {
+        
+        var tproduk  = tproduklist.find(obj => {
+          return obj.produkid === element.produkid;
+        })        
+        if(tproduk === undefined)
+        element.dlt = true;
+        else {
+          element.harga =  tproduk.harga;
+          element.produkname = tproduk.produkname;
+        }
+      });
+      // check produk
+      
+      tbeli.hargaadmin = BiayaAdmin;
+      tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+      this.setState({ beli: tbeli });
+    });
+
+    
+
+   
 
     // update dtabase
     this.setState({ isFetching: false, beli: tbeli });
+  };
+
+  onBatal = async () => {
+    const { navigation } = this.props;
+
+    Alert.alert(
+      "Batal",
+      "Apakah anda yakin untuk membatalkan ?",
+
+      [
+        {
+          text: "Tidak",
+          style: "tidak"
+        },
+        {
+          text: "Ya", onPress: async () => {
+            try {
+              var tbeli = this.state.beli;
+              var tuser = this.state.user;
+              tbeli.log += "\n " + tuser.nama + ": Batal "+ Date.now();
+              tbeli.status = "User Batal";
+              tbeli.belidate = Date.now();
+
+              await firebase
+              .database()
+              .ref("beli/" + tbeli.key)
+              .set(tbeli);
+      
+              
+              navigation.goBack();
+            } catch (error) {
+              console.error(error);
+            }
+
+          }
+        }
+      ]
+    );
+
+
   };
 
   _renderProduk = ({ item }) => {
@@ -792,6 +867,7 @@ class BeliDraftScreen extends React.Component {
                 alignContent: "center",
                 marginRight: 10,
               }}
+              onPress={this.onBatal}
             >
               <Text style={{ color: "red", textAlign: "center" }}>Batal</Text>
             </TouchableOpacity>
