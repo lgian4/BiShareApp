@@ -89,7 +89,7 @@ const currencyFormatter = (value, options) => {
 var group = "";
 const BiayaAdmin = 5000;
 
-class BeliDraftScreen extends React.Component {
+class BeliKonfirmasiScreen extends React.Component {
   constructor() {
     super();
 
@@ -269,13 +269,6 @@ class BeliDraftScreen extends React.Component {
     navigation.push("ProdukDetail", { params: tempproduk });
   };
 
-  GetDateTime = () => {
-    var today = new Date();
-    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    return date + ' ' + time;
-  };
-
   LoadBeli = async () => {
     const { navigation, route } = this.props;
     const { params: tbeli } = route.params;
@@ -295,43 +288,7 @@ class BeliDraftScreen extends React.Component {
       navigation.goBack();
     }
 
-    // get database produk
-    var tproduklist = [];
-    await firebase
-      .database()
-      .ref("produk/")
-      .on("value", async (snapshot) => {
-        tproduklist = [];
-        snapshot.forEach((child) => {
-          if (
-            child.key != "count" &&
-            child.key != "produkmediacount" &&
-            child.val().dlt != true
-          ) {
-            var tproduk = child.val();
-            tproduk.key = child.key;
-            tproduklist.push(tproduk);
-          }
-        });
 
-        tbeli.produklist.forEach((element) => {
-
-          var tproduk = tproduklist.find(obj => {
-            return obj.produkid === element.produkid;
-          })
-          if (tproduk === undefined)
-            element.dlt = true;
-          else {
-            element.harga = tproduk.harga;
-            element.produkname = tproduk.produkname;
-          }
-        });
-        // check produk
-
-        tbeli.hargaadmin = BiayaAdmin;
-        tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
-        this.setState({ beli: tbeli });
-      });
 
 
 
@@ -380,28 +337,6 @@ class BeliDraftScreen extends React.Component {
 
 
   };
-  getStatusColor = () => {
-    var status = this.state.beli.status;
-    if (status == "Draft")
-      return "#FFC947";
-    if (status == "User Batal")
-      return "#CD113B";
-    if (status == "Penjual Batal")
-      return "#DA0037";
-    if (status == "Penjual Batal")
-      return "#DA0037";
-    if (status == "Menunggu Konfirmasi Penjual")
-      return "#39A2DB";
-    if (status == "Menunggu Pembayaran")
-      return "#185ADB";
-    if (status == "Menunggu Konfirmasi Pembayaran")
-      return "#5C33F6";
-    if (status == "Menunggu Pengambilan")
-      return "#185ADB";
-    if (status == "Selesai")
-      return "#01937C";
-    else return "black";
-  }
 
   onKonfirmasi = async () => {
     const { navigation } = this.props;
@@ -420,7 +355,7 @@ class BeliDraftScreen extends React.Component {
             try {
               var tbeli = this.state.beli;
               var tuser = this.state.user;
-              tbeli.log +=  tuser.nama + ": Pembeli Konfirmasi " + this.GetDateTime() +"\n";
+              tbeli.log += "\n " + tuser.nama + ": pembeli konfirmasi " + Date.now();
               tbeli.status = "Menunggu Konfirmasi Penjual";
               tbeli.belidate = Date.now();
 
@@ -507,61 +442,47 @@ class BeliDraftScreen extends React.Component {
             </Text>
 
             <View style={{ flexDirection: "row" }}>
-              <View
-                style={{
-                  borderWidth: 2,
-                  borderColor: "#F6F6F6",
-                  borderRadius: 10,
-                }}
+              <Text
+                style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }}
+                numberOfLines={1}
               >
-                <TouchableOpacity
-                  onPress={async () => {
-                    this.onMinusStok(item);
-                  }}
-                >
-                  <Icon name={"remove-outline"} size={25} color={"black"} />
-                </TouchableOpacity>
-              </View>
-
-              <Text style={{ fontSize: 20, paddingHorizontal: 10 }}>
-                {item.stok}
+                {item.tokoname}
               </Text>
-              <View
-                style={{
-                  borderWidth: 2,
-                  borderColor: "#F6F6F6",
-                  borderRadius: 10,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={async () => {
-                    this.onAddStok(item);
-                  }}
-                >
-                  <Icon name={"add-outline"} size={25} color={"black"} />
-                </TouchableOpacity>
-              </View>
             </View>
           </View>
-          <View style={{ flex: 0.5, justifyContent: "center" }}>
-            <TouchableOpacity
-              onPress={async () => {
-                this.onDeleteStok(item);
-              }}
-            >
-              <Icon
-                name={"trash-outline"}
-                style={{ alignSelf: "flex-end" }}
-                size={25}
-                color={"red"}
-              />
-            </TouchableOpacity>
-          </View>
+
         </View>
       </TouchableOpacity>
     );
   };
-
+  GetDateTime = () => {
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return date + ' ' + time;
+  };
+  getStatusColor = () => {
+    var status = this.state.beli.status;
+    if (status == "Draft")
+      return "#FFC947";
+    if (status == "User Batal")
+      return "#CD113B";
+    if (status == "Penjual Batal")
+      return "#DA0037";
+    if (status == "Penjual Batal")
+      return "#DA0037";
+    if (status == "Menunggu Konfirmasi Penjual")
+      return "#39A2DB";
+    if (status == "Menunggu Pembayaran")
+      return "#185ADB";
+    if (status == "Menunggu Konfirmasi Pembayaran")
+      return "#5C33F6";
+    if (status == "Menunggu Pengambilan")
+      return "#185ADB";
+    if (status == "Selesai")
+      return "#01937C";
+    else return "black";
+  }
   renderEmptyContainer = () => {
     return (
       <View
@@ -714,6 +635,7 @@ class BeliDraftScreen extends React.Component {
               underlineColorAndroid="transparent"
               keyboardType={"default"}
               textAlignVertical={"top"}
+              editable={false}
             />
           </View>
           <View
@@ -739,6 +661,7 @@ class BeliDraftScreen extends React.Component {
               underlineColorAndroid="transparent"
               keyboardType={"default"}
               textAlignVertical={"top"}
+              editable={false}
             />
             <Text style={{ fontSize: 14 }}>Alamat (Optional)</Text>
             <TextInput
@@ -754,6 +677,7 @@ class BeliDraftScreen extends React.Component {
               underlineColorAndroid="transparent"
               keyboardType={"default"}
               textAlignVertical={"top"}
+              editable={false}
             />
           </View>
 
@@ -785,6 +709,7 @@ class BeliDraftScreen extends React.Component {
                 }
                 this.setState({ beli: tbeli });
               }}
+              enabled={false}
             >
 
               {this.state.optionkirim.map((v) => {
@@ -819,6 +744,7 @@ class BeliDraftScreen extends React.Component {
                 }
                 this.setState({ beli: tbeli });
               }}
+              enabled={false}
             >
               {this.state.beli.metodepengiriman == "Ambil Sendiri" ?
                 this.state.optionbayarambil.map((v) => {
@@ -837,6 +763,7 @@ class BeliDraftScreen extends React.Component {
               borderRadius: 10,
               padding: 10,
               marginHorizontal: 15,
+              marginBottom: 15,
               flexDirection: "column",
             }}
           >
@@ -919,50 +846,74 @@ class BeliDraftScreen extends React.Component {
               </Text>
             </View>
           </View>
-          <View
-            style={{
-              marginTop: 10,
-              borderRadius: 10,
-              padding: 10,
-              marginHorizontal: 5,
-              flexDirection: "row",
-            }}
-          >
-            <TouchableOpacity
+          {(this.state.beli != null && ( this.state.beli.status == 'User Batal' || this.state.beli.status == 'Penjual Batal' )) &&
+            <View
               style={{
-                padding: 10,
-                backgroundColor: "white",
+                marginTop: 10,
                 borderRadius: 10,
-                width: WIDTH / 2 - 40,
-                alignContent: "center",
-                marginRight: 10,
+                padding: 10,
+                marginHorizontal: 5,
+
               }}
-              onPress={this.onBatal}
             >
-              <Text style={{ color: "red", textAlign: "center" }}>Batal</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              <View
+                style={{
+                  backgroundColor: "white",
+                  
+                  borderRadius: 10,
+                  padding: 10,
+
+                }}
+              ><Text style={{ fontSize: 14,fontWeight:"bold" }}>Log </Text>
+                <Text style={{ fontSize: 14 }}>{this.state.beli.log} </Text>
+              </View>
+            </View>
+          }
+          {(this.state.beli != null && this.state.beli.status != 'User Batal' && this.state.beli.status != 'Penjual Batal' && this.state.beli.status == 'Menunggu Konfirmasi Penjual') &&
+            <View
               style={{
-                padding: 10,
-                backgroundColor: "#F24E1E",
+                marginTop: 10,
                 borderRadius: 10,
-                width: WIDTH / 2,
-                alignContent: "center",
+                padding: 10,
+                marginHorizontal: 5,
+
               }}
-              onPress={this.onKonfirmasi}
             >
-              <Text style={{ color: "white", textAlign: "center" }}>
-                Konfirmasi
-              </Text>
-            </TouchableOpacity>
-          </View>
+              <View
+                style={{
+                  backgroundColor: "white",
+                  marginVertical: 10,
+                  borderRadius: 10,
+                  padding: 10,
+
+                }}
+              >
+                <Text style={{ fontSize: 14 }}>Menunggu Penjual mengkonfirmasi ketersedian produk. </Text>
+              </View>
+
+              <TouchableOpacity
+                style={{
+                  padding: 10,
+                  backgroundColor: "#DA0037",
+                  borderRadius: 10,
+                  width: WIDTH - 30,
+                  alignContent: "center",
+
+                }}
+                onPress={this.onBatal}
+              >
+                <Text style={{ color: "white", textAlign: "center" }}>Batal</Text>
+              </TouchableOpacity>
+
+            </View>
+          }
         </ScrollView>
       </View>
     );
   }
 }
 
-export default BeliDraftScreen;
+export default BeliKonfirmasiScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -21,6 +21,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import * as firebase from "firebase";
 import AsyncStorage from "@react-native-community/async-storage";
+import { createIconSetFromFontello } from "react-native-vector-icons";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAG7oZ5gK_4JfibKyOXG4oXqleART-e8vA",
@@ -85,7 +86,7 @@ const currencyFormatter = (value, options) => {
   )}`;
 };
 
-class BeliListScreen extends React.Component {
+class BeliListTokoScreen extends React.Component {
   constructor() {
     super();
 
@@ -289,6 +290,7 @@ class BeliListScreen extends React.Component {
     if (tuser == null) {
       tuser = await getData("user");
     }
+    
 
 
     //console.log(tuser);
@@ -297,10 +299,10 @@ class BeliListScreen extends React.Component {
       await firebase
         .database()
         .ref("beli/")
-        .orderByChild("userid")
-        .equalTo(tuser.userid)
+        .orderByChild("tokoid")
+        .equalTo(tuser.tokoid.toString())
         .on("value", (snapshot) => {
-
+          console.log(snapshot);
           tbelilist = []
           snapshot.forEach((child) => {
             if (
@@ -316,7 +318,7 @@ class BeliListScreen extends React.Component {
 
 
           this.setState({ belilist: tbelilist, isFetching: false, user: tuser });
-          console.log(tbelilist);
+        
         });
     } catch (error) {
       console.error(error);
@@ -401,7 +403,7 @@ class BeliListScreen extends React.Component {
                 <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Daftar Beli</Text>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Daftar Beli Toko</Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"white"} />
             </View>
@@ -435,7 +437,7 @@ class BeliListScreen extends React.Component {
   }
 }
 
-export default BeliListScreen;
+export default BeliListTokoScreen;
 
 const styles = StyleSheet.create({
   container: {

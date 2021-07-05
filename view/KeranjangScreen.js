@@ -116,7 +116,7 @@ class KeranjangScreen extends React.Component {
         stok: 0,
         harga: 0,
       },
-      
+
       refresh: true,
       totalproduk: 0,
       totalharga: 0,
@@ -206,6 +206,12 @@ class KeranjangScreen extends React.Component {
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
   };
+  GetDateTime = () => {
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return date + ' ' + time;
+  };
 
   onDeleteStok = async (item) => {
     this.setState({ isFetching: true });
@@ -277,7 +283,7 @@ class KeranjangScreen extends React.Component {
       metodepengiriman: "Ambil Sendiri",
       metodepembayaran: "Bayar Tunai",
       status: "Draft",
-      log:tuser.nama + ": Draft dibuat - "+ Date.now(),
+      log: tuser.nama + ": Draft dibuat - " + this.GetDateTime() +"\n",
       komenpenjual: "",
       dlt: false,
       belidate: Date.now(),
@@ -337,7 +343,7 @@ class KeranjangScreen extends React.Component {
               (child.key != "count" &&
                 child.key != "produkmediacount" &&
                 child.val().dlt != true,
-              child.val().stok >= 1)
+                child.val().stok >= 1)
             ) {
               ttotalproduk = ttotalproduk + 1;
               ttotalharga = ttotalharga + child.val().stok * child.val().harga;

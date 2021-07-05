@@ -523,6 +523,24 @@ class ProfilScreen extends React.Component {
 
 
             }
+            {(this.state.user != null && this.state.user.tokoid != "") &&
+              <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("BeliListToko"); }}>
+                <View style={{ justifyContent: "center" }}>
+
+                  <Text style={{ color: "black", fontSize: 16, }}>Daftar Beli Sebagai Toko</Text>
+                </View>
+              </TouchableOpacity >
+
+
+
+            }
+            {(this.state.user != null && this.state.user.tokoid != "") &&
+
+              <View style={{ borderWidth: 1, borderColor: "#F3F3F3", width: WIDTH }}></View>
+
+
+
+            }
 
             <TouchableOpacity style={{ marginVertical: 10, paddingHorizontal: 20 }} onPress={() => { const { navigation } = this.props; navigation.push("EditProfil"); }}>
               <View style={{ justifyContent: "center" }}>
