@@ -113,7 +113,7 @@ class BeliListScreen extends React.Component {
         mediaurl: "",
         produkname: "",
         stok: 0,
-        harga: 0
+        harga: 0,
       },
       refresh: true,
       totalproduk: 0,
@@ -147,24 +147,21 @@ class BeliListScreen extends React.Component {
   };
 
   onAddStok = async (item) => {
-    this.setState({ isFetching: true })
+    this.setState({ isFetching: true });
     var tkeranjanglist = this.state.keranjanglist;
     var tuser = this.state.user;
-    if (tuser == null)
-      tuser = await getData("user");
+    if (tuser == null) tuser = await getData("user");
     var ttotalharga = 0;
     var ttotalproduk = 0;
     var selected = null;
     tkeranjanglist.forEach(function (obj) {
-
       if (obj.produkid === item.produkid) {
         selected = obj;
         obj.stok = obj.stok + 1;
-        if (obj.stok == 0)
-          obj.dlt = true;
+        if (obj.stok == 0) obj.dlt = true;
       }
       ttotalproduk = ttotalproduk + 1;
-      ttotalharga = ttotalharga + (obj.stok * obj.harga);
+      ttotalharga = ttotalharga + obj.stok * obj.harga;
     });
     console.log(tkeranjanglist.length);
 
@@ -175,48 +172,36 @@ class BeliListScreen extends React.Component {
       .set(selected);
 
     await this.LoadData();
-  }
+  };
 
   getStatusColor = (status) => {
-    if (status == "Draft")
-      return "#FFC947";
-    if (status == "User Batal")
-      return "#CD113B";
-    if (status == "Penjual Batal")
-      return "#DA0037";
-    if (status == "Penjual Batal")
-      return "#DA0037";
-    if (status == "Menunggu Konfirmasi Penjual")
-      return "#39A2DB";
-    if (status == "Menunggu Pembayaran")
-      return "#185ADB";
-    if (status == "Menunggu Konfirmasi Pembayaran")
-      return "#5C33F6";
-    if (status == "Menunggu Pengambilan")
-      return "#185ADB";
-    if (status == "Selesai")
-      return "#01937C";
-  }
+    if (status == "Draft") return "#FFC947";
+    if (status == "User Batal") return "#CD113B";
+    if (status == "Penjual Batal") return "#DA0037";
+    if (status == "Penjual Batal") return "#DA0037";
+    if (status == "Menunggu Konfirmasi Penjual") return "#39A2DB";
+    if (status == "Menunggu Pembayaran") return "#185ADB";
+    if (status == "Menunggu Konfirmasi Pembayaran") return "#5C33F6";
+    if (status == "Menunggu Pengambilan") return "#185ADB";
+    if (status == "Selesai") return "#01937C";
+  };
 
   onMinusStok = async (item) => {
-    this.setState({ isFetching: true })
+    this.setState({ isFetching: true });
     var tkeranjanglist = this.state.keranjanglist;
     var tuser = this.state.user;
-    if (tuser == null)
-      tuser = await getData("user");
+    if (tuser == null) tuser = await getData("user");
     var ttotalharga = 0;
     var ttotalproduk = 0;
     var selected = null;
     tkeranjanglist.forEach(function (obj) {
-
       if (obj.produkid === item.produkid) {
         selected = obj;
         obj.stok = obj.stok - 1;
-        if (obj.stok == 0)
-          obj.dlt = true;
+        if (obj.stok == 0) obj.dlt = true;
       }
       ttotalproduk = ttotalproduk + 1;
-      ttotalharga = ttotalharga + (obj.stok * obj.harga);
+      ttotalharga = ttotalharga + obj.stok * obj.harga;
     });
     console.log(tkeranjanglist.length);
 
@@ -227,26 +212,24 @@ class BeliListScreen extends React.Component {
       .set(selected);
 
     await this.LoadData();
-  }
+  };
 
   onDeleteStok = async (item) => {
-    this.setState({ isFetching: true })
+    this.setState({ isFetching: true });
     var tkeranjanglist = this.state.keranjanglist;
     var tuser = this.state.user;
-    if (tuser == null)
-      tuser = await getData("user");
+    if (tuser == null) tuser = await getData("user");
     var ttotalharga = 0;
     var ttotalproduk = 0;
     var selected = null;
     tkeranjanglist.forEach(function (obj) {
-
       if (obj.produkid === item.produkid) {
         selected = obj;
         obj.stok = 0;
         obj.dlt = true;
       }
       ttotalproduk = ttotalproduk + 1;
-      ttotalharga = ttotalharga + (obj.stok * obj.harga);
+      ttotalharga = ttotalharga + obj.stok * obj.harga;
     });
     console.log(tkeranjanglist.length);
 
@@ -256,8 +239,7 @@ class BeliListScreen extends React.Component {
       .ref("keranjang/" + tuser.userid + "/" + item.produkid)
       .set(selected);
     await this.LoadData();
-  }
-
+  };
 
   handleConfirm = (date) => {
     this.setState({ DateDisplay: date });
@@ -269,20 +251,27 @@ class BeliListScreen extends React.Component {
     const { navigation } = this.props;
     if (selectedproduk.status == "Draft")
       navigation.push("BeliDraft", { params: selectedproduk });
-    if (selectedproduk.status == "User Batal")  navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Penjual Batal") navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Penjual Batal") navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Menunggu Konfirmasi Penjual")  navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Menunggu Pembayaran") navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Menunggu Konfirmasi Pembayaran") navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Menunggu Pengambilan") navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Selesai") navigation.push("BeliKonfirmasi", { params: selectedproduk });
-
+    if (selectedproduk.status == "User Batal")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Penjual Batal")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Penjual Batal")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Menunggu Konfirmasi Penjual")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Menunggu Pembayaran")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Menunggu Konfirmasi Pembayaran")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Menunggu Pengambilan")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Selesai")
+      navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Sistem Error")
+      navigation.push("BeliKonfirmasiToko", { params: selectedproduk });
   };
 
   LoadData = async () => {
-
-
     await this.setState({ isFetching: true });
 
     var tuser = this.state.user;
@@ -290,9 +279,9 @@ class BeliListScreen extends React.Component {
       tuser = await getData("user");
     }
 
-
     //console.log(tuser);
     var tbelilist = [];
+    var tbelilistselesai = [];
     try {
       await firebase
         .database()
@@ -300,29 +289,38 @@ class BeliListScreen extends React.Component {
         .orderByChild("userid")
         .equalTo(tuser.userid)
         .on("value", (snapshot) => {
-
-          tbelilist = []
+          tbelilist = [];
+          tbelilistselesai = [];
           snapshot.forEach((child) => {
-            if (
-              child.val().dlt == false
-
-            ) {
+            if (child.val().dlt == false) {
+              var status = child.val().status;
               var tbeli = child.val();
               tbeli.key = child.key;
-
-              tbelilist.push(tbeli);
+              if (
+                status == "User Batal" ||
+                status == "Penjual Batal" ||
+                status == "Selesai" ||
+                status == "Sistem Error"
+              ) {
+                tbelilistselesai.push(tbeli);
+              } else {
+                tbelilist.push(tbeli);
+              }
             }
           });
 
-
-          this.setState({ belilist: tbelilist, isFetching: false, user: tuser });
+          tbelilist = tbelilist.reverse();
+          tbelilistselesai = tbelilistselesai.reverse();
+          this.setState({
+            belilist: [...tbelilist, ...tbelilistselesai],
+            isFetching: false,
+            user: tuser,
+          });
           console.log(tbelilist);
         });
     } catch (error) {
       console.error(error);
     }
-
-
   };
 
   _renderProduk = ({ item }) => {
@@ -331,11 +329,12 @@ class BeliListScreen extends React.Component {
     //   <View></View>
     // )
 
-
-
-
     return (
-      <TouchableOpacity onPress={async () => { this.OnBeli(item) }}>
+      <TouchableOpacity
+        onPress={async () => {
+          this.OnBeli(item);
+        }}
+      >
         <View
           style={{
             backgroundColor: "white",
@@ -345,39 +344,50 @@ class BeliListScreen extends React.Component {
 
             marginHorizontal: 10,
             flexDirection: "row",
-
           }}
         >
-
-          <View style={{ margin: 5, width: 30, height: 30, overflow: 'hidden', borderRadius: 15 }}>
+          <View
+            style={{
+              margin: 5,
+              width: 30,
+              height: 30,
+              overflow: "hidden",
+              borderRadius: 15,
+            }}
+          >
             <Image
-              style={{ width: '100%', height: '120%' }}
+              style={{ width: "100%", height: "120%" }}
               source={require("./../assets/Person.jpg")}
             />
           </View>
 
-          <View style={{ flex: 2, }}>
-            <Text style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5, color: this.getStatusColor(item.status) }} numberOfLines={1}>
+          <View style={{ flex: 2 }}>
+            <Text
+              style={{
+                fontWeight: "bold",
+                flexWrap: "wrap",
+                marginBottom: 5,
+                color: this.getStatusColor(item.status),
+              }}
+              numberOfLines={1}
+            >
               {item.status} - {item.tokoname}
             </Text>
-            <Text style={{ marginBottom: 5 }}>{item.produklist.length ?? 0} item | {currencyFormatter(item.totalharga, defaultOptions)} </Text>
-
-
+            <Text style={{ marginBottom: 5 }}>
+              {item.produklist.length ?? 0} item |{" "}
+              {currencyFormatter(item.totalharga, defaultOptions)}{" "}
+            </Text>
           </View>
-
         </View>
       </TouchableOpacity>
-
     );
   };
-
 
   async componentDidMount() {
     var tsuer = await getData("user");
     this.setState({ user: tsuer });
     await this.LoadData();
-    this.props.navigation.addListener('focus', this.LoadData)
-
+    this.props.navigation.addListener("focus", this.LoadData);
   }
 
   render() {
@@ -385,7 +395,6 @@ class BeliListScreen extends React.Component {
     return (
       <View style={styles.container}>
         <SafeAreaView style={{ height: HEIGHT }}>
-
           <View
             style={{
               flexDirection: "row",
@@ -393,20 +402,30 @@ class BeliListScreen extends React.Component {
               paddingHorizontal: 20,
               paddingTop: 15,
               paddingBottom: 10,
-              backgroundColor: "white"
+              backgroundColor: "white",
             }}
           >
             <View style={{ marginTop: 20 }}>
-              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.goBack(); }}>
-                <Icon name={"chevron-back-outline"} size={25} color={"#666872"} />
+              <TouchableOpacity
+                onPress={() => {
+                  const { navigation } = this.props;
+                  navigation.goBack();
+                }}
+              >
+                <Icon
+                  name={"chevron-back-outline"}
+                  size={25}
+                  color={"#666872"}
+                />
               </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }}>Daftar Beli</Text>
+            <Text style={{ fontSize: 16, fontWeight: "bold", marginTop: 20 }}>
+              Daftar Beli
+            </Text>
             <View style={{ marginTop: 20 }}>
               <Icon name={"cart"} size={25} color={"white"} />
             </View>
           </View>
-
 
           <View style={{}}>
             <FlatList
@@ -415,21 +434,16 @@ class BeliListScreen extends React.Component {
               style={{
                 paddingHorizontal: 0,
                 backgroundColor: "#F6F6F6",
-                height: HEIGHT - 80
+                height: HEIGHT - 40,
               }}
-
-
               contentContainerStyle={{ justifyContent: "space-between" }}
               renderItem={this._renderProduk}
               keyExtractor={(item) => item.key}
               onRefresh={() => this.LoadData()}
               refreshing={this.state.isFetching}
             />
-
           </View>
-
         </SafeAreaView>
-
       </View>
     );
   }
@@ -441,7 +455,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F6F6F6",
-    height: HEIGHT
+    height: HEIGHT,
   },
   image: {
     flex: 1,

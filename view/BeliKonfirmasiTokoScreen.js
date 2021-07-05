@@ -302,7 +302,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
     const { navigation } = this.props;
 
     Alert.alert(
-      "Batal",
+      "Konfirmasi",
       "Apakah anda yakin untuk membatalkan ?",
 
       [
@@ -397,6 +397,8 @@ class BeliKonfirmasiTokoScreen extends React.Component {
               var tbeli = this.state.beli;
               var tuser = this.state.user;
               var status = "Sistem Error";
+              console.log(tbeli.metodepembayaran)
+              console.log(tbeli.metodepengiriman)
               if (tbeli.metodepembayaran == "Bayar Tunai" && tbeli.metodepengiriman == "Ambil Sendiri") {
                 status = "Menunggu Pengambilan";
               }
@@ -793,19 +795,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
             <Select style={{ width: WIDTH - 50 }}
               selectedValue={this.state.beli.metodepengiriman}
               onValueChange={(itemValue, itemIndex) => {
-                var tbeli = this.state.beli;
-                tbeli.metodepengiriman = itemValue;
-                if (itemValue == "Kirim") {
-                  tbeli.hargaongkir = this.state.optionkirim[1].biaya;
-                  tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
-                }
-                else {
-                  tbeli.metodepembayaran = this.state.optionbayarambil[1].label;
-                  tbeli.hargaadmin = this.state.optionbayarambil[1].biaya;
-                  tbeli.hargaongkir = this.state.optionkirim[0].biaya;
-                  tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
-                }
-                this.setState({ beli: tbeli });
+               
               }}
               enabled={false}
             >
@@ -944,7 +934,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
               </Text>
             </View>
           </View>
-          {(this.state.beli != null && (this.state.beli.status == 'User Batal' || this.state.beli.status == 'Penjual Batal')) &&
+          {(this.state.beli != null ) &&
             <View
               style={{
                 marginTop: 10,
@@ -1005,6 +995,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
               <TouchableOpacity
                 style={{
                   padding: 10,
+                  marginTop:10,
                   backgroundColor: "white",
                   borderRadius: 10,
                   width: WIDTH - 30,
@@ -1013,7 +1004,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                 }}
                 onPress={this.onKonfirmasiPenjual}
               >
-                <Text style={{ color: "#F24E1E", textAlign: "center" }}>Konfimrasi Produk</Text>
+                <Text style={{ color: "#F24E1E", textAlign: "center" }}>Konfirmasi Produk</Text>
               </TouchableOpacity>
 
             </View>
@@ -1058,11 +1049,12 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                   padding: 10,
                   backgroundColor: "white",
                   borderRadius: 10,
+                  marginTop:10,
                   width: WIDTH - 30,
                   alignContent: "center",
 
                 }}
-                onPress={this.onKonfirmasiPenjual}
+                onPress={this.onKonfirmasiPembayaran}
               >
                 <Text style={{ color: "#F24E1E", textAlign: "center" }}>Konfimrasi Pembayaran</Text>
               </TouchableOpacity>

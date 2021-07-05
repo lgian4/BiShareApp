@@ -302,7 +302,7 @@ class BeliKonfirmasiScreen extends React.Component {
     const { navigation } = this.props;
 
     Alert.alert(
-      "Batal",
+      "Konfirmasi",
       "Apakah anda yakin untuk membatalkan ?",
 
       [
@@ -341,7 +341,7 @@ class BeliKonfirmasiScreen extends React.Component {
     const { navigation } = this.props;
 
     Alert.alert(
-      "Batal",
+      "Konfirmasi",
       "Apakah anda yakin sudah menerima produk, dan menyelesaikan pembelian ?",
 
       [
@@ -380,7 +380,7 @@ class BeliKonfirmasiScreen extends React.Component {
     const { navigation } = this.props;
 
     Alert.alert(
-      "Batal",
+      "Konfirmasi",
       "Apakah anda yakin sudah melakukan pembayaran sesuai jumlah ?",
 
       [
@@ -774,7 +774,9 @@ class BeliKonfirmasiScreen extends React.Component {
               selectedValue={this.state.beli.metodepengiriman}
               onValueChange={(itemValue, itemIndex) => {
                 var tbeli = this.state.beli;
-                tbeli.metodepengiriman = itemValue;
+                // tbeli.metodepengiriman = itemValue;
+                //console.log(ite)
+                // console.log(itemIndex)
                 if (itemValue == "Kirim") {
                   tbeli.hargaongkir = this.state.optionkirim[1].biaya;
                   tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
@@ -924,7 +926,7 @@ class BeliKonfirmasiScreen extends React.Component {
               </Text>
             </View>
           </View>
-          {(this.state.beli != null && ( this.state.beli.status == 'User Batal' || this.state.beli.status == 'Penjual Batal' )) &&
+          {(this.state.beli != null && ( this.state.beli.status != 'Draft' )) &&
             <View
               style={{
                 marginTop: 10,

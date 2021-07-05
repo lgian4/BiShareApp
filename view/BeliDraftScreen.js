@@ -405,7 +405,24 @@ class BeliDraftScreen extends React.Component {
 
   onKonfirmasi = async () => {
     const { navigation } = this.props;
-
+    var tbeli = this.state.beli;
+    if(tbeli.namalengkap == ""){
+      this.notify("Nama kosong");
+      return;
+    }
+    if(tbeli.produklist.length <= 0){
+      this.notify("Produk kosong");
+      return;
+    }
+    if(tbeli.totalharga <= 0){
+      this.notify("Harga kosong");
+      return;
+    }
+    if(tbeli.metodepengiriman=="Kirim" && tbeli.alamat ==""){
+      this.notify("Alamat kosong");
+      return;
+    }
+    
     Alert.alert(
       "Konfirmasi",
       "Apakah anda yakin untuk membeli ?",
@@ -418,7 +435,7 @@ class BeliDraftScreen extends React.Component {
         {
           text: "Ya", onPress: async () => {
             try {
-              var tbeli = this.state.beli;
+            
               var tuser = this.state.user;
               tbeli.log +=  tuser.nama + ": Pembeli Konfirmasi " + this.GetDateTime() +"\n";
               tbeli.status = "Menunggu Konfirmasi Penjual";
@@ -773,6 +790,7 @@ class BeliDraftScreen extends React.Component {
               onValueChange={(itemValue, itemIndex) => {
                 var tbeli = this.state.beli;
                 tbeli.metodepengiriman = itemValue;
+                console.log(tbeli.metodepengiriman);
                 if (itemValue == "Kirim") {
                   tbeli.hargaongkir = this.state.optionkirim[1].biaya;
                   tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
