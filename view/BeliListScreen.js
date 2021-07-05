@@ -270,13 +270,13 @@ class BeliListScreen extends React.Component {
     if (selectedproduk.status == "Draft")
       navigation.push("BeliDraft", { params: selectedproduk });
     if (selectedproduk.status == "User Batal")  navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Penjual Batal") { }
-    if (selectedproduk.status == "Penjual Batal") { }
+    if (selectedproduk.status == "Penjual Batal") navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Penjual Batal") navigation.push("BeliKonfirmasi", { params: selectedproduk });
     if (selectedproduk.status == "Menunggu Konfirmasi Penjual")  navigation.push("BeliKonfirmasi", { params: selectedproduk });
-    if (selectedproduk.status == "Menunggu Pembayaran") { }
-    if (selectedproduk.status == "Menunggu Konfirmasi Pembayaran") { }
-    if (selectedproduk.status == "Menunggu Pengambilan") { }
-    if (selectedproduk.status == "Selesai") { }
+    if (selectedproduk.status == "Menunggu Pembayaran") navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Menunggu Konfirmasi Pembayaran") navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Menunggu Pengambilan") navigation.push("BeliKonfirmasi", { params: selectedproduk });
+    if (selectedproduk.status == "Selesai") navigation.push("BeliKonfirmasi", { params: selectedproduk });
 
   };
 

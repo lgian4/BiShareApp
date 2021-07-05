@@ -28,6 +28,7 @@ import ChangePasswordScreen from './view/ChangePasswordScreen';
 import BeliDraftScreen from './view/BeliDraftScreen';
 import BeliListTokoScreen from './view/BeliListTokoScreen';
 import BeliKonfirmasiScreen from './view/BeliKonfirmasiScreen';
+import BeliKonfirmasiTokoScreen from './view/BeliKonfirmasiTokoScreen';
 import AsyncStorage from "@react-native-community/async-storage";
 import BeliListScreen from './view/BeliListScreen';
 
@@ -87,6 +88,7 @@ const HomeTab = () => {
       <HomeStack.Screen name="BeliDraft" component={BeliDraftScreen} />
       <HomeStack.Screen name="BeliListToko" component={BeliListTokoScreen} />
       <HomeStack.Screen name="BeliKonfirmasi" component={BeliKonfirmasiScreen} />
+      <HomeStack.Screen name="BeliKonfirmasiToko" component={BeliKonfirmasiTokoScreen} />
       <HomeStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <HomeStack.Screen name="RegisterTab" component={RegisterTab} />
     </HomeStack.Navigator>
