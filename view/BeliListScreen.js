@@ -316,7 +316,7 @@ class BeliListScreen extends React.Component {
             isFetching: false,
             user: tuser,
           });
-          console.log(tbelilist);
+          
         });
     } catch (error) {
       console.error(error);

@@ -284,9 +284,7 @@ class BeliListTokoScreen extends React.Component {
     try {
       await firebase
         .database()
-        .ref("beli/")
-        .orderByChild("userid")
-        .equalTo(tuser.userid)
+        .ref("beli/")        
         .on("value", (snapshot) => {
           tbelilist = [];
           tbelilistselesai = [];

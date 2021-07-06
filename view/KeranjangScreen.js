@@ -287,6 +287,10 @@ class KeranjangScreen extends React.Component {
       komenpenjual: "",
       dlt: false,
       belidate: Date.now(),
+      pembayarannama:"",      
+      pembayarantanggal:"",
+      pembayaranbank:"",
+      pembayarannorek:"",
     };
     // save pembayaran
     tbeli.key = await firebase.database().ref("beli/").push(tbeli).getKey();

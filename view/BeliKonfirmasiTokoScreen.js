@@ -123,8 +123,14 @@ class BeliKonfirmasiTokoScreen extends React.Component {
       totalproduk: 0,
       totalharga: 0,
       isFetching: true,
-      optionkirim: [{ label: "Ambil Sendiri", biaya: 0 }, { label: "Kirim", biaya: 10000 }],
-      optionbayarambil: [{ label: "Bayar Tunai", biaya: 5000 }, { label: "Transfer Bank", biaya: 5000 }],
+      optionkirim: [
+        { label: "Ambil Sendiri", biaya: 0 },
+        { label: "Kirim", biaya: 10000 },
+      ],
+      optionbayarambil: [
+        { label: "Bayar Tunai", biaya: 5000 },
+        { label: "Transfer Bank", biaya: 5000 },
+      ],
       optionbayarkirim: [{ label: "Transfer Bank", biaya: 5000 }],
     };
   }
@@ -170,18 +176,20 @@ class BeliKonfirmasiTokoScreen extends React.Component {
           if (obj.stok == 0) obj.dlt = true;
         }
         if (obj.dlt == false)
-          tbiayaproduk = tbiayaproduk + (obj.stok * obj.harga);
+          tbiayaproduk = tbiayaproduk + obj.stok * obj.harga;
       });
 
       tbeli.produklist = tproduklist;
-      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
+      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
       tbeli.hargaproduk = tbiayaproduk;
 
       this.setState({
         beli: tbeli,
         isFetching: false,
       });
-    } catch (error) { console.error(error) }
+    } catch (error) {
+      console.error(error);
+    }
     // firebase
     //   .database()
     //   .ref("keranjang/" + tuser.userid + "/" + item.produkid)
@@ -204,18 +212,20 @@ class BeliKonfirmasiTokoScreen extends React.Component {
           if (obj.stok == 0) obj.dlt = true;
         }
         if (obj.dlt == false)
-          tbiayaproduk = tbiayaproduk + (obj.stok * obj.harga);
+          tbiayaproduk = tbiayaproduk + obj.stok * obj.harga;
       });
 
       tbeli.produklist = tproduklist;
-      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
+      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
       tbeli.hargaproduk = tbiayaproduk;
 
       this.setState({
         beli: tbeli,
         isFetching: false,
       });
-    } catch (error) { console.error(error) }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   onDeleteStok = async (item) => {
@@ -235,18 +245,20 @@ class BeliKonfirmasiTokoScreen extends React.Component {
           if (obj.stok == 0) obj.dlt = true;
         }
         if (obj.dlt == false)
-          tbiayaproduk = tbiayaproduk + (obj.stok * obj.harga);
+          tbiayaproduk = tbiayaproduk + obj.stok * obj.harga;
       });
 
       tbeli.produklist = tproduklist;
-      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;;
+      tbeli.totalharga = tbiayaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
       tbeli.hargaproduk = tbiayaproduk;
 
       this.setState({
         beli: tbeli,
         isFetching: false,
       });
-    } catch (error) { console.error(error) }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   handleConfirm = (date) => {
@@ -288,12 +300,6 @@ class BeliKonfirmasiTokoScreen extends React.Component {
       navigation.goBack();
     }
 
-
-
-
-
-
-
     // update dtabase
     this.setState({ isFetching: false, beli: tbeli });
   };
@@ -308,14 +314,16 @@ class BeliKonfirmasiTokoScreen extends React.Component {
       [
         {
           text: "Tidak",
-          style: "tidak"
+          style: "tidak",
         },
         {
-          text: "Ya", onPress: async () => {
+          text: "Ya",
+          onPress: async () => {
             try {
               var tbeli = this.state.beli;
               var tuser = this.state.user;
-              tbeli.log += tuser.nama + ": Penjual Batal " + this.GetDateTime() + "\n";
+              tbeli.log +=
+                tuser.nama + ": Penjual Batal " + this.GetDateTime() + "\n";
               tbeli.status = "Penjual Batal";
               tbeli.belidate = Date.now();
 
@@ -324,18 +332,14 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                 .ref("beli/" + tbeli.key)
                 .set(tbeli);
 
-
               navigation.goBack();
             } catch (error) {
               console.error(error);
             }
-
-          }
-        }
+          },
+        },
       ]
     );
-
-
   };
 
   onKonfirmasi = async () => {
@@ -348,14 +352,16 @@ class BeliKonfirmasiTokoScreen extends React.Component {
       [
         {
           text: "Tidak",
-          style: "tidak"
+          style: "tidak",
         },
         {
-          text: "Ya", onPress: async () => {
+          text: "Ya",
+          onPress: async () => {
             try {
               var tbeli = this.state.beli;
               var tuser = this.state.user;
-              tbeli.log += "\n " + tuser.nama + ": pembeli konfirmasi " + Date.now();
+              tbeli.log +=
+                "\n " + tuser.nama + ": pembeli konfirmasi " + Date.now();
               tbeli.status = "Menunggu Konfirmasi Penjual";
               tbeli.belidate = Date.now();
 
@@ -364,23 +370,18 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                 .ref("beli/" + tbeli.key)
                 .set(tbeli);
 
-
               navigation.goBack();
             } catch (error) {
               console.error(error);
             }
-
-          }
-        }
+          },
+        },
       ]
     );
-
-
   };
 
   onKonfirmasiPenjual = async () => {
     const { navigation } = this.props;
-
 
     Alert.alert(
       "Konfirmasi",
@@ -389,24 +390,34 @@ class BeliKonfirmasiTokoScreen extends React.Component {
       [
         {
           text: "Tidak",
-          style: "tidak"
+          style: "tidak",
         },
         {
-          text: "Ya", onPress: async () => {
+          text: "Ya",
+          onPress: async () => {
             try {
               var tbeli = this.state.beli;
               var tuser = this.state.user;
-              var status = "Sistem Error";
-              console.log(tbeli.metodepembayaran)
-              console.log(tbeli.metodepengiriman)
-              if (tbeli.metodepembayaran == "Bayar Tunai" && tbeli.metodepengiriman == "Ambil Sendiri") {
-                status = "Menunggu Pengambilan";
+              var vstatus = "Sistem Error";
+
+              if (
+                tbeli.metodepembayaran == "Bayar Tunai" &&
+                tbeli.metodepengiriman == "Ambil Sendiri"
+              ) {
+                vstatus = "Menunggu Pengambilan";
+              } else if (tbeli.metodepembayaran == "Transfer Bank") {
+                vstatus = "Menunggu Pembayaran";
+              } else {
+                console.log("tbeli.metodepembayaran" + tbeli.metodepembayaran);
+                console.log("tbeli.metodepengiriman" + tbeli.metodepengiriman);
+                return;
               }
-              else if (tbeli.metodepembayaran == "Transfer Bank") {
-                status = "Menunggu Pembayaran";
-              }
-              tbeli.log += tuser.nama + ": penjual konfirmasi " + this.GetDateTime() + "\n";
-              tbeli.status = status;
+              tbeli.log +=
+                tuser.nama +
+                ": penjual konfirmasi " +
+                this.GetDateTime() +
+                "\n";
+              tbeli.status = vstatus;
               tbeli.belidate = Date.now();
 
               await firebase
@@ -414,22 +425,17 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                 .ref("beli/" + tbeli.key)
                 .set(tbeli);
 
-
               navigation.goBack();
             } catch (error) {
-              console.error(error);
+              console.error(JSON.stringify(error));
             }
-
-          }
-        }
+          },
+        },
       ]
     );
-
-
   };
   onKonfirmasiPembayaran = async () => {
     const { navigation } = this.props;
-
 
     Alert.alert(
       "Konfirmasi",
@@ -438,17 +444,22 @@ class BeliKonfirmasiTokoScreen extends React.Component {
       [
         {
           text: "Tidak",
-          style: "tidak"
+          style: "tidak",
         },
         {
-          text: "Ya", onPress: async () => {
+          text: "Ya",
+          onPress: async () => {
             try {
               var tbeli = this.state.beli;
               var tuser = this.state.user;
               var status = "Sistem Error";
 
-              tbeli.log += tuser.nama + ": penjual konfirmasi pembayaran " + this.GetDateTime() + "\n";
-              tbeli.status = 'Menunggu Pengambilan';
+              tbeli.log +=
+                tuser.nama +
+                ": penjual konfirmasi pembayaran " +
+                this.GetDateTime() +
+                "\n";
+              tbeli.status = "Menunggu Pengambilan";
               tbeli.belidate = Date.now();
 
               await firebase
@@ -456,28 +467,28 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                 .ref("beli/" + tbeli.key)
                 .set(tbeli);
 
-
               if (tbeli.metodepengiriman == "Ambil Sendiri") {
-                Alert.alert("Pengingat", "Silahkan tunggu pembeli mengambil barang",
-                  [{ text: "OK", onPress: async () => { } }]);
-              }
-              else if (tbeli.metodepengiriman == "Kirim") {
-                Alert.alert("Pengingat", "Silahkan mengirim barang ke alamat yang diminta pembeli",
-                [{ text: "OK", onPress: async () => { } }]);
+                Alert.alert(
+                  "Pengingat",
+                  "Silahkan tunggu pembeli mengambil barang",
+                  [{ text: "OK", onPress: async () => {} }]
+                );
+              } else if (tbeli.metodepengiriman == "Kirim") {
+                Alert.alert(
+                  "Pengingat",
+                  "Silahkan mengirim barang ke alamat yang diminta pembeli",
+                  [{ text: "OK", onPress: async () => {} }]
+                );
               }
               navigation.goBack();
             } catch (error) {
               console.error(error);
             }
-
-          }
-        }
+          },
+        },
       ]
     );
-
-
   };
-
 
   _renderProduk = ({ item }) => {
     // if (item == null || item.stok <= 0 || item.dlt == false)
@@ -543,46 +554,46 @@ class BeliKonfirmasiTokoScreen extends React.Component {
 
             <View style={{ flexDirection: "row" }}>
               <Text
-                style={{ fontWeight: "bold", flexWrap: "wrap", marginBottom: 5 }}
+                style={{
+                  fontWeight: "bold",
+                  flexWrap: "wrap",
+                  marginBottom: 5,
+                }}
                 numberOfLines={1}
               >
                 {item.tokoname}
               </Text>
             </View>
           </View>
-
         </View>
       </TouchableOpacity>
     );
   };
   GetDateTime = () => {
     var today = new Date();
-    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    return date + ' ' + time;
+    var date =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
+    var time =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return date + " " + time;
   };
   getStatusColor = () => {
     var status = this.state.beli.status;
-    if (status == "Draft")
-      return "#FFC947";
-    if (status == "User Batal")
-      return "#CD113B";
-    if (status == "Penjual Batal")
-      return "#DA0037";
-    if (status == "Penjual Batal")
-      return "#DA0037";
-    if (status == "Menunggu Konfirmasi Penjual")
-      return "#39A2DB";
-    if (status == "Menunggu Pembayaran")
-      return "#185ADB";
-    if (status == "Menunggu Konfirmasi Pembayaran")
-      return "#5C33F6";
-    if (status == "Menunggu Pengambilan")
-      return "#185ADB";
-    if (status == "Selesai")
-      return "#01937C";
+    if (status == "Draft") return "#FFC947";
+    if (status == "User Batal") return "#CD113B";
+    if (status == "Penjual Batal") return "#DA0037";
+    if (status == "Penjual Batal") return "#DA0037";
+    if (status == "Menunggu Konfirmasi Penjual") return "#39A2DB";
+    if (status == "Menunggu Pembayaran") return "#185ADB";
+    if (status == "Menunggu Konfirmasi Pembayaran") return "#5C33F6";
+    if (status == "Menunggu Pengambilan") return "#185ADB";
+    if (status == "Selesai") return "#01937C";
     else return "black";
-  }
+  };
   renderEmptyContainer = () => {
     return (
       <View
@@ -645,7 +656,15 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                 />
               </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 16, fontWeight: "bold", marginTop: 20, color: this.getStatusColor() }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                marginTop: 20,
+                color: this.getStatusColor(),
+              }}
+              lineBreakMode={"tail"}
+            >
               {this.state.beli.status ?? "Beli"} - {this.state.beli.username}
             </Text>
             <View style={{ marginTop: 20 }}>
@@ -792,19 +811,15 @@ class BeliKonfirmasiTokoScreen extends React.Component {
           >
             <Text style={{ fontSize: 14 }}>Metode Pengiriman</Text>
 
-            <Select style={{ width: WIDTH - 50 }}
+            <Select
+              style={{ width: WIDTH - 50 }}
               selectedValue={this.state.beli.metodepengiriman}
-              onValueChange={(itemValue, itemIndex) => {
-               
-              }}
+              onValueChange={(itemValue, itemIndex) => {}}
               enabled={false}
             >
-
               {this.state.optionkirim.map((v) => {
-                return <Select.Item label={v.label} value={v.label} />
+                return <Select.Item label={v.label} value={v.label} />;
               })}
-
-
             </Select>
           </View>
           <View
@@ -818,30 +833,32 @@ class BeliKonfirmasiTokoScreen extends React.Component {
           >
             <Text style={{ fontSize: 14 }}>Metode Pembayaran</Text>
 
-            <Select style={{ width: WIDTH - 50 }}
+            <Select
+              style={{ width: WIDTH - 50 }}
               selectedValue={this.state.beli.metodepembayaran}
               onValueChange={(itemValue, itemIndex) => {
                 var tbeli = this.state.beli;
                 tbeli.metodepembayaran = itemValue;
                 if (itemValue == "Bayar Tunai") {
                   tbeli.hargaadmin = this.state.optionbayarambil[0].biaya;
-                  tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+                  tbeli.totalharga =
+                    tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
                 } else {
                   tbeli.hargaadmin = this.state.optionbayarambil[1].biaya;
-                  tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+                  tbeli.totalharga =
+                    tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
                 }
                 this.setState({ beli: tbeli });
               }}
               enabled={false}
             >
-              {this.state.beli.metodepengiriman == "Ambil Sendiri" ?
-                this.state.optionbayarambil.map((v) => {
-                  return <Select.Item label={v.label} value={v.label} />
-                }) : this.state.optionbayarkirim.map((v) => {
-                  return <Select.Item label={v.label} value={v.label} />
-                })
-
-              }
+              {this.state.beli.metodepengiriman == "Ambil Sendiri"
+                ? this.state.optionbayarambil.map((v) => {
+                    return <Select.Item label={v.label} value={v.label} />;
+                  })
+                : this.state.optionbayarkirim.map((v) => {
+                    return <Select.Item label={v.label} value={v.label} />;
+                  })}
             </Select>
           </View>
           <View
@@ -934,14 +951,13 @@ class BeliKonfirmasiTokoScreen extends React.Component {
               </Text>
             </View>
           </View>
-          {(this.state.beli != null ) &&
+          {this.state.beli != null && (
             <View
               style={{
                 marginTop: 10,
                 borderRadius: 10,
                 padding: 10,
                 marginHorizontal: 5,
-
               }}
             >
               <View
@@ -950,117 +966,194 @@ class BeliKonfirmasiTokoScreen extends React.Component {
 
                   borderRadius: 10,
                   padding: 10,
-
                 }}
-              ><Text style={{ fontSize: 14, fontWeight: "bold" }}>Log </Text>
+              >
+                <Text style={{ fontSize: 14, fontWeight: "bold" }}>Log </Text>
                 <Text style={{ fontSize: 14 }}>{this.state.beli.log} </Text>
               </View>
             </View>
-          }
-          {(this.state.beli != null && this.state.beli.status == 'Menunggu Konfirmasi Penjual') &&
-            <View
-              style={{
-                marginTop: 10,
-                borderRadius: 10,
-                padding: 10,
-                marginHorizontal: 5,
-
-              }}
-            >
+          )}
+          {this.state.beli != null &&        this.state.beli.metodepembayaran == "Transfer Bank" && (
               <View
                 style={{
                   backgroundColor: "white",
                   marginVertical: 10,
                   borderRadius: 10,
                   padding: 10,
-
+                  marginHorizontal:15
                 }}
               >
-                <Text style={{ fontSize: 14 }}>Menunggu Penjual mengkonfirmasi ketersedian produk. </Text>
+               
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "bold",
+                    paddingTop: 7,
+                    paddingBottom: 3,
+                  }}
+                >
+                  Data Pembayaran{" "}
+                </Text>
+                <Text style={{ fontSize: 14 }}>Nama Bank</Text>
+                <TextInput
+                  style={{ fontSize: 14, paddingVertical: 4 }}
+                  placeholder={"Masukkan Nama bank yang digunakan"}
+                  onChangeText={async (val) => {
+                    var tbeli = this.state.beli;
+                    tbeli.pembayaranbank = val;
+                    await this.setState({ beli: tbeli });
+                  }}
+                  defaultValue={this.state.beli.pembayaranbank}
+                  placeholderTextColor={"#666872"}
+                  underlineColorAndroid="black"
+                  keyboardType={"default"}
+                  editable={false}
+                  textAlignVertical={"top"}
+                />
+                <Text style={{ fontSize: 14 }}>Nama Pengirim</Text>
+                <TextInput
+                  style={{ fontSize: 14, paddingVertical: 4 }}
+                  placeholder={"Masukkan Nama Pengirim yang digunakan"}
+                  onChangeText={async (val) => {
+                    var tbeli = this.state.beli;
+                    tbeli.pembayarannama = val;
+                    await this.setState({ beli: tbeli });
+                  }}
+                  defaultValue={this.state.beli.pembayarannama}
+                  placeholderTextColor={"#666872"}
+                  underlineColorAndroid="black"
+                  keyboardType={"default"}
+                  editable={false}
+                  textAlignVertical={"top"}
+                />
+                <Text style={{ fontSize: 14 }}>Waktu Pengiriman</Text>
+                <TextInput
+                  style={{ fontSize: 14, paddingVertical: 4 }}
+                  placeholder={"Masukkan Tanggal Pengiriman dilakukan"}
+                  onChangeText={async (val) => {
+                    var tbeli = this.state.beli;
+                    tbeli.pembayarantanggal = val;
+                    await this.setState({ beli: tbeli });
+                  }}
+                  defaultValue={this.state.beli.pembayarantanggal}
+                  placeholderTextColor={"#666872"}
+                  underlineColorAndroid="black"
+                  keyboardType={"default"}
+                  editable={false}
+                  textAlignVertical={"top"}
+                />
               </View>
-
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  backgroundColor: "#DA0037",
-                  borderRadius: 10,
-                  width: WIDTH - 30,
-                  alignContent: "center",
-
-                }}
-                onPress={this.onBatal}
-              >
-                <Text style={{ color: "white", textAlign: "center" }}>Batal</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  marginTop:10,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  width: WIDTH - 30,
-                  alignContent: "center",
-
-                }}
-                onPress={this.onKonfirmasiPenjual}
-              >
-                <Text style={{ color: "#F24E1E", textAlign: "center" }}>Konfirmasi Produk</Text>
-              </TouchableOpacity>
-
-            </View>
-          }
-          {(this.state.beli != null && this.state.beli.status == 'Menunggu Konfirmasi Pembayaran') &&
-            <View
-              style={{
-                marginTop: 10,
-                borderRadius: 10,
-                padding: 10,
-                marginHorizontal: 5,
-
-              }}
-            >
+            )}
+          {this.state.beli != null &&
+            this.state.beli.status == "Menunggu Konfirmasi Penjual" && (
               <View
                 style={{
-                  backgroundColor: "white",
-                  marginVertical: 10,
+                  marginTop: 10,
                   borderRadius: 10,
                   padding: 10,
-
+                  marginHorizontal: 5,
                 }}
               >
-                <Text style={{ fontSize: 14 }}>Menunggu Penjual mengkonfirmasi pembayaran. </Text>
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    marginVertical: 10,
+                    borderRadius: 10,
+                    padding: 10,
+                  }}
+                >
+                  <Text style={{ fontSize: 14 }}>
+                    Menunggu Penjual mengkonfirmasi ketersedian produk.{" "}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={{
+                    padding: 10,
+                    backgroundColor: "#DA0037",
+                    borderRadius: 10,
+                    width: WIDTH - 30,
+                    alignContent: "center",
+                  }}
+                  onPress={this.onBatal}
+                >
+                  <Text style={{ color: "white", textAlign: "center" }}>
+                    Batal
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    padding: 10,
+                    marginTop: 10,
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    width: WIDTH - 30,
+                    alignContent: "center",
+                  }}
+                  onPress={this.onKonfirmasiPenjual}
+                >
+                  <Text style={{ color: "#F24E1E", textAlign: "center" }}>
+                    Konfirmasi Produk
+                  </Text>
+                </TouchableOpacity>
               </View>
-
-              <TouchableOpacity
+            )}
+          
+          {this.state.beli != null &&
+            this.state.beli.status == "Menunggu Konfirmasi Pembayaran" && (
+              <View
                 style={{
-                  padding: 10,
-                  backgroundColor: "#DA0037",
+                  marginTop: 10,
                   borderRadius: 10,
-                  width: WIDTH - 30,
-                  alignContent: "center",
-
-                }}
-                onPress={this.onBatal}
-              >
-                <Text style={{ color: "white", textAlign: "center" }}>Batal</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
                   padding: 10,
-                  backgroundColor: "white",
-                  borderRadius: 10,
-                  marginTop:10,
-                  width: WIDTH - 30,
-                  alignContent: "center",
-
+                  marginHorizontal: 5,
                 }}
-                onPress={this.onKonfirmasiPembayaran}
               >
-                <Text style={{ color: "#F24E1E", textAlign: "center" }}>Konfimrasi Pembayaran</Text>
-              </TouchableOpacity>
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    marginVertical: 10,
+                    borderRadius: 10,
+                    padding: 10,
+                  }}
+                >
+                  <Text style={{ fontSize: 14 }}>
+                    Menunggu Penjual mengkonfirmasi pembayaran{" "}
+                  </Text>
+                 
+                </View>
 
-            </View>
-          }
+                <TouchableOpacity
+                  style={{
+                    padding: 10,
+                    backgroundColor: "#DA0037",
+                    borderRadius: 10,
+                    width: WIDTH - 30,
+                    alignContent: "center",
+                  }}
+                  onPress={this.onBatal}
+                >
+                  <Text style={{ color: "white", textAlign: "center" }}>
+                    Batal
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    padding: 10,
+                    backgroundColor: "white",
+                    borderRadius: 10,
+                    marginTop: 10,
+                    width: WIDTH - 30,
+                    alignContent: "center",
+                  }}
+                  onPress={this.onKonfirmasiPembayaran}
+                >
+                  <Text style={{ color: "#F24E1E", textAlign: "center" }}>
+                    Konfimrasi Pembayaran
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
         </ScrollView>
       </View>
     );

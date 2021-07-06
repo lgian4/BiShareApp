@@ -641,7 +641,7 @@ class BeliDraftScreen extends React.Component {
                 />
               </TouchableOpacity>
             </View>
-            <Text style={{ fontSize: 16, fontWeight: "bold", marginTop: 20, color: this.getStatusColor() }}>
+            <Text style={{ fontSize: 16, fontWeight: "bold", marginTop: 20, color: this.getStatusColor() }} lineBreakMode={"tail"} >
               {this.state.beli.status ?? "Beli"} - {this.state.beli.username}
             </Text>
             <View style={{ marginTop: 20 }}>
@@ -790,10 +790,12 @@ class BeliDraftScreen extends React.Component {
               onValueChange={(itemValue, itemIndex) => {
                 var tbeli = this.state.beli;
                 tbeli.metodepengiriman = itemValue;
-                console.log(tbeli.metodepengiriman);
+                console.log("metode pengiriman " +tbeli.metodepengiriman);
+                console.log("index"+itemIndex);
                 if (itemValue == "Kirim") {
                   tbeli.hargaongkir = this.state.optionkirim[1].biaya;
                   tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
+                  tbeli.metodepembayaran = this.state.optionbayarambil[1].label;
                 }
                 else {
                   tbeli.metodepembayaran = this.state.optionbayarambil[1].label;
