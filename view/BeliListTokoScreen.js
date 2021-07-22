@@ -248,6 +248,22 @@ class BeliListTokoScreen extends React.Component {
     this.setState({ TextInputDisableStatus: true });
   };
 
+  calculateTotalProduk= (produklist) => {
+    try {
+      
+      var tproduklist = produklist;
+      var ttotalproduk = 0;
+      tproduklist.forEach(function (obj) {
+        
+        if (obj.dlt == false)
+          ttotalproduk = obj.stok;
+      });
+
+      
+      return ttotalproduk;
+    } catch (error) { console.error(error) }
+
+  }
   OnBeli = (selectedproduk) => {
     const { navigation } = this.props;
 
@@ -281,6 +297,7 @@ class BeliListTokoScreen extends React.Component {
 
     //console.log(tuser);
     var tbelilist = [];
+    var tbelilistselesai= [];
     try {
       await firebase
         .database()
@@ -371,7 +388,7 @@ class BeliListTokoScreen extends React.Component {
               {item.status} - {item.tokoname}
             </Text>
             <Text style={{ marginBottom: 5 }}>
-              {item.produklist.length ?? 0} item |{" "}
+            {this.calculateTotalProduk( item.produklist) } item |{" "}
               {currencyFormatter(item.totalharga, defaultOptions)}{" "}
             </Text>
           </View>

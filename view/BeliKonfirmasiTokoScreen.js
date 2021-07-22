@@ -119,6 +119,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
         stok: 0,
         harga: 0,
       },
+      totalproduk:0,
       refresh: true,
       totalproduk: 0,
       totalharga: 0,
@@ -159,6 +160,26 @@ class BeliKonfirmasiTokoScreen extends React.Component {
     }
   };
 
+  
+  calculateTotalProduk=async () => {
+    try {
+      this.setState({ isFetching: true });
+      var tproduklist = this.state.beli.produklist;
+      var ttotalproduk = 0;
+      tproduklist.forEach(function (obj) {
+        
+        if (obj.dlt == false)
+          ttotalproduk = obj.stok;
+      });
+
+      this.setState({
+        totalproduk: ttotalproduk,
+        isFetching: false,
+      });
+    } catch (error) { console.error(error) }
+
+  }
+
   onAddStok = async (item) => {
     try {
       this.setState({ isFetching: true });
@@ -190,6 +211,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
     } catch (error) {
       console.error(error);
     }
+    await this.calculateTotalProduk();
     // firebase
     //   .database()
     //   .ref("keranjang/" + tuser.userid + "/" + item.produkid)
@@ -226,6 +248,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
     } catch (error) {
       console.error(error);
     }
+    await this.calculateTotalProduk();
   };
 
   onDeleteStok = async (item) => {
@@ -259,6 +282,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
     } catch (error) {
       console.error(error);
     }
+    await this.calculateTotalProduk();
   };
 
   handleConfirm = (date) => {
@@ -299,7 +323,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
       const { navigation } = this.props;
       navigation.goBack();
     }
-
+    await this.calculateTotalProduk();
     // update dtabase
     this.setState({ isFetching: false, beli: tbeli });
   };
@@ -549,7 +573,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
             </Text>
             <Text style={{ marginBottom: 5 }}>
               {" "}
-              {currencyFormatter(item.harga)}
+              {item.stok} Item x {currencyFormatter(item.harga)}
             </Text>
 
             <View style={{ flexDirection: "row" }}>
@@ -882,9 +906,7 @@ class BeliKonfirmasiTokoScreen extends React.Component {
                   textAlign: "right",
                 }}
               >
-                {this.state.beli != null && this.state.beli.produklist != null
-                  ? this.state.beli.produklist.length
-                  : 0}{" "}
+                {this.state.totalproduk}
                 Produk
               </Text>
             </View>

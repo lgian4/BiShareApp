@@ -208,9 +208,15 @@ class KeranjangScreen extends React.Component {
   };
   GetDateTime = () => {
     var today = new Date();
-    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    return date + ' ' + time;
+    var date =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
+    var time =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    return date + " " + time;
   };
 
   onDeleteStok = async (item) => {
@@ -283,14 +289,14 @@ class KeranjangScreen extends React.Component {
       metodepengiriman: "Ambil Sendiri",
       metodepembayaran: "Bayar Tunai",
       status: "Draft",
-      log: tuser.nama + ": Draft dibuat - " + this.GetDateTime() +"\n",
+      log: tuser.nama + ": Draft dibuat - " + this.GetDateTime() + "\n",
       komenpenjual: "",
       dlt: false,
       belidate: Date.now(),
-      pembayarannama:"",      
-      pembayarantanggal:"",
-      pembayaranbank:"",
-      pembayarannorek:"",
+      pembayarannama: "",
+      pembayarantanggal: "",
+      pembayaranbank: "",
+      pembayarannorek: "",
     };
     // save pembayaran
     tbeli.key = await firebase.database().ref("beli/").push(tbeli).getKey();
@@ -342,12 +348,13 @@ class KeranjangScreen extends React.Component {
           tkeranjanglist = [];
           ttotalproduk = 0;
           ttotalharga = 0;
+          group = "";
           snapshot.forEach((child) => {
             if (
               (child.key != "count" &&
                 child.key != "produkmediacount" &&
                 child.val().dlt != true,
-                child.val().stok >= 1)
+              child.val().stok >= 1)
             ) {
               ttotalproduk = ttotalproduk + 1;
               ttotalharga = ttotalharga + child.val().stok * child.val().harga;
@@ -722,7 +729,12 @@ class KeranjangScreen extends React.Component {
               Keranjang Belanjaan
             </Text>
             <View style={{ marginTop: 20 }}>
-              <TouchableOpacity onPress={() => { const { navigation } = this.props; navigation.push("BeliList"); }}>
+              <TouchableOpacity
+                onPress={() => {
+                  const { navigation } = this.props;
+                  navigation.push("BeliList");
+                }}
+              >
                 <Icon name={"basket-outline"} size={25} color={"#666872"} />
               </TouchableOpacity>
             </View>

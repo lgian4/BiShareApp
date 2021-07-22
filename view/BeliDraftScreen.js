@@ -107,6 +107,7 @@ class BeliDraftScreen extends React.Component {
         islike: false,
         userid: "",
       },
+      totalproduk: 0,
       firstmedia: "",
       keranjanglist: [],
       keranjang: {
@@ -182,6 +183,7 @@ class BeliDraftScreen extends React.Component {
         isFetching: false,
       });
     } catch (error) { console.error(error) }
+    await this.calculateTotalProduk();
     // firebase
     //   .database()
     //   .ref("keranjang/" + tuser.userid + "/" + item.produkid)
@@ -216,7 +218,10 @@ class BeliDraftScreen extends React.Component {
         isFetching: false,
       });
     } catch (error) { console.error(error) }
+    await this.calculateTotalProduk();
   };
+
+  
 
   onDeleteStok = async (item) => {
     try {
@@ -247,7 +252,27 @@ class BeliDraftScreen extends React.Component {
         isFetching: false,
       });
     } catch (error) { console.error(error) }
+    await this.calculateTotalProduk();
   };
+
+  calculateTotalProduk=async () => {
+    try {
+      this.setState({ isFetching: true });
+      var tproduklist = this.state.beli.produklist;
+      var ttotalproduk = 0;
+      tproduklist.forEach(function (obj) {
+        
+        if (obj.dlt == false)
+          ttotalproduk = obj.stok;
+      });
+
+      this.setState({
+        totalproduk: ttotalproduk,
+        isFetching: false,
+      });
+    } catch (error) { console.error(error) }
+
+  }
 
   handleConfirm = (date) => {
     this.setState({ DateDisplay: date });
@@ -330,7 +355,8 @@ class BeliDraftScreen extends React.Component {
 
         tbeli.hargaadmin = BiayaAdmin;
         tbeli.totalharga = tbeli.hargaproduk + tbeli.hargaadmin + tbeli.hargaongkir;
-        this.setState({ beli: tbeli });
+       await this.calculateTotalProduk();
+        this.setState({ beli: tbeli,isFetching : false  });
       });
 
 
@@ -870,10 +896,7 @@ class BeliDraftScreen extends React.Component {
                   textAlign: "right",
                 }}
               >
-                {this.state.beli != null && this.state.beli.produklist != null
-                  ? this.state.beli.produklist.length
-                  : 0}{" "}
-                Produk
+                {this.state.totalproduk ?? 0} Produk
               </Text>
             </View>
             <View style={{ flex: 2, flexDirection: "row" }}>

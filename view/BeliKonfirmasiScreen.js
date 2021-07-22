@@ -119,6 +119,7 @@ class BeliKonfirmasiScreen extends React.Component {
         stok: 0,
         harga: 0,
       },
+      totalproduk:0,
       refresh: true,
       totalproduk: 0,
       totalharga: 0,
@@ -190,6 +191,7 @@ class BeliKonfirmasiScreen extends React.Component {
     } catch (error) {
       console.error(error);
     }
+    await this.calculateTotalProduk();
     // firebase
     //   .database()
     //   .ref("keranjang/" + tuser.userid + "/" + item.produkid)
@@ -226,6 +228,7 @@ class BeliKonfirmasiScreen extends React.Component {
     } catch (error) {
       console.error(error);
     }
+    await this.calculateTotalProduk();
   };
 
   onDeleteStok = async (item) => {
@@ -259,6 +262,7 @@ class BeliKonfirmasiScreen extends React.Component {
     } catch (error) {
       console.error(error);
     }
+    await this.calculateTotalProduk();
   };
 
   handleConfirm = (date) => {
@@ -299,7 +303,7 @@ class BeliKonfirmasiScreen extends React.Component {
       const { navigation } = this.props;
       navigation.goBack();
     }
-
+    await this.calculateTotalProduk();
     // update dtabase
     this.setState({ isFetching: false, beli: tbeli });
   };
@@ -531,7 +535,7 @@ class BeliKonfirmasiScreen extends React.Component {
             </Text>
             <Text style={{ marginBottom: 5 }}>
               {" "}
-              {currencyFormatter(item.harga)}
+           {item.stok} Item x {currencyFormatter(item.harga)}
             </Text>
 
             <View style={{ flexDirection: "row" }}>
@@ -576,6 +580,25 @@ class BeliKonfirmasiScreen extends React.Component {
     if (status == "Selesai") return "#01937C";
     else return "black";
   };
+  
+  calculateTotalProduk=async () => {
+    try {
+      this.setState({ isFetching: true });
+      var tproduklist = this.state.beli.produklist;
+      var ttotalproduk = 0;
+      tproduklist.forEach(function (obj) {
+        
+        if (obj.dlt == false)
+          ttotalproduk = obj.stok;
+      });
+
+      this.setState({
+        totalproduk: ttotalproduk,
+        isFetching: false,
+      });
+    } catch (error) { console.error(error) }
+
+  }
   renderEmptyContainer = () => {
     return (
       <View
@@ -881,10 +904,7 @@ class BeliKonfirmasiScreen extends React.Component {
                   textAlign: "right",
                 }}
               >
-                {this.state.beli != null && this.state.beli.produklist != null
-                  ? this.state.beli.produklist.length
-                  : 0}{" "}
-                Produk
+                {this.state.totalproduk} Produk
               </Text>
             </View>
             <View style={{ flex: 2, flexDirection: "row" }}>
